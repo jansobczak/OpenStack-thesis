@@ -1,36 +1,18 @@
-from libcloud.compute.types import Provider
-from libcloud.compute.providers import get_driver
+from OS_class import OSConnection
+from OS_class import OSNova
 
-auth_username = 'sobczakj'
-auth_password = 'open.stack'
-auth_url = 'http://194.29.169.45:5000'
+"Create connection class"
+"TODO config file to connection"
+
+auth_url = 'http://194.29.169.46:5000'
 project_name = 'rest_service'
-region_name = ''
+username = 'sobczakj'
+password = 'open.stack'
 
-def create_connection(auth_url, region, project_name, username, password):
-    prof = profile.Profile()
-    prof.set_region(profile.Profile.ALL, region)
+os_conn = OSConnection(auth_url, project_name, username, password)
+os_image = OSNova(os_conn.getConn())
 
-    return connection.Connection(
-        profile=prof,
-        user_agent='examples',
-        auth_url=auth_url,
-        project_name=project_name,
-        username=username,
-        password=password
-    )
-
-def list_images(conn):
-	print("List Images:")
-
-	for image in conn.compute.images():
-		print(image)
-
-
-conn = create_connection(auth_url, region_name, project_name, auth_username, auth_password)
-list_images(conn)
-
-##images = conn.list_images()
-#for image in images:
-#    print(image)
-#       
+os_image.showImagesJSON()
+os_image.showFlavorsJSON()
+os_image.showServerJSON()
+os_image.showNetworkJSON()
