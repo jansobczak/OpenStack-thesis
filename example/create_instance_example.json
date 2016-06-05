@@ -1,0 +1,7 @@
+{
+	"image_name": "Debian Jessie Snapshot",
+    "flavor_name": "m1.small",
+    "network_name": "rest_service_network",
+    "keypair_name": "rest_service_key",
+    "server_name": "api_example"
+}

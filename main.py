@@ -1,17 +1,16 @@
 from OS_class import OSConnection
 from OS_class import OSNova
 from OS_class import OSTools
+from REST_service import RESTservice
 
 "Create connection class"
-"TODO config file to connection"
+os_conn = OSConnection("config.json")
+os_nova = OSNova(os_conn)
 
-auth_url = 'http://194.29.169.46:5000'
-project_name = 'rest_service'
-username = 'sobczakj'
-password = 'open.stack'
+rest_service = RESTservice()
+rest_service.mountOSNova(os_nova)
+rest_service.start()
 
-os_conn = OSConnection(auth_url, project_name, username, password)
-os_nova = OSNova(os_conn.getConn())
 
 #os_nova.showImagesJSON()
 #os_nova.showFlavorsJSON()
@@ -28,9 +27,11 @@ os_nova = OSNova(os_conn.getConn())
 #print "Networks:"
 #OSTools.toSimpleTable(os_nova.getNetworks())
 
-#print "KeyParis:"
+#print "KeyPairs:"
 #OSTools.toSimpleTable(os_nova.getKeyPairs())
+#print(OSTools.toJSON(os_nova.getKeyPair("rest_service_key")))
 
-OSTools.toJSON(os_nova.getKeyPairs("rest_service_key"))
+#print "Servers:"
+#print(OSTools.toJSON(os_nova.getServers())
 
-os_nova.createServer("Debian Jessie", "2", "rest_service_network", "rest_service_key", "API_instance")
+#os_nova.createServer("Debian Jessie", "m1.small", "rest_service_network", "rest_service_key", "API_instance")
