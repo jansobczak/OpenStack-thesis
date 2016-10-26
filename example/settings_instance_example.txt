@@ -1,8 +1,0 @@
-#cloud-config
-password: open.stack
-chpasswd: { expire: False }
-ssh_pwauth: True
-
-#cloud-config
-ssh_authorized_keys:
-  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYCBhj+tSk06MKbS0Q2VcyOXLquzwSbvhFApsUsyn8PVTXh/PY0/U50dEiZj9Mn6tTmfSj9IFuJ1ALa0pCarkteU3PJvpFhCP8FOnd+bCOrXuqftEKvl2p9SYJYwvhBSnVOBUwJ1qju2goEXQoMlvE2GsyRZtxRqh3pKgb3S29N5VYYWyUn8s90vEMXw1E4zNvn8lhjPp2xeFE+F5asSWyuVBTyWJ5pxsDqgHEtSWcG4LUjYsjmqRIq622BE/0oTKDBXs4TO+ePRWqS8QRer8qSNxzA6mj1tofY+quV8gVKt8gdJ0u2JI+it8vGPMPi122yQBExQM/QUZpAbYwwJSX sobczakj@js-server
