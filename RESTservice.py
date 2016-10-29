@@ -1,7 +1,5 @@
-import random
-import string
 import cherrypy
-from OS_class import OSTools
+from OSTools import OSTools
 
 
 class Images(object):
@@ -11,7 +9,7 @@ class Images(object):
     def __init__(self, os_nova):
         self.os_nova_object = os_nova
 
-    @cherrypy.tools.accept(media='text/plain')
+    @cherrypy.tools.accept(media="text/plain")
     def GET(self):
         return OSTools.toJSON(self.os_nova_object.getImages())
 
@@ -23,7 +21,7 @@ class Instance(object):
     def __init__(self, os_nova):
         self.os_nova_object = os_nova
 
-    @cherrypy.tools.accept(media='text/plain')
+    @cherrypy.tools.accept(media="text/plain")
     def GET(self):
         return OSTools.toJSON(self.os_nova_object.getServers())
 
@@ -117,7 +115,7 @@ class InstanceStop(object):
 
 class RESTservice(object):
     def start(self):
-        cherrypy.server.socket_host = '194.29.169.17'
+        cherrypy.server.socket_host = "0.0.0.0"
         cherrypy.server.socket_port = 8080
 
         cherrypy.engine.start()
@@ -125,20 +123,20 @@ class RESTservice(object):
 
     def mountOSNova(self, os_nova):
         conf = {
-            '/': {
-                'request.dispatch':
+            "/": {
+                "request.dispatch":
                 cherrypy.dispatch.MethodDispatcher(),
-                'tools.sessions.on': True,
-                'tools.response_headers.on': True,
-                'tools.response_headers.headers':
-                [('Content-Type', 'text/plain')],
+                "tools.sessions.on": True,
+                "tools.response_headers.on": True,
+                "tools.response_headers.headers":
+                [("Content-Type", "text/plain")],
             }
         }
-        cherrypy.tree.mount(Images(os_nova), '/images', conf)
-        cherrypy.tree.mount(Instance(os_nova), '/instance', conf)
-        cherrypy.tree.mount(InstanceDelete(os_nova), '/instance/delete', conf)
-        cherrypy.tree.mount(InstanceStop(os_nova), '/instance/stop', conf)
-        cherrypy.tree.mount(InstanceStart(os_nova), '/instance/start', conf)
+        cherrypy.tree.mount(Images(os_nova), "/images", conf)
+        cherrypy.tree.mount(Instance(os_nova), "/instance", conf)
+        cherrypy.tree.mount(InstanceDelete(os_nova), "/instance/delete", conf)
+        cherrypy.tree.mount(InstanceStop(os_nova), "/instance/stop", conf)
+        cherrypy.tree.mount(InstanceStart(os_nova), "/instance/start", conf)
 
     def stop(self):
         cherrypy.engine.stop()

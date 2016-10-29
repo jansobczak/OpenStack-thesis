@@ -1,0 +1,1690 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"project",
+				"projectManager"
+			],
+			[
+				"porje",
+				"project_id"
+			],
+			[
+				"pr",
+				"project_id\tstatement"
+			],
+			[
+				"proje",
+				"project_id"
+			],
+			[
+				"file",
+				"file_name"
+			],
+			[
+				"at",
+				"auth_url"
+			],
+			[
+				"pro",
+				"project_domain_name"
+			],
+			[
+				"user",
+				"user_domain"
+			],
+			[
+				"de",
+				"default\t(OSKeystoneClient.py)"
+			],
+			[
+				"list",
+				"listProject\t(OSKeystoneClient.py)"
+			],
+			[
+				"crea",
+				"createProject\t(OSKeystoneClient.py)"
+			],
+			[
+				"OSKe",
+				"OSKeystoneClient"
+			],
+			[
+				"OS",
+				"OSKeystoneAuth\tclass"
+			],
+			[
+				"Os",
+				"OSNova"
+			],
+			[
+				"lis",
+				"listProject\t(OSKeystoneClient.py)"
+			],
+			[
+				"osK",
+				"osKClient"
+			],
+			[
+				"proj",
+				"projectManager"
+			],
+			[
+				"KS",
+				"KSClient"
+			],
+			[
+				"cre",
+				"createKeyStoneSession\t(OSKeystoneAuth.py)"
+			],
+			[
+				"__",
+				"__init__\t(OSKeystone.py)"
+			],
+			[
+				"ke",
+				"keystoneclient"
+			],
+			[
+				"Ks",
+				"KSProjectManager\timport"
+			],
+			[
+				"us",
+				"username"
+			],
+			[
+				"lo",
+				"loading"
+			],
+			[
+				"a",
+				"auth_url\tstatement"
+			],
+			[
+				"key",
+				"keystone"
+			],
+			[
+				"Se",
+				"Session"
+			],
+			[
+				"auth",
+				"auth_url"
+			],
+			[
+				"keysto",
+				"keystoneclient"
+			],
+			[
+				"bac",
+				"background-color"
+			],
+			[
+				"parse",
+				"parsexml_\t(AIXMDataTypesClass.py)"
+			],
+			[
+				"wid",
+				"width"
+			],
+			[
+				"AIXU",
+				"AIXIMUpdateClass.py"
+			],
+			[
+				"type",
+				"type=\"text"
+			],
+			[
+				"local",
+				"localContractorID"
+			],
+			[
+				"inv",
+				"invoice"
+			],
+			[
+				"val",
+				"value"
+			],
+			[
+				"tye",
+				"type=\"text"
+			],
+			[
+				"for",
+				"for\tfor (…) {…}"
+			],
+			[
+				"table",
+				"tableData"
+			],
+			[
+				"if",
+				"if\tif"
+			],
+			[
+				"delte",
+				"deleteContractorButton\t(index.php)"
+			],
+			[
+				"contra",
+				"contractorID"
+			],
+			[
+				"contractorAc",
+				"contractorActiveButton"
+			],
+			[
+				"has",
+				"hasClass"
+			],
+			[
+				"contractorA",
+				"contractorActiveButton"
+			],
+			[
+				"conta",
+				"contractorActiveButton"
+			],
+			[
+				"btn-",
+				"btn-primary\t(ifirma_operations.php)"
+			],
+			[
+				"Ex",
+				"IFirmaException〔class〕"
+			],
+			[
+				"pe",
+				"performDbQuery"
+			],
+			[
+				"payme",
+				"paymentDate"
+			],
+			[
+				"contractor",
+				"contractorObject"
+			],
+			[
+				"prev",
+				"preventDefault"
+			],
+			[
+				"saveContractor",
+				"saveContractorButton\t(index.php)"
+			],
+			[
+				"contr",
+				"contractor"
+			],
+			[
+				"cont",
+				"contractor"
+			],
+			[
+				"con",
+				"contractors"
+			],
+			[
+				"arra",
+				"array\t$… = array (…)"
+			],
+			[
+				"ret",
+				"returnArray"
+			],
+			[
+				"I",
+				"IFirmaException〔class〕"
+			],
+			[
+				"fun",
+				"functionName"
+			],
+			[
+				"cur",
+				"curFunction"
+			],
+			[
+				"__F",
+				"__FUNCTION__"
+			],
+			[
+				"Exception",
+				"Exception"
+			],
+			[
+				"getCont",
+				"getContractor"
+			],
+			[
+				"elementsMo",
+				"elementsModalTitle\t(index.php)"
+			],
+			[
+				"col-",
+				"col-sm-9\t(bootstrap.css)"
+			],
+			[
+				"rep",
+				"reponses"
+			],
+			[
+				"Ifirma",
+				"IFirma"
+			],
+			[
+				"stat",
+				"statistics"
+			],
+			[
+				"form",
+				"form-control"
+			],
+			[
+				"mayb",
+				"maybeStop"
+			],
+			[
+				"roo",
+				"rooms"
+			],
+			[
+				"le",
+				"length"
+			],
+			[
+				"ro",
+				"rooms"
+			],
+			[
+				"may",
+				"maybeStart"
+			],
+			[
+				"doCall",
+				"doCall()"
+			],
+			[
+				"setLo",
+				"setLocalAndSendAnswer"
+			],
+			[
+				"func",
+				"function"
+			],
+			[
+				"function",
+				"function〔keyword〕"
+			],
+			[
+				"sess",
+				"sessionDescription"
+			],
+			[
+				"start",
+				"startRTC()"
+			],
+			[
+				"get",
+				"getTracks"
+			],
+			[
+				"style",
+				"style=〔attribute〕"
+			],
+			[
+				"margin",
+				"margin-top"
+			],
+			[
+				"lea",
+				"leaveRoom\t(main.js)"
+			],
+			[
+				"is",
+				"isChannelReady"
+			],
+			[
+				"doC",
+				"doCall()"
+			],
+			[
+				"hang",
+				"hangup()"
+			],
+			[
+				"room",
+				"roomName"
+			],
+			[
+				"setRo",
+				"setRoom〔function〕"
+			],
+			[
+				"sea",
+				"searchUserResults\t(call.html)"
+			],
+			[
+				"dro",
+				"dropdown"
+			],
+			[
+				"drop",
+				"dropdown-menu"
+			],
+			[
+				"set",
+				"setRoom"
+			],
+			[
+				"alert",
+				"alert〔function〕"
+			],
+			[
+				"ex",
+				"exists\t(register_user.php)"
+			],
+			[
+				"json",
+				"json_encode〔function〕"
+			],
+			[
+				"pg_erro",
+				"pg_result_error〔function〕"
+			],
+			[
+				"res",
+				"results"
+			],
+			[
+				"results",
+				"$results〔variable〕"
+			],
+			[
+				"sta",
+				"startRTC()"
+			],
+			[
+				"search",
+				"searchName"
+			],
+			[
+				"databas",
+				"databaseName"
+			],
+			[
+				"panel-",
+				"panel-primary\t(bootstrap.css)"
+			],
+			[
+				"col-sm",
+				"col-sm-4\t(bootstrap.css)"
+			],
+			[
+				"max",
+				"max-width"
+			],
+			[
+				"find",
+				"findServer"
+			],
+			[
+				"server",
+				"server\tforstmt"
+			],
+			[
+				"nova",
+				"novaClient\tstatement"
+			],
+			[
+				"NovaClient",
+				"novaClient\tstatement"
+			],
+			[
+				"os_nova",
+				"os_nova_object\tstatement"
+			],
+			[
+				"os",
+				"os_nova_object"
+			],
+			[
+				"fin",
+				"finally\tkeyword"
+			],
+			[
+				"ser",
+				"server_name"
+			],
+			[
+				"input",
+				"input_json"
+			],
+			[
+				"c",
+				"cherrypy"
+			],
+			[
+				"show",
+				"showImagesJSON\tfunction"
+			],
+			[
+				"mount",
+				"mountOSNove\t(REST_service.py)"
+			],
+			[
+				"os_",
+				"os_nova"
+			],
+			[
+				"OSTools",
+				"OSTools.toJSON\t(main.py)"
+			],
+			[
+				"st",
+				"stop"
+			],
+			[
+				"REST",
+				"REST_service\tmodule"
+			],
+			[
+				"in",
+				"instance"
+			],
+			[
+				"net",
+				"network"
+			],
+			[
+				"to",
+				"toJSON\tfunction"
+			],
+			[
+				"o",
+				"object\tclass"
+			],
+			[
+				"glance",
+				"glance_service"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "from keystoneclient.v3.projects import ProjectManager as KSProjectManager\nfrom keystoneclient.v3 import client as KSClient\nimport pprint\n\n\nclass OSKeystoneClient:\n    session = None\n    client = None\n    projectManager = None\n\n    def __init__(self, sess):\n        self.session = sess\n        self.client = KSClient.Client(session=self.session)\n        self.projectManager = KSProjectManager(self.client)\n\n\n    def createProject(self, name, domain):\n        return projectManager.create(name, domain)\n\n    def listProject(self):\n        return projectManager.list()\n\n    def deleteProject(self, name):\n    \treturn projectManager.delete(name, domain)\n    \n",
+			"file": "OSKeystoneClient.py",
+			"file_size": 589,
+			"file_write_time": 131222470900000000,
+			"settings":
+			{
+				"buffer_size": 655,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "main.py",
+			"settings":
+			{
+				"buffer_size": 1260,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"an",
+				"Anaconda: Autoformat PEP8 Errors"
+			],
+			[
+				"set syn p",
+				"Set Syntax: Python"
+			],
+			[
+				"ana",
+				"Anaconda: Run Last Test"
+			],
+			[
+				"p",
+				"Package Control: Install Package"
+			],
+			[
+				"install pac",
+				"Package Control: Install Package"
+			],
+			[
+				"packa re",
+				"Package Control: Remove Package"
+			],
+			[
+				"aa",
+				"Anaconda: Set Python interpreter"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"dockblock",
+				"DocBlockr: Reparse comment block"
+			],
+			[
+				"php",
+				"PHP CodeBeautifier"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"subli",
+				"SublimeLinter: Toggle Linter"
+			],
+			[
+				"html ",
+				"SublimeLinter: Choose Mark Style"
+			],
+			[
+				"sublim show",
+				"SublimeLinter: Don’t Show Errors on Save"
+			],
+			[
+				"packeg re",
+				"Package Control: Remove Package"
+			],
+			[
+				"linter set",
+				"Preferences: SublimeLinter Settings – User"
+			],
+			[
+				"reind",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"show e",
+				"SublimeLinter: Show Errors on Save"
+			],
+			[
+				"show ",
+				"SublimeLinter: Show All Errors"
+			],
+			[
+				"re",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"reid",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"git q",
+				"Git: Quick Commit"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"remove ",
+				"Package Control: Remove Package"
+			],
+			[
+				"goo",
+				"Google Spell Check"
+			],
+			[
+				"lin vi",
+				"SublimeLinter: Lint This View"
+			],
+			[
+				"lin vie",
+				"SublimeLinter: Lint This View"
+			],
+			[
+				"lint",
+				"SublimeLinter: Lint This View"
+			],
+			[
+				"setj",
+				"Set Syntax: JSON"
+			],
+			[
+				"spell",
+				"Google Spell Check"
+			],
+			[
+				"sblime linter",
+				"Preferences: SublimeLinter Settings – Default"
+			],
+			[
+				"linter",
+				"SublimeLinter: Show All Errors"
+			],
+			[
+				"php b",
+				"PHP CodeBeautifier"
+			],
+			[
+				"linter styl",
+				"SublimeLinter: Choose Mark Style"
+			],
+			[
+				"sublime",
+				"SublimeLinter: Show All Errors"
+			],
+			[
+				"instal ",
+				"Package Control: Install Package"
+			],
+			[
+				"hot",
+				"HTMLPrettify: Set Plugin Options"
+			],
+			[
+				"packet",
+				"Package Control: List Packages"
+			],
+			[
+				"linter mar",
+				"SublimeLinter: Choose Mark Style"
+			],
+			[
+				"jso",
+				"JSON Reindent: reindent file or selection"
+			],
+			[
+				"json",
+				"JSON Reindent: reindent file or selection"
+			],
+			[
+				"reident",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"pack in",
+				"Package Control: Install Package"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"pytho",
+				"Set Syntax: Python3"
+			],
+			[
+				"li",
+				"Package Control: List Packages"
+			],
+			[
+				"sublime linter ",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"set pyt",
+				"Set Syntax: Python3"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"python",
+				"Build With: Python"
+			],
+			[
+				"set up ",
+				"SFTP: Setup Server…"
+			],
+			[
+				"appe",
+				"Set Syntax: AppleScript"
+			],
+			[
+				"bash",
+				"Set Syntax: Shell Script (Bash)"
+			],
+			[
+				"set sy mik",
+				"Set Syntax: Mikrotik Script"
+			],
+			[
+				"contro",
+				"Package Control: Install Package"
+			],
+			[
+				"sft",
+				"SFTP: Upload File"
+			],
+			[
+				"paca",
+				"Package Control: List Packages"
+			],
+			[
+				"sync loc",
+				"SFTP: Sync Remote -> Local…"
+			],
+			[
+				"sync",
+				"SFTP: Sync Local -> Remote…"
+			],
+			[
+				"toggle lin",
+				"SublimeLinter: Toggle Linter"
+			],
+			[
+				"toggl",
+				"SublimeLinter: Toggle Linter"
+			],
+			[
+				"sub",
+				"SublimeLinter: Enable Linting"
+			],
+			[
+				"ja",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"sublie",
+				"SublimeLinter: Toggle Linter"
+			],
+			[
+				"html",
+				"HTMLBeautify"
+			],
+			[
+				"sublim",
+				"SublimeLinter: Disable Linting"
+			],
+			[
+				"subl",
+				"SublimeLinter: Enable Linter"
+			],
+			[
+				"package",
+				"Package Control: Remove Package"
+			],
+			[
+				"setsyntaxphp",
+				"Set Syntax: PHP"
+			],
+			[
+				"codeinte",
+				"SublimeCodeIntel: Enable Live Autocompletion for Current Language"
+			],
+			[
+				"intall pac",
+				"Package Control: Install Package"
+			],
+			[
+				"set synta html",
+				"Set Syntax: HTML"
+			],
+			[
+				"list paca",
+				"Package Control: List Packages"
+			],
+			[
+				"packacontrolls",
+				"Package Control: List Packages"
+			],
+			[
+				"set sy php",
+				"Set Syntax: PHP"
+			],
+			[
+				"phpcode",
+				"PHP Code Sniffer: Switch coding standard"
+			],
+			[
+				"code",
+				"PHP Code Sniffer: Sniff this file"
+			],
+			[
+				"packe",
+				"Package Control: List Packages"
+			],
+			[
+				"phpc",
+				"PHP Code Sniffer: Sniff this file"
+			],
+			[
+				"browse",
+				"Preferences: Browse Packages"
+			],
+			[
+				"r",
+				"Package Control: Remove Package"
+			],
+			[
+				"pack",
+				"Package Control: Remove Package"
+			],
+			[
+				"ternjs",
+				"TernJS: Jump to definition"
+			],
+			[
+				"t",
+				"TernJS: Reload"
+			],
+			[
+				"pac",
+				"Package Control: Install Package"
+			],
+			[
+				"ftp",
+				"FTPSync: Check current file"
+			],
+			[
+				"allaut",
+				"SublimeCodeIntel: Enable Live Autocompletion for Current Language"
+			],
+			[
+				"color",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"setjav",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"java",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"pacge",
+				"Package Control: Remove Package"
+			],
+			[
+				"colo",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"fpt",
+				"FTPSync: Setup FTPSync in this folder"
+			],
+			[
+				"sublielinte",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"packa",
+				"Package Control: List Packages"
+			],
+			[
+				"intall pa",
+				"Package Control: Install Package"
+			],
+			[
+				"ftpsy",
+				"FTPSync: Check current file"
+			],
+			[
+				"color she",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"colorsub",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"add",
+				"Project: Add Folder"
+			],
+			[
+				"proje",
+				"Project: Add Folder"
+			],
+			[
+				"sublimecode",
+				"SublimeCodeIntel: Enable Live Autocompletion for Current Language"
+			],
+			[
+				"renmae",
+				"SublimeLinter: Enable Debug Mode"
+			],
+			[
+				"pacga",
+				"Package Control: Remove Package"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"code sni",
+				"PHP Code Sniffer: Sniff this file"
+			],
+			[
+				":",
+				":w - Save"
+			],
+			[
+				"side",
+				"View: Toggle Side Bar"
+			],
+			[
+				"col",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"coloro",
+				"Colorsublime: Browse Themes"
+			],
+			[
+				"page",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 593.0
+	},
+	"console":
+	{
+		"height": 609.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib;",
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"help",
+			"clear",
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/__pycache__"
+	],
+	"file_history":
+	[
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/DocBlockr_Python/DocblockrPython.sublime-settings",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/config_admin.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OSKeystoneAuth.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OSTools.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OSNova.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/RESTservice.py",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/Anaconda/Anaconda.sublime-settings",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/Python.sublime-settings",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/config.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/main.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/REST_service.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/.gitignore",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/DocblockrPython.sublime-settings",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/sftp-config.json",
+		"/Users/jansobczak/Documents/Projekty/PortraitInstitute/wp-content/themes/clean-photo-wp-theme/style.css",
+		"/Users/jansobczak/Documents/Projekty/PortraitInstitute/wp-content/themes/clean-photo-wp-theme/footer.php",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/Parser/main.py",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/Parser/AIXMDataTypesClass.py",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/mapsData.xml",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/AIXM-Features.xsd",
+		"/Users/jansobczak/Documents/Projekty/PortraitInstitute/wp-content/themes/clean-photo-wp-theme/searchform.php",
+		"/Users/jansobczak/Documents/Projekty/PortraitInstitute/index.php",
+		"/Users/jansobczak/Documents/Projekty/PortraitInstitute/sftp-config.json",
+		"/Users/jansobczak/Documents/Projekty/PortraitInstitute/wp-content/themes/clean-photo-wp-theme/public/js/main.js",
+		"/Users/jansobczak/Documents/Projekty/PortraitInstitute/wp-content/themes/clean-photo-wp-theme/internal/acf_fields.php",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/main.py",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/AIXMDataTypesClass/AIXMDataTypesClass.py",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/AIXMFeaturesClass.py",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/aixm_schema_4-5-r2/AIXM-DataTypes.xsd",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/snapshot_2016_07_21_PANSA_AIXM4.5.xml",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/AIXM-Snapshot.xsd",
+		"/Users/jansobczak/Documents/Projekty/MapyLotniczne/AIXM-DataTypes.xsd",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/index.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/inc/ifirma/ifirma.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/inc/ifirma/ifirma_operations.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/js/gui_logic.js",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/css/index.css",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/inc/ifirma/contractor.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/inc/ifirma/exception.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/inc/ifirma/element.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/inc/config.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/.gitignore",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/css/bootstrap.css",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/inc/ifirma/ifirma_functions.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/FV/inc/ifirma/key.php",
+		"/Users/jansobczak/Documents/Projekty/MikrotikScripts/AutoBackFTP.rsc",
+		"/Users/jansobczak/Documents/Projekty/MikrotikScripts/AutoBackUp.rsc",
+		"/Users/jansobczak/Documents/Projekty/MikrotikScripts/AutoUpgrade.rsc",
+		"/Users/jansobczak/Documents/Projekty/MikrotikScripts/PPPOE monitor.rsc",
+		"/Users/jansobczak/Documents/Projekty/MikrotikScripts/PPPOE restart.rsc",
+		"/Users/jansobczak/Documents/Projekty/MikrotikScripts/WiFi monitor.rsc",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/js/main.js",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/inc/register_user.php",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/inc/search_name.php",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/inc/server_class.php",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/js/index.js",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/js/call.js",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/inc/config.php",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/inc/log_out.php",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/inc/login_user.php",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/call.html",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/index.html",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/register.html",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/inc/get_user.php",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/index.js",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/.jshintrc",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/package.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/config.jshintrc",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/.gitignore",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/sftp-config.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/css/bootstrap.css",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/UMS/css/main.css",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/HTML-CSS-JS Prettify/HTMLPrettify.sublime-settings",
+		"/Users/jansobczak/Downloads/DataRoom2.htm",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/server_name_example.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example/create_instance_example.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/create_instance_example.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/settings_instance_example.txt",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/rest.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/.gitgnore",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/__init__.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/test.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/sftp-config.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/wifi_analyse.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/rpiscanner.sh",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/PcapViz/pcapviz/core.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/PcapViz/main.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/PcapViz/pcapviz/__init__.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/PcapViz/pcapviz/sources.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/PcapViz/main.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/PcapViz/pcapviz/core.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/channel_hoping.sh",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/sftp-config.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/sftp-server",
+		"/Users/jansobczak/Documents/Projekty/Praca/Dataroom/inc/mail_sent.php",
+		"/Users/jansobczak/Dropbox/Scripts/Apple/PowerPoint - mac.remote.applescript",
+		"/Users/jansobczak/Dropbox/Scripts/MikroTik/Wifi clients drop.rsc",
+		"/Users/jansobczak/Dropbox/Scripts/MikroTik/AutoBackUp.rsc",
+		"/Users/jansobczak/Dropbox/Scripts/MikroTik/AutoBackFTP.rsc",
+		"/Users/jansobczak/Dropbox/Scripts/MikroTik/AutoUpgrade.rsc",
+		"/Users/jansobczak/Dropbox/Scripts/MikroTik/PPPOE restart.rsc",
+		"/Users/jansobczak/Dropbox/Scripts/MikroTik/PPPOE monitor.rsc",
+		"/Users/jansobczak/Dropbox/Scripts/MikroTik/PPPOE monitor",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/mail_sent.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/config.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/js/main.js",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/link_class.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/links.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/js/index.js",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/login.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/js/logout.js",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/js/login.js",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/js/links.js",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Logger/Logger/ClientStart.bat",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/session_class.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/upload_class.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/push.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/server_class.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/delete_files.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/upload_session.php",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/mail_panel.php",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/sftp_servers/DataRoom",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/sftp-config.json",
+		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/inc/upload.php"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			"",
+			"/Users/jansobczak/Documents/Projekty/PortraitInstitute/wp-content/themes/clean-photo-wp-theme/",
+			"/Users/jansobczak/Documents/Projekty/PortraitInstitute/wp-content/themes/clean-photo-wp-theme/demo-installer",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"print",
+			"ksclient",
+			"go to top",
+			"div",
+			"Avx",
+			"parser",
+			"parse",
+			"post-switcher",
+			"prev",
+			"Back to portfolio",
+			"Share this post on",
+			"Type and hit enter",
+			"@media",
+			"regular",
+			"wph-header",
+			"import ",
+			"parse",
+			"p",
+			"parse",
+			"import",
+			"Changes",
+			"geoLat",
+			"GRC",
+			"Avx",
+			"addContractor",
+			"saveContractor",
+			"payment_days",
+			"NULL",
+			"Name",
+			"contracotr",
+			"InvoiceContractors",
+			"contractorsName",
+			"tempElement",
+			"modal-sm",
+			"media",
+			"96",
+			"vBytesReceived",
+			"aBytesReceived",
+			"Stats",
+			"function",
+			"userName",
+			"pass",
+			"loginName",
+			"loginPass",
+			"placeholder",
+			"text",
+			"Audio",
+			"Video",
+			"getRemo",
+			"pc",
+			"extractSDp",
+			"removeCn",
+			"extractSd",
+			"extract",
+			"preferOpus",
+			"requestTurn",
+			"doCall",
+			"turnRE",
+			"pc",
+			"stopRTC",
+			"stop()",
+			"bye",
+			"createPeerConnection",
+			"pc",
+			"room",
+			"sendMessage",
+			"message",
+			"joined",
+			"createAnswer",
+			"answer",
+			"sendMe",
+			"sendME",
+			"handle",
+			"offer",
+			"strem",
+			"maybeStop",
+			"gotStream",
+			"socket.emit",
+			"hangup",
+			"doAn",
+			"becasue",
+			"This is unused?",
+			"//Static server to serve socket.io to webbrowser",
+			"then",
+			"preferOpus",
+			"doCall",
+			"loginName",
+			"sdpCo",
+			"bye",
+			"ID",
+			"JSONresults",
+			"loginName",
+			"exampleInputName2",
+			"inputName",
+			"pc",
+			"inputEmail3",
+			"video",
+			"s",
+			"nova_client",
+			"os_connection.network.networks()",
+			"os_connection.compute.servers()",
+			"creds",
+			"novaClient",
+			"novaclient",
+			"conn",
+			"show",
+			"os_image",
+			"instances",
+			"instance",
+			"instances",
+			"connection",
+			"draw",
+			"print",
+			"country_label",
+			"node_name",
+			"print",
+			"warning",
+			"warnign",
+			"no route",
+			"adlist",
+			"SlideShowName",
+			"temp",
+			"Status",
+			"prefixName",
+			"Filter",
+			"showModalAlert",
+			"panelmail",
+			"updatemailtools"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"peerConnection",
+			"get",
+			"",
+			"\"Century Gothic\", CenturyGothic, AppleGothic, sans-serif",
+			"temp_location"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "OSKeystoneClient.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 655,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								607,
+								607
+							]
+						],
+						"settings":
+						{
+							"auto_complete": false,
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"incomplete_sync": null,
+							"open_with_edit": true,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "main.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1260,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								470,
+								470
+							]
+						],
+						"settings":
+						{
+							"auto_complete": false,
+							"bracket_highlighter.busy": false,
+							"bracket_highlighter.locations":
+							{
+								"close":
+								{
+								},
+								"icon":
+								{
+								},
+								"open":
+								{
+								},
+								"unmatched":
+								{
+								}
+							},
+							"bracket_highlighter.regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content"
+							],
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 112.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 112.0
+	},
+	"output.sftp":
+	{
+		"height": 112.0
+	},
+	"pinned_build_system": "Anaconda Python Builder",
+	"project": "Reservation-Service.sublime-project",
+	"replace":
+	{
+		"height": 46.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"main.js",
+				"wp-content/themes/clean-photo-wp-theme/public/js/main.js"
+			],
+			[
+				"log",
+				"js/login.js"
+			],
+			[
+				"logout",
+				"js/logout.js"
+			],
+			[
+				"index",
+				"js/index.js"
+			],
+			[
+				"maij",
+				"js/main.js"
+			],
+			[
+				"boo",
+				"css/bootstrap.css"
+			],
+			[
+				"in",
+				"index.php"
+			],
+			[
+				"upload",
+				"inc/upload_class.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 287.0,
+		"last_filter": "update",
+		"selected_items":
+		[
+			[
+				"update",
+				"updatePanels"
+			]
+		],
+		"width": 392.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 229.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
