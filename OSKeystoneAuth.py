@@ -38,9 +38,11 @@ class OSKeystoneAuth:
     def createNovaSession(self):
         loader = KSloading.get_plugin_loader("password")
         auth = loader.load_from_options(
+            user_domain_name=self.user_domain,
             auth_url=self.auth_url,
             username=self.username,
             password=self.password,
+            project_domain_name=self.project_domain_name,
             project_name=self.project_name,
             project_id=self.project_id)
         return KSSession.Session(auth=auth)

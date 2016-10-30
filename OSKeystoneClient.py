@@ -4,13 +4,11 @@ import pprint
 
 
 class OSKeystoneClient:
-    session = None
     client = None
     projectManager = None
 
-    def __init__(self, sess):
-        self.session = sess
-        self.client = KSClient.Client(session=self.session)
+    def __init__(self, session):
+        self.client = KSClient.Client(session=session)
         self.projectManager = KSProjectManager(self.client)
 
     def createProject(self, name, domain):

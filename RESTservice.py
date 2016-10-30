@@ -92,10 +92,10 @@ class InstanceStart(object):
 
 class InstanceStop(object):
     exposed = True
-    os_nova_object = None
+    osNova = None
 
-    def __init__(self, os_nova):
-        self.os_nova_object = os_nova
+    def __init__(self, osNova):
+        self.osNova = osNova
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -105,7 +105,7 @@ class InstanceStop(object):
         try:
             result = None
             instance_name = input_json["server_name"]
-            self.os_nova_object.stopServer(instance_name)
+            self.osNova.stopServer(instance_name)
             result = {"operation": "stop instance", "result": "success"}
         except:
             result = {"operation": "stop instance", "result": "error"}
@@ -121,7 +121,7 @@ class RESTservice(object):
         cherrypy.engine.start()
         cherrypy.engine.block()
 
-    def mountOSNova(self, os_nova):
+    def mountOSNova(self, osNova):
         conf = {
             "/": {
                 "request.dispatch":
@@ -132,11 +132,11 @@ class RESTservice(object):
                 [("Content-Type", "text/plain")],
             }
         }
-        cherrypy.tree.mount(Images(os_nova), "/images", conf)
-        cherrypy.tree.mount(Instance(os_nova), "/instance", conf)
-        cherrypy.tree.mount(InstanceDelete(os_nova), "/instance/delete", conf)
-        cherrypy.tree.mount(InstanceStop(os_nova), "/instance/stop", conf)
-        cherrypy.tree.mount(InstanceStart(os_nova), "/instance/start", conf)
+        cherrypy.tree.mount(Images(osNova), "/images", conf)
+        cherrypy.tree.mount(Instance(osNova), "/instance", conf)
+        cherrypy.tree.mount(InstanceDelete(osNova), "/instance/delete", conf)
+        cherrypy.tree.mount(InstanceStop(osNova), "/instance/stop", conf)
+        cherrypy.tree.mount(InstanceStart(osNova), "/instance/start", conf)
 
     def stop(self):
         cherrypy.engine.stop()

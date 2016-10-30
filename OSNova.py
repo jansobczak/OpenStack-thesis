@@ -1,84 +1,32 @@
 import pprint
 import time
-from novaclient.client import Client as NovaClient
+from novaclient import client as NovaClient
 
 
 class OSNova:
     "Class for Openstack images"
-    osKSAuth = None
     novaClient = None
 
-    def __init__(self, keystone_auth):
-        self.osKSAuth = keystone_auth
-        self.novaClient = NovaClient(2, self.osKSAuth.createNovaSession())
+    def __init__(self, session):
+        self.novaClient = NovaClient.Client(2, session=session)
 
     def getImages(self):
         return self.novaClient.images.list()
 
-    def showImages(self):
-        images = self.getImages()
-        for image in images:
-            pprint.pprint(image)
-
-    def showImagesJSON(self):
-        images = self.getImages()
-        for image in images:
-            print(OSTools.toJSON(image))
-
     def getFlavors(self):
         return self.novaClient.flavors.list()
-
-    def showFlavors(self):
-        flavors = self.getFlavors()
-        for flavor in flavors:
-            pprint.pprint(flavor)
-
-    def showFlavorsJSON(self):
-        flavors = self.getFlavors()
-        for flavor in flavors:
-            print(OSTools.toJSON(flavor))
 
     def getServers(self):
         return self.novaClient.servers.list()
 
-    def showServers(self):
-        servers = self.getServers()
-        for server in servers:
-            pprint.pprint(server)
-
-    def showServerJSON(self):
-        servers = self.getServers()
-        for server in servers:
-            print(OSTools.toJSON(server))
-
     def getNetworks(self):
         return self.novaClient.networks.list()
-
-    def showNetworks(self):
-        networks = self.getNetworks()
-        for network in networks:
-            pprint.pprint(network)
-
-    def showNetworksJSON(self):
-        networks = self.getNetworks()
-        for network in networks:
-            print(OSTools.toJSON(network))
 
     def getKeyPairs(self):
         return self.novaClient.keypairs.list()
 
     def getKeyPair(self, keypair):
         return self.novaClient.keypairs.get(keypair)
-
-    def showKeyPairs(self):
-        keypairs = self.getKeyPairs()
-        for keypair in keypairs:
-            pprint.pprint(keypair)
-
-    def showKeyPairsJSON(self):
-        keypairs = self.getKeyPairs()
-        for keypair in keypairs:
-            print(OSTools.toJSON(keypair))
 
     def createServer(self, image, flavor, network, keypair, server_name):
         """Create server instance
