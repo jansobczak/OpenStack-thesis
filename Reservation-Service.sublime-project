@@ -5,7 +5,7 @@
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Anaconda Python Builder",
 			"selector": "source.python",
-			"shell_cmd": "\"python\" -u \"$file\""
+			"shell_cmd": "\"python3.5\" -u \"$file\""
 		}
 	],
 	"folders":
@@ -17,21 +17,23 @@
 	"settings":
 	[
 		{
-			"translate_tabs_to_spaces": true,
-			"tab_size": 4,
+			"auto_indent": true,
 			"draw_white_space": "all",
-
-    		// tabs and whitespace
-    		"auto_indent": true,
-		    "rulers": [150],
-		    "smart_indent": true,
-		    "trim_automatic_white_space": true,
-		    "use_tab_stops": true,
-		    "word_wrap": true,
-		    "wrap_width": 150,
-		    "pep8_ignore":[
-		    	"E501"
-		    ],
+			"pep8_ignore":
+			[
+				"E501"
+			],
+			"rulers":
+			[
+				150
+			],
+			"smart_indent": true,
+			"tab_size": 4,
+			"translate_tabs_to_spaces": true,
+			"trim_automatic_white_space": true,
+			"use_tab_stops": true,
+			"word_wrap": true,
+			"wrap_width": 150
 		}
 	]
 }

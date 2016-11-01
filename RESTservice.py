@@ -1,5 +1,6 @@
 import cherrypy
 from OSTools import OSTools
+import Menager
 
 
 class Images(object):
@@ -114,6 +115,7 @@ class InstanceStop(object):
 
 
 class RESTservice(object):
+
     def start(self):
         cherrypy.server.socket_host = "0.0.0.0"
         cherrypy.server.socket_port = 8080
@@ -121,22 +123,18 @@ class RESTservice(object):
         cherrypy.engine.start()
         cherrypy.engine.block()
 
-    def mountOSNova(self, osNova):
+    def mountMenager(self):
         conf = {
             "/": {
-                "request.dispatch":
-                cherrypy.dispatch.MethodDispatcher(),
                 "tools.sessions.on": True,
+                'tools.sessions.timeout': 60,
+                "tools.sessions.name": "ReservationService",
                 "tools.response_headers.on": True,
                 "tools.response_headers.headers":
-                [("Content-Type", "text/plain")],
+                [("Content-Type", "application/json")],
             }
         }
-        cherrypy.tree.mount(Images(osNova), "/images", conf)
-        cherrypy.tree.mount(Instance(osNova), "/instance", conf)
-        cherrypy.tree.mount(InstanceDelete(osNova), "/instance/delete", conf)
-        cherrypy.tree.mount(InstanceStop(osNova), "/instance/stop", conf)
-        cherrypy.tree.mount(InstanceStart(osNova), "/instance/start", conf)
+        cherrypy.tree.mount(Menager.Menager(), "/", conf)
 
     def stop(self):
         cherrypy.engine.stop()

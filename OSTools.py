@@ -1,14 +1,20 @@
 import json
 import sys
+import collections
+import pprint
 
 
 class OSTools(object):
     @staticmethod
-    def toJSON(os_object):
-        returnValue = ""
-        for object in os_object:
-            returnValue += json.dumps(object.to_dict(), sys.stdout, sort_keys=True, indent=4, separators=(",", ": "))
-        return returnValue
+    def toJSON(objects):
+        if isinstance(objects, collections.Iterable):
+            returnValue = ""
+            for object in objects:
+                returnValue += json.dumps(object.to_dict(), sys.stdout, sort_keys=True, indent=4)
+            return returnValue
+
+        else:
+            return json.dumps(objects.to_dict(), sys.stdout, sort_keys=True, indent=4)
 
     @staticmethod
     def toSimpleTable(os_object):

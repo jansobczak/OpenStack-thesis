@@ -13,15 +13,22 @@ class OSKeystoneAuth:
     username = None
     password = None
 
-    def __init__(self, auth_url, project_domain_name, project_name, user_domain, username, password):
+    def __init__(self, auth_url=None, project_domain_name=None, project_name=None, user_domain=None, username=None, password=None, project_id=None):
         self.auth_url = auth_url
         self.project_name = project_name
         self.project_domain_name = project_domain_name
         self.user_domain = user_domain
         self.username = username
         self.password = password
+        self.project_id = project_id
 
-    def __init__(self, file_name):
+    def __eq__(self, other):
+        if self.auth_url == other.auth_url and self.project_name == other.project_name and self.project_domain_name == other.project_domain_name and self.user_domain == other.user_domain and self.username == other.username and self.password == other.password and self.project_id == other.project_id:
+            return True
+        else:
+            return False
+
+    def readFromFile(self, file_name):
         self.getCredFromFile(file_name)
 
     def createKeyStoneSession(self):
