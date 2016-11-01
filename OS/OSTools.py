@@ -1,10 +1,10 @@
 import json
 import sys
 import collections
-import pprint
 
 
 class OSTools(object):
+
     @staticmethod
     def toJSON(objects):
         if isinstance(objects, collections.Iterable):

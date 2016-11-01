@@ -1,6 +1,6 @@
 import cherrypy
-from OSTools import OSTools
-import Menager
+from OS import OSTools
+from menager import Menager
 
 
 class Images(object):

@@ -1,13 +1,9 @@
-import OSNova
-from OSTools import OSTools
-import OSKeystoneAuth
-import OSKeystoneClient
-import RESTservice
-import OSNeutron
+from OS import OSKeystoneAuth
+from restservice import RESTservice
 
 
 osKSAuth = OSKeystoneAuth.OSKeystoneAuth()
-osKSAuth.readFromFile("config_admin.json")
+osKSAuth.readFromFile("configs/config_admin.json")
 
 rest_service = RESTservice.RESTservice()
 rest_service.mountMenager()

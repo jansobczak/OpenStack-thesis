@@ -1,4 +1,3 @@
-import pprint
 import time
 from novaclient import client as NovaClient
 

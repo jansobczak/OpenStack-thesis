@@ -81,7 +81,7 @@ class OSKeystoneAuth:
                 if "project_id" in data:
                     self.project_id = data["project_id"]
             except IndexError:
-                print "JSON cred invalid!"
+                print("JSON cred invalid!")
 
     def getProjectName(self):
         return self.project_name

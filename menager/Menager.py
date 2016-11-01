@@ -1,8 +1,8 @@
 import cherrypy
 
-import OSTools
-import OSKeystoneAuth
-import OSKeystoneClient
+from OS import OSTools
+from OS import OSKeystoneAuth
+from OS import OSKeystoneClient
 
 
 class Menager:

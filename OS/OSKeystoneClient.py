@@ -2,7 +2,7 @@ import cherrypy
 from keystoneclient.v3.projects import ProjectManager as KSProjectManager
 from keystoneclient.v3.users import UserManager as KSUserManager
 from keystoneclient.v3 import client as KSClient
-from OSTools import OSTools
+from OS import OSTools
 
 
 class OSKeystoneProject:
