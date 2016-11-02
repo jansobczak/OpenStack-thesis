@@ -8,21 +8,23 @@ class OSNeutron:
         self.client = NClient.Client(session=session)
 
     def createSubnet(self, name, network_id, project_id, cidr, start_alloc, end_alloc, enable_dhcp, description=None):
+        """
+        This create subnet
+        """
         self.client.create_network
         self.client.create_subnet({
             "subnet": {
-            	"name": name,
+                "name": name,
                 "network_id": network_id,
-				"tenant_id": project_id,
-		        "description": description,
+                "tenant_id": project_id,
+                "description": description,
                 "ip_version": 4,
                 "cidr": cidr,
-                "allocation_pools": [
-	      		{
-                	"end": start_alloc,
+                "allocation_pools": [{
+                    "end": start_alloc,
                     "start": end_alloc
-              	}],
-              	"enable_dhcp": enable_dhcp,
+                }],
+                "enable_dhcp": enable_dhcp,
             }
         })
 

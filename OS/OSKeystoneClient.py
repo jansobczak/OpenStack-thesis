@@ -74,7 +74,7 @@ class OSKeystoneUser:
         return self.userManager.list()
 
     def createUser(self, name, password, project_id, domain="default"):
-        return self.userManager.create(name=name, password=password, project=project_id, domain=domain)
+        return self.userManager.create(name=name, password=password, default_project=project_id, domain=domain)
 
     def deleteUser(self, user_id):
         return self.userManager.delete(user_id)

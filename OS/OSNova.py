@@ -28,14 +28,6 @@ class OSNova:
         return self.novaClient.keypairs.get(keypair)
 
     def createServer(self, image, flavor, network, keypair, server_name):
-        """Create server instance
-        Arguments:
-            image {[string]} -- Image ID or Name
-            flavor {[string]} -- Flavor ID or Name
-            network {[string]} -- Network ID or Name
-            keypair {[string]} -- Keypair ID or Name
-            server_name {[string]} -- Name for the new instance
-        """
         print("Create server")
         image = self.novaClient.images.find(name=image)
         flavor = self.novaClient.flavors.find(name=flavor)

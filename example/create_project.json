@@ -1,0 +1,16 @@
+{
+	"project_name": "test project",
+	"user":
+	{
+		"username": "test_project_admin",
+		"password": "qwe123"
+	},
+	"network":
+	{
+		"network_name": "test_project_network",
+		"priv_subnet": "192.168.0.0",
+		"priv_mask": "255.255.255.0",
+		"router"
+		...
+	}
+}

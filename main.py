@@ -1,7 +1,6 @@
 from OS import OSKeystoneAuth
 from restservice import RESTservice
 
-
 osKSAuth = OSKeystoneAuth.OSKeystoneAuth()
 osKSAuth.readFromFile("configs/config_admin.json")
 
