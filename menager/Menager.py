@@ -1,4 +1,5 @@
 import cherrypy
+from menager.MenagerTools import MenagerTool
 from menager.MenagerAuth import MenagerAuth
 from menager.MenagerLab import MenagerLab
 
@@ -19,13 +20,6 @@ class Menager:
     def bindUser(self, body):
         print(body)
 
-    @staticmethod
-    def isAuthorized(session_id, dictionary):
-        if session_id in dictionary.keys():
-            return True
-        else:
-            return False
-
     def _cp_dispatch(self, vpath):
         if len(vpath) == 1 and "auth" in vpath:
             return self.menagerAuth.auth
@@ -43,8 +37,8 @@ class Menager:
 
     @cherrypy.expose
     def index(self):
-        session_id = cherrypy.request.cookie['ReservationService'].value
-        if Menager.isAuthorized(session_id, self.keystoneAuthList):
+        session_id = cherrypy.request.cookie["ReservationService"].value
+        if MenagerTool.isAuthorized(session_id, self.keystoneAuthList):
             return "Authorized as: " + self.keystoneAuthList[session_id].username
         else:
             return "Not authorized"

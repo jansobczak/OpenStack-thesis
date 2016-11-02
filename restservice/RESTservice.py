@@ -15,7 +15,7 @@ class RESTservice(object):
         conf = {
             "/": {
                 "tools.sessions.on": True,
-                'tools.sessions.timeout': 60,
+                "tools.sessions.timeout": 60,
                 "tools.sessions.name": "ReservationService",
                 "tools.response_headers.on": True,
                 "tools.response_headers.headers":

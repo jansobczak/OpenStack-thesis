@@ -1,6 +1,6 @@
 import cherrypy
 from OS import OSKeystoneAuth
-import Menager
+from menager.MenagerTools import MenagerTool
 
 
 class MenagerAuth:
@@ -18,8 +18,8 @@ class MenagerAuth:
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def deauth(self):
-        session_id = cherrypy.request.cookie['ReservationService'].value
-        if Menager.Menager.isAuthorized(session_id, self.keystoneAuthList):
+        session_id = cherrypy.request.cookie["ReservationService"].value
+        if MenagerTool.isAuthorized(session_id, self.keystoneAuthList):
             input_json = cherrypy.request.json
             keystoneAuth = self.parseJson(input_json)
             if keystoneAuth == self.keystoneAuthList[session_id]:

@@ -24,3 +24,17 @@ class OSTools(object):
                 print("{: <45} {: <20}".format(object.id, object.name))
             elif hasattr(object, "id") and hasattr(object, "label"):
                 print("{: <45} {: <20}".format(object.id, object.label))
+
+    @staticmethod
+    def isID(id):
+        if len(id) < 32:
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def isNeutronID(id):
+        if len(id) < 37:
+            return False
+        else:
+            return True
