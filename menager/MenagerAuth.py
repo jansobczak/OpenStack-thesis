@@ -1,5 +1,5 @@
 import cherrypy
-from OS import OSKeystoneAuth
+from OS import OSKeystone
 from menager.MenagerTools import MenagerTool
 
 
@@ -53,6 +53,6 @@ class MenagerAuth:
                 projectDomainName = data["project_domain_name"]
             if "project_id" in data:
                 projectId = data["project_id"]
-            return OSKeystoneAuth.OSKeystoneAuth(authUrl, projectDomainName, projectName, userDomain, username, password, projectId)
+            return OSKeystone.OSKeystoneAuth(authUrl, projectDomainName, projectName, userDomain, username, password, projectId)
         except IndexError:
             return("JSON cred invalid!")

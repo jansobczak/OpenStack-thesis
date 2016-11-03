@@ -1,8 +1,14 @@
 import cherrypy
 from menager.MenagerTools import MenagerTool
+from OS import OSNeutron
+from OS import OSKeystone
 
 
 class MenagerLab:
+    labName = None
+    networkName = None
+    subnet = None
+    router = None
     keystoneAuthList = None
 
     @cherrypy.expose
@@ -15,8 +21,10 @@ class MenagerLab:
             return '{ "status": not authorized }'
 
     @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def create(self):
-        # 1. parse json
+        input_json = cherrypy.request.json
         # 2. create user
         # 3. create project
         # 4. create private network
@@ -25,7 +33,19 @@ class MenagerLab:
         # 7. add new key ???
         return "OK"
 
+    def parseJSONCreate(self, data):
+
+        try:
+            if "project_name" in data:
+                pass
+            print("ee")
+
+        except IndexError:
+            return("JSON parse invalid!")
+
     @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def delete(self):
         return "OK"
 

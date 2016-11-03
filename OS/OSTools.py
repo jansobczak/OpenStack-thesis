@@ -34,7 +34,7 @@ class OSTools(object):
 
     @staticmethod
     def isNeutronID(id):
-        if len(id) < 37:
+        if len(id) < 36:
             return False
         else:
             return True
