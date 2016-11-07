@@ -11,15 +11,14 @@
 		"private_subnet": 
 		{
 			"name": "private",
-			"cidr": "10.0.10./24",
+			"cidr": "10.0.10.1/24",
 			"start_alloc": "10.0.10.2",
 			"end_alloc": "10.0.10.254",
-			"enable_dhcp": True,
+			"enable_dhcp": "true",
 
 		},
-		"router":
-		{
-
-		}
+		"router_name": "router",
+		"attach_priv": "true",
+		"attach_pub": "true",
 	}
 }

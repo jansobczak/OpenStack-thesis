@@ -121,6 +121,7 @@ class OSNetwork(OSNeutron):
 
 
 class OSRouter(OSNeutron):
+    name = None
 
     def listRouters(self):
         return self.client.list_routers()

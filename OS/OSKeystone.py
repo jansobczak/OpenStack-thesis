@@ -18,11 +18,18 @@ class OSKeystone:
 
 
 class OSKeystoneProject(OSKeystone):
+    id = None
+    name = None
+    domain = None
 
-    def __init__(self, session):
-        self.session = session
-        self.client = KSClient.Client(session=session)
-        self.projectManager = KSProjectManager(self.client)
+    def __init__(self, **kwargs):
+        self.id = kwargs.get("id")
+        self.name = kwargs.get("name")
+        self.domain = kwargs.get("domain")
+        self.session = kwargs.get("session")
+        if self.session is not None:
+            self.client = KSClient.Client(session=self.session)
+            self.projectManager = KSProjectManager(self.client)
 
     def createProject(self, name, domain="default"):
         return self.client.projects.create(name, domain)
@@ -101,23 +108,27 @@ class OSKeystoneAuth:
     username = None
     password = None
 
-    def __init__(self, auth_url=None, project_domain_name=None, project_name=None, user_domain=None, username=None, password=None, project_id=None):
-        self.auth_url = auth_url
-        self.project_name = project_name
-        self.project_domain_name = project_domain_name
-        self.user_domain = user_domain
-        self.username = username
-        self.password = password
-        self.project_id = project_id
+    def __init__(self, **kwargs):
+        """
+        :param **kwargs: filename, auth_url, project_name, project_domain_name, user_domain, username, password
+        :type **kwargs: dictionary
+        """
+        filename = kwargs.get("filename")
+        if filename is None:
+            self.auth_url = kwargs.get("auth_url")
+            self.project_name = kwargs.get("project_name")
+            self.project_domain_name = kwargs.get("project_domain_name")
+            self.user_domain = kwargs.get("user_domain")
+            self.username = kwargs.get("username")
+            self.password = kwargs.get("password")
+        else:
+            self.getCredFromFile(filename)
 
     def __eq__(self, other):
         if self.auth_url == other.auth_url and self.project_name == other.project_name and self.project_domain_name == other.project_domain_name and self.user_domain == other.user_domain and self.username == other.username and self.password == other.password and self.project_id == other.project_id:
             return True
         else:
             return False
-
-    def readFromFile(self, file_name):
-        self.getCredFromFile(file_name)
 
     def createKeyStoneSession(self):
         auth = KSIdentity.Password(

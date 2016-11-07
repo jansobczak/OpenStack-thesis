@@ -18,8 +18,7 @@ class RESTservice(object):
                 "tools.sessions.timeout": 60,
                 "tools.sessions.name": "ReservationService",
                 "tools.response_headers.on": True,
-                "tools.response_headers.headers":
-                [("Content-Type", "application/json")],
+                "tools.response_headers.headers": [("Content-Type", "application/json")],
             }
         }
         cherrypy.tree.mount(Menager.Menager(), "/", conf)

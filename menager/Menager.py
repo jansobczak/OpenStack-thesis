@@ -1,15 +1,25 @@
 import cherrypy
+import json
 from menager.MenagerTools import MenagerTool
 from menager.MenagerAuth import MenagerAuth
 from menager.MenagerLab import MenagerLab
 
 
 class Menager:
+    """Service menager
+    This class represent menager which organize all service abilities
+    It should be spawn with CherryPy main class
+    :param keystoneAuthList: Dictionary of session_id - OSKeystoneAuth objects
+    :type keystoneAuthList: dict
+    :param menagerAuth: MenagerAuth object
+    :type menagerAuth: MenagerAuth
+    :param menagerLab: MenagerLab object
+    :type menagerLab: MenagerLab
+    """
     keystoneAuthList = {}
 
     menagerAuth = None
     menagerLab = None
-    menagerProj = None
 
     def __init__(self):
         self.menagerAuth = MenagerAuth()
@@ -31,14 +41,20 @@ class Menager:
         if len(vpath) == 2 and "laboratory" in vpath and "list" in vpath:
             vpath.pop(0)
             return self.menagerLab
-        if len(vpath) == 2 and "project" in vpath and "create" in vpath:
+        if len(vpath) == 2 and "laboratory" in vpath and "create" in vpath:
             vpath.pop(0)
             return self.menagerProj
 
     @cherrypy.expose
+    @cherrypy.tools.json_out()
     def index(self):
+        """Default returns of /
+        :returns: JSON response
+        :rtype: {string}
+        """
         session_id = cherrypy.request.cookie["ReservationService"].value
         if MenagerTool.isAuthorized(session_id, self.keystoneAuthList):
-            return "Authorized as: " + self.keystoneAuthList[session_id].username
+            data = json.dumps(dict(response=self.keystoneAuthList[session_id].username))
         else:
-            return "Not authorized"
+            data = json.dumps(dict(response='not authorized'))
+        return data
