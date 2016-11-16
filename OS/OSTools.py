@@ -6,15 +6,23 @@ import collections
 class OSTools(object):
 
     @staticmethod
-    def toJSON(objects):
-        if isinstance(objects, collections.Iterable):
-            returnValue = ""
-            for object in objects:
-                returnValue += json.dumps(object.to_dict(), sys.stdout, sort_keys=True, indent=4)
-            return returnValue
+    def prepareJSON(objects):
+        """This prepare object for JSON format
 
-        else:
-            return json.dumps(objects.to_dict(), sys.stdout, sort_keys=True, indent=4)
+        :param objects:[type]
+        :returns: Array of object to dict
+        :rtype: {array}
+        """
+        try:
+            returnValue = []
+            if isinstance(objects, collections.Iterable):
+                for object in objects:
+                    returnValue.append(object.to_dict())
+                return returnValue
+            else:
+                return returnValue.append(objects.to_dict())
+        except Exception as e:
+            raise e
 
     @staticmethod
     def toSimpleTable(os_object):

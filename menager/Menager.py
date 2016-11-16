@@ -52,9 +52,11 @@ class Menager:
         :returns: JSON response
         :rtype: {string}
         """
-        session_id = cherrypy.request.cookie["ReservationService"].value
-        if MenagerTool.isAuthorized(session_id, self.keystoneAuthList):
-            data = json.dumps(dict(response=self.keystoneAuthList[session_id].username))
+        session_id = None
+        if "ReservationService" in cherrypy.request.cookie:
+            session_id = cherrypy.request.cookie["ReservationService"].value
+        if session_id is not None and MenagerTool.isAuthorized(session_id, self.keystoneAuthList):
+            data = json.dumps(dict(current="Global manager", response=self.keystoneAuthList[session_id].username))
         else:
-            data = json.dumps(dict(response='not authorized'))
+            data = json.dumps(dict(current="Global manager", response='not authorized'))
         return data

@@ -34,7 +34,7 @@ class MenagerLab:
         if MenagerTool.isAuthorized(session_id, self.keystoneAuthList):
             osKSAuth = self.keystoneAuthList[session_id]
             osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())
-            data = dict(current="Laboratory manager", response=OSTools.OSTools.toJSON(osKSProject.listProject()))
+            data = dict(current="Laboratory manager", response=OSTools.OSTools.prepareJSON(osKSProject.listProject()))
         else:
             data = dict(current="Laboratory manager", user_status="not authorized")
         return data
