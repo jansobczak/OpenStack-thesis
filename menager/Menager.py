@@ -43,7 +43,10 @@ class Menager:
             return self.menagerLab
         if len(vpath) == 2 and "laboratory" in vpath and "create" in vpath:
             vpath.pop(0)
-            return self.menagerProj
+            return self.menagerLab
+        if len(vpath) == 2 and "laboratory" in vpath and "delete" in vpath:
+            vpath.pop(0)
+            return self.menagerLab
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -52,10 +55,7 @@ class Menager:
         :returns: JSON response
         :rtype: {string}
         """
-        session_id = None
-        if "ReservationService" in cherrypy.request.cookie:
-            session_id = cherrypy.request.cookie["ReservationService"].value
-        if session_id is not None and MenagerTool.isAuthorized(session_id, self.keystoneAuthList):
+        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
             data = json.dumps(dict(current="Global manager", response=self.keystoneAuthList[session_id].username))
         else:
             data = json.dumps(dict(current="Global manager", response='not authorized'))

@@ -32,7 +32,10 @@ class OSKeystoneProject(OSKeystone):
             self.projectManager = KSProjectManager(self.client)
 
     def createProject(self, name, domain="default"):
-        return self.client.projects.create(name, domain)
+        if self.findProject(name) is None:
+            return self.client.projects.create(name, domain)
+        else:
+            raise Exception("Project " + name + " already exists!")
 
     def listProject(self):
         return self.client.projects.list()
@@ -47,7 +50,7 @@ class OSKeystoneProject(OSKeystone):
         projects = self.listProject()
         for project in projects:
             if project.name == name:
-                return project.id
+                return project
         return None
 
 
@@ -68,7 +71,10 @@ class OSKeystoneUser(OSKeystone):
         return self.client.users.list()
 
     def createUser(self, name, password, project_id, domain="default"):
-        return self.client.users.create(name=name, password=password, default_project=project_id, domain=domain)
+        if self.findUser(name) is None:
+            return self.client.users.create(name=name, password=password, default_project=project_id, domain=domain)
+        else:
+            raise Exception("User " + name + " already exists!")
 
     def deleteUser(self, user_id):
         return self.client.users.delete(user_id)
@@ -76,11 +82,15 @@ class OSKeystoneUser(OSKeystone):
     def getUser(self, user_id):
         return self.client.users.get(user_id)
 
-    def findUser(self, name):
+    def findUser(self, name, project_id=None):
         users = self.listUser()
         for user in users:
-            if user.name == name:
-                return user
+            if project_id is None:
+                if user.name == name:
+                    return user
+            else:
+                if user.name == name and user.default_project_id == project_id:
+                    return user
         return None
 
 

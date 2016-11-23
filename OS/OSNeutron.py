@@ -17,6 +17,7 @@ class OSSubnet(OSNeutron):
     startAlloc = None
     endAlloc = None
     enableDhcp = None
+    gateway = None
 
     def __init__(self, **kwargs):
         self.session = kwargs.get("session")
@@ -80,6 +81,7 @@ class OSSubnet(OSNeutron):
 
 
 class OSNetwork(OSNeutron):
+    id = None
     name = None
     adminStateUp = None
     tenatId = None

@@ -35,8 +35,8 @@ class MenagerAuth:
         :returns: JSON response, logout or not authorized
         :rtype: {string}
         """
-        session_id = cherrypy.request.cookie["ReservationService"].value
-        if MenagerTool.isAuthorized(session_id, self.keystoneAuthList):
+        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
+            session_id = cherrypy.request.cookie["ReservationService"].value
             input_json = cherrypy.request.json
             keystoneAuth = self.parseJson(input_json)
             if keystoneAuth == self.keystoneAuthList[session_id]:

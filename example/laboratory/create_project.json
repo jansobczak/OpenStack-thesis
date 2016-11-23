@@ -1,8 +1,8 @@
 {
-	"project_name": "test project",
+	"project_name": "test_project",
 	"user":
 	{
-		"username": "test_project_admin",
+		"username": "test_admin",
 		"password": "qwe123"
 	},
 	"network":
@@ -12,13 +12,14 @@
 		{
 			"name": "private",
 			"cidr": "10.0.10.1/24",
+			"gateway": "10.0.10.1",
 			"start_alloc": "10.0.10.2",
 			"end_alloc": "10.0.10.254",
-			"enable_dhcp": "true",
+			"enable_dhcp": "true"
 
 		},
 		"router_name": "router",
 		"attach_priv": "true",
-		"attach_pub": "true",
+		"attach_pub": "true"
 	}
 }
