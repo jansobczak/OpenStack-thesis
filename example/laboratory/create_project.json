@@ -7,16 +7,16 @@
 	},
 	"network":
 	{
-		"network_name": "test_project_network",
+		"network_name": "test_network",
 		"private_subnet": 
 		{
 			"name": "private",
-			"cidr": "10.0.10.1/24",
+			"cidr": "10.0.10.0/24",
 			"gateway": "10.0.10.1",
 			"start_alloc": "10.0.10.2",
 			"end_alloc": "10.0.10.254",
-			"enable_dhcp": "true"
-
+			"enable_dhcp": "true",
+			"description": ""
 		},
 		"router_name": "router",
 		"attach_priv": "true",

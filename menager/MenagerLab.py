@@ -50,36 +50,45 @@ class MenagerLab:
             osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())
             osKSRoles = OSKeystone.OSKeystoneRoles(session=osKSAuth.createKeyStoneSession())
             osKSUser = OSKeystone.OSKeystoneUser(session=osKSAuth.createKeyStoneSession())
-
+            # Parse incoming JSON
             lab = self.parseJSONCreate(cherrypy.request.json)
-
             # Create project and user for this project give
-            # New user is admin
-            osKSProject.createProject(lab["project"].name)
-            labProject = osKSProject.findProject(lab["project"].name)
-            osKSUser.createUser(lab["user"].username, lab["user"].password, labProject.id)
-            labUser = osKSUser.findUser(lab["user"].username, labProject.id)
-            osKSRoles.grantUser(labUser.id, labProject.id, osKSRoles.findRole("admin"))
-
-            osKSAuth.project_id = labProject.id
-            osKSAuth.project_name = labProject.name
-            osKSAuth.username = labUser.name
+            osKSProject.createProject(name=lab["project"].name)
+            lab["project"] = osKSProject.findProject(lab["project"].name)
+            # Create new user make him admin
+            osKSUser.createUser(lab["user"].username, lab["user"].password, lab["project"].id)
+            # As for this version of code we assume one user is present with that name
+            password = lab["user"].password
+            lab["user"] = osKSUser.findUser(name=lab["user"].username, project_id=lab["project"].id)[0]
+            lab["user"].password = password
+            # Grant Admin to this project
+            osKSRoles.grantUser(lab["user"].id, lab["project"].id, osKSRoles.findRole("admin"))
+            # Bind Auth to new project
+            osKSAuth.project_id = lab["project"].id
+            osKSAuth.project_name = lab["project"].name
+            osKSAuth.username = lab["user"].name
             osKSAuth.password = lab["user"].password
-
+            # Update sessions
             osNeuSubnet = OSNeutron.OSSubnet(session=osKSAuth.createKeyStoneSession())
             osNeuNetwork = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
             osNeuRouter = OSNeutron.OSRouter(session=osKSAuth.createKeyStoneSession())
-
-            osNeuNetwork.createNetwork(lab["network"].name, labProject.id)
-            lab["network"].id = osNeuNetwork.findNetwork("private")
-            osNeuSubnet.createSubnet(lab["subnet"].name, lab["network"].id, labProject.id, lab["subnet"].cidr, lab["subnet"].gateway, lab["subnet"].startAlloc, lab["subnet"].endAlloc, lab["subnet"].enableDhcp)
+            # Create private network for laboratory
+            osNeuNetwork.createNetwork(lab["network"].name, lab["project"].id)
+            # As for this version of code we assume one private network for laboratory
+            lab["network"] = osNeuNetwork.findNetwork(name=lab["network"].name, project_id=lab["project"].id)[0]
+            # Create subnet and attach it to network
+            osNeuSubnet.createSubnet(lab["subnet"].name, lab["network"]["id"], lab["subnet"].cidr, lab["subnet"].gateway, lab["subnet"].startAlloc, lab["subnet"].endAlloc, lab["subnet"].enableDhcp, lab["subnet"].description)
+            # Create router
             osNeuRouter.createRouter(lab["router"].name)
-
-            lab["router"].id = osNeuRouter.findRouter(lab["router"].name)["id"]
-            lab["subnet"].id = osNeuSubnet.findSubnet(lab["subnet"].name)["id"]
-
-            osNeuRouter.addInterface(lab["router"].id, lab["subnet"].id)
-            osNeuRouter.addGateway(lab["router"].id, osNeuNetwork.findNetwork("public"))
+            # Find subnet and router id
+            lab["router"] = osNeuRouter.findRouter(name=lab["router"].name, project_id=lab["project"].id)
+            lab["subnet"] = osNeuSubnet.findSubnet(name=lab["subnet"].name, project_id=lab["project"].id)
+            # Add interface and configure gateway
+            for x in range(0, len(lab["router"])):
+                for y in range(0, len(lab["subnet"])):
+                    osNeuRouter.addInterface(lab["router"][x]["id"], lab["subnet"][y]["id"])
+                externalNetwork = osNeuNetwork.findNetwork(name="public")[0]
+                osNeuRouter.addGateway(lab["router"][x]["id"], externalNetwork["id"])
 
             data = dict(current="Laboratory manager", operation="ok")
         else:
@@ -123,6 +132,8 @@ class MenagerLab:
                         subnet.gateway = data["network"]["private_subnet"]["gateway"]
                     if "enable_dhcp" in data["network"]["private_subnet"]:
                         subnet.enableDhcp = data["network"]["private_subnet"]["enable_dhcp"]
+                    if "description" in data["network"]["private_subnet"]:
+                        subnet.description = data["network"]["private_subnet"]["description"]
                 if "attach_priv" in data["network"]:
                     returnDict["attach_priv"] = data["network"]["attach_priv"]
                 if "attach_pub" in data["network"]:
@@ -151,10 +162,42 @@ class MenagerLab:
                     project_id = input_json["project_id"]
             except Exception:
                 return("Failed to parse json!")
+
             if project_id is not None:
                 osKSAuth = self.keystoneAuthList[session_id]
+                # Delete router
+                osNeuRouter = OSNeutron.OSRouter(session=osKSAuth.createKeyStoneSession())
+                router = osNeuRouter.findRouter(project_id=project_id)[0]
+                if router.id is not None:
+                    # delete subnet TODO
+                    osNeuRouter.deleteRouter(router["id"])
+
+                else:
+                    raise Exception("Can't find router in laboratory!")
+
+                # Delete subnet
+                osNeuSubnet = OSNeutron.OSSubnet(session=osKSAuth.createKeyStoneSession())
+                subnet = osNeuSubnet.findSubnet(project_id=project_id)
+                if subnet is not None:
+                    osNeuSubnet.deleteSubnet(subnet["id"])
+                else:
+                    raise Exception("Can't find subnet in laboratory!")
+
+                # Delete network
+                osNeuNetwork = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
+                network = osNeuNetwork.findNetwork(project_id=project_id)[0]
+                if network is not None:
+                    osNeuNetwork.deleteNetwork(network["id"])
+                else:
+                    raise Exception("Can't find network in laboratory!")
+
+                # Delete project
                 osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())
-                result = osKSProject.deleteProject(project_id)
+                osKSProject.deleteProject(project_id)
+
+                # Delete user
+                osKSUser = OSKeystone.OSKeystoneUser(session=osKSAuth.createKeyStoneSession())
+                osKSUser.findProject()
 
             data = dict(current="Laboratory manager", operation="ok")
         else:

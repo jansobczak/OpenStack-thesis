@@ -32,7 +32,7 @@ class OSKeystoneProject(OSKeystone):
             self.projectManager = KSProjectManager(self.client)
 
     def createProject(self, name, domain="default"):
-        if self.findProject(name) is None:
+        if self.findProject(name=name) is None:
             return self.client.projects.create(name, domain)
         else:
             raise Exception("Project " + name + " already exists!")
@@ -71,7 +71,8 @@ class OSKeystoneUser(OSKeystone):
         return self.client.users.list()
 
     def createUser(self, name, password, project_id, domain="default"):
-        if self.findUser(name) is None:
+        users = self.findUser(name=name, project_id=project_id)
+        if len(users) == 0:
             return self.client.users.create(name=name, password=password, default_project=project_id, domain=domain)
         else:
             raise Exception("User " + name + " already exists!")
@@ -82,16 +83,51 @@ class OSKeystoneUser(OSKeystone):
     def getUser(self, user_id):
         return self.client.users.get(user_id)
 
-    def findUser(self, name, project_id=None):
+    def findUser(self, **kwargs):
+        """
+        Find user by:
+        - name
+        - project_id
+        - user_id
+        Arguments:
+            **kwargs -- name, project_id, user_id
+        Returns:
+            One users or array of users
+            One item if item_id
+            Array of users if project_id or name
+            Mixed
+        """
+        name = kwargs.get("name")
+        project_id = kwargs.get("project_id")
+        user_id = kwargs.get("user_id")
         users = self.listUser()
-        for user in users:
-            if project_id is None:
-                if user.name == name:
-                    return user
+        if user_id is not None:
+            for i in range(0, len(users)):
+                if users[i].id == user_id:
+                    return users[i]
+
+        if name is not None:
+            if project_id is not None:
+                returnArray = []
+                for i in range(0, len(users)):
+                    if users[i].name == name and users[i].default_project_id == project_id:
+                        returnArray.append(users[i])
+                return returnArray
             else:
-                if user.name == name and user.default_project_id == project_id:
-                    return user
-        return None
+                returnArray = []
+                for i in range(0, len(users)):
+                    if users[i].name == name:
+                        returnArray.append(users[i])
+                return returnArray
+        else:
+            if project_id is not None:
+                returnArray = []
+                for i in range(0, len(users)):
+                    if users[i].default_project_id == project_id:
+                        returnArray.append(users[i])
+                return returnArray
+            else:
+                return None
 
 
 class OSKeystoneRoles(OSKeystone):
@@ -119,10 +155,6 @@ class OSKeystoneAuth:
     password = None
 
     def __init__(self, **kwargs):
-        """
-        :param **kwargs: filename, auth_url, project_name, project_domain_name, user_domain, username, password
-        :type **kwargs: dictionary
-        """
         filename = kwargs.get("filename")
         if filename is None:
             self.auth_url = kwargs.get("auth_url")

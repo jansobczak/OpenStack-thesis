@@ -20,10 +20,19 @@ curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @
 curl -s -L -X GET --cookie cookies http://openstack.pw.net:8080/laboratory/list | python -m json.tool
 
 # Delete laboratory
-# !!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # Change id of the project in specific json
-# !!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @laboratory/delete_project.json http://openstack.pw.net:8080/laboratory/delete | python -m json.tool
+
+
+#Delete laboratory openstack the hard way
+router remove subnet router private
+router delete router
+subnet delete private
+network delete test_network
+user delete test_admin
+project delete test_project
 
 # Create laboratory
 curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @laboratory/create_project.json  http://openstack.pw.net:8080/laboratory/create | python -m json.tool
