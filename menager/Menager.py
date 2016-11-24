@@ -56,6 +56,7 @@ class Menager:
         :rtype: {string}
         """
         if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
+            session_id = cherrypy.request.cookie["ReservationService"].value
             data = json.dumps(dict(current="Global manager", response=self.keystoneAuthList[session_id].username))
         else:
             data = json.dumps(dict(current="Global manager", response='not authorized'))

@@ -1,0 +1,9 @@
+{
+    "user_domain": "Default",
+    "username": "test_admin",
+    "password": "qwe123",
+    "auth_url": "http://172.16.1.12/identity/v3",
+    "project_domain_name": "default",
+    "project_name": "test_project",
+    "project_id": ""
+}
