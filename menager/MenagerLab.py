@@ -167,29 +167,35 @@ class MenagerLab:
                 osKSAuth = self.keystoneAuthList[session_id]
                 # Delete router
                 osNeuRouter = OSNeutron.OSRouter(session=osKSAuth.createKeyStoneSession())
-                router = osNeuRouter.findRouter(project_id=project_id)[0]
-                if router.id is not None:
-                    # delete subnet TODO
-                    osNeuRouter.deleteRouter(router["id"])
-
-                else:
-                    raise Exception("Can't find router in laboratory!")
-
-                # Delete subnet
+                router = osNeuRouter.findRouter(project_id=project_id)
                 osNeuSubnet = OSNeutron.OSSubnet(session=osKSAuth.createKeyStoneSession())
-                subnet = osNeuSubnet.findSubnet(project_id=project_id)
-                if subnet is not None:
-                    osNeuSubnet.deleteSubnet(subnet["id"])
-                else:
-                    raise Exception("Can't find subnet in laboratory!")
+                subnets = osNeuSubnet.findSubnet(project_id=project_id)
+                for x in range(0, len(router)):
+                    for y in range(0, len(subnets)):
+                        if router[x]["id"] is not None and subnets[y]["id"] is not None:
+                            osNeuRouter.deleteInterface(router[x]["id"], subnets[y]["id"])
+                        else:
+                            raise Exception("Can't find subnet for router in laboratory!")
+                    if router[x]["id"] is not None:
+                        osNeuRouter.deleteRouter(router[x]["id"])
+                    else:
+                        raise Exception("Can't find router in laboratory!")
+
+                # Delete subnets
+                for i in range(0, len(subnets)):
+                    if subnets[i]["id"] is not None:
+                        osNeuSubnet.deleteSubnet(subnets[i]["id"])
+                    else:
+                        raise Exception("Can't find subnet in laboratory!")
 
                 # Delete network
                 osNeuNetwork = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
-                network = osNeuNetwork.findNetwork(project_id=project_id)[0]
-                if network is not None:
-                    osNeuNetwork.deleteNetwork(network["id"])
-                else:
-                    raise Exception("Can't find network in laboratory!")
+                networks = osNeuNetwork.findNetwork(project_id=project_id)
+                for i in range(0, len(networks)):
+                    if networks[i].id is not None:
+                        osNeuNetwork.deleteNetwork(networks[i]["id"])
+                    else:
+                        raise Exception("Can't find network in laboratory!")
 
                 # Delete project
                 osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())

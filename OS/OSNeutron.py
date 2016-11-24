@@ -250,8 +250,14 @@ class OSRouter(OSNeutron):
         body = {"subnet_id": subnet_id}
         return self.client.add_interface_router(router_id, body)
 
-    def removeInterface(self, router_id, subnet_id):
-        return None
+    def deleteInterface(self, router_id, subnet_id):
+        if not OSTools.OSTools.isNeutronID(router_id):
+            router_id = self.findRouter(name=router_id)["id"]
+        if not OSTools.OSTools.isNeutronID(subnet_id):
+            osNeuSubnet = OSSubnet(session=self.session)
+            subnet_id = osNeuSubnet.findSubnet(name=subnet_id)["id"]
+        body = {"subnet_id": subnet_id}
+        self.client.remove_interface_router(router_id, body)
 
     def addGateway(self, router_id, network_id):
         if not OSTools.OSTools.isNeutronID(router_id):
