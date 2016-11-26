@@ -110,7 +110,7 @@ class OSKeystoneUser(OSKeystone):
             if project_id is not None:
                 returnArray = []
                 for i in range(0, len(users)):
-                    if users[i].name == name and users[i].default_project_id == project_id:
+                    if users[i].name == name and hasattr(users[i], "default_project_id") and users[i].default_project_id == project_id:
                         returnArray.append(users[i])
                 return returnArray
             else:
@@ -123,7 +123,7 @@ class OSKeystoneUser(OSKeystone):
             if project_id is not None:
                 returnArray = []
                 for i in range(0, len(users)):
-                    if users[i].default_project_id == project_id:
+                    if hasattr(users[i], "default_project_id") and users[i].default_project_id == project_id:
                         returnArray.append(users[i])
                 return returnArray
             else:
