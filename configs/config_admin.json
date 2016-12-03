@@ -2,8 +2,10 @@
 	"user_domain": "Default",
 	"username": "admin",
 	"password": "OsPass123",
-	"auth_url": "http://172.16.1.12/identity/v3",
-	"project_domain_name": "default",
+	"auth_url": "http://openstack.soit.com.pl/identity/v3",
+	"project_domain_name": "Default",
 	"project_name": "admin",
-	"project_id": "8585c668c8174da58ff88f47b2b48c32"
+	"project_id": "dc8ea7232ee44029bb6e01a025a94a7c",
+    "glance_endpoint": "http://openstack.soit.com.pl:9292"
+
 }

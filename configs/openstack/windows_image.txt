@@ -1,0 +1,11 @@
+qemu-img create -f qcow2 ws10.qcow2 15G
+
+virt-install --connect qemu:///system \
+  --name ws10 --ram 2048 --vcpus 2 \
+  --network network=default,model=virtio \
+  --disk path=ws10.qcow2,format=qcow2,device=disk,bus=virtio \
+  --cdrom  Win10_1607_English_x64.iso \
+  --disk path=virtio-win-0.1.126.iso,device=cdrom \
+  --vnc --os-type windows --os-variant win2k8
+
+ virsh vncdisplay ws10

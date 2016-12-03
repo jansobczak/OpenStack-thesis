@@ -153,6 +153,7 @@ class OSKeystoneAuth:
     user_domain = None
     username = None
     password = None
+    glance_endpoint = None
 
     def __init__(self, **kwargs):
         filename = kwargs.get("filename")
@@ -163,11 +164,12 @@ class OSKeystoneAuth:
             self.user_domain = kwargs.get("user_domain")
             self.username = kwargs.get("username")
             self.password = kwargs.get("password")
+            self.glance_endpoint = kwargs.get("glance_endpoint")
         else:
             self.getCredFromFile(filename)
 
     def __eq__(self, other):
-        if self.auth_url == other.auth_url and self.project_name == other.project_name and self.project_domain_name == other.project_domain_name and self.user_domain == other.user_domain and self.username == other.username and self.password == other.password and self.project_id == other.project_id:
+        if self.auth_url == other.auth_url and self.project_name == other.project_name and self.project_domain_name == other.project_domain_name and self.user_domain == other.user_domain and self.username == other.username and self.password == other.password and self.project_id == other.project_id and self.glance_endpoint == other.glance_endpoint:
             return True
         else:
             return False
@@ -221,6 +223,8 @@ class OSKeystoneAuth:
                     self.project_domain_name = data["project_domain_name"]
                 if "project_id" in data:
                     self.project_id = data["project_id"]
+                if "glance_endpoint" in data:
+                    self.glance_endpoint = data["glance_endpoint"]
             except IndexError:
                 print("JSON cred invalid!")
 

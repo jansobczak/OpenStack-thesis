@@ -1,0 +1,7 @@
+{
+    "name": "test_image",
+    "container_format": "bare",
+    "disk_format": "iso",
+    "is_public": "public",
+    "file_path": "/home/reserv/images/debian.iso"
+}

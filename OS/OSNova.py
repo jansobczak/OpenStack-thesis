@@ -3,13 +3,17 @@ from novaclient import client as NovaClient
 
 
 class OSNova:
-    "Class for Openstack images"
+    """Class for Openstack module Nova"""
     novaClient = None
 
     def __init__(self, session):
         self.novaClient = NovaClient.Client(2, session=session)
 
-    def getImages(self):
+
+class OSImages(OSNova):
+    """Class for managing Images in OpenStack"""
+
+    def get(self):
         return self.novaClient.images.list()
 
     def getFlavors(self):

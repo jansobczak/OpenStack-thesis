@@ -52,7 +52,50 @@ class MenagerLab:
                 osKSRoles = OSKeystone.OSKeystoneRoles(session=osKSAuth.createKeyStoneSession())
                 osKSUser = OSKeystone.OSKeystoneUser(session=osKSAuth.createKeyStoneSession())
                 # Parse incoming JSON
-                lab = self.parseJSONCreate(cherrypy.request.json)
+                project = OSKeystone.OSKeystoneProject()
+                user = OSKeystone.OSKeystoneUser()
+                network = OSNeutron.OSNetwork()
+                router = OSNeutron.OSRouter()
+                subnet = OSNeutron.OSSubnet()
+                lab = {}
+                data = cherrypy.request.json
+                if "project_name" in data:
+                    project.name = data["project_name"]
+                if "user" in data:
+                    if "username" in data["user"]:
+                        user.username = data["user"]["username"]
+                    if "password" in data["user"]:
+                        user.password = data["user"]["password"]
+                if "network" in data:
+                    if "network_name" in data["network"]:
+                        network.name = data["network"]["network_name"]
+                    if "router_name" in data["network"]:
+                        router.name = data["network"]["router_name"]
+                    if "private_subnet" in data["network"]:
+                        if "name" in data["network"]["private_subnet"]:
+                            subnet.name = data["network"]["private_subnet"]["name"]
+                        if "cidr" in data["network"]["private_subnet"]:
+                            subnet.cidr = data["network"]["private_subnet"]["cidr"]
+                        if "start_alloc" in data["network"]["private_subnet"]:
+                            subnet.startAlloc = data["network"]["private_subnet"]["start_alloc"]
+                        if "end_alloc" in data["network"]["private_subnet"]:
+                            subnet.endAlloc = data["network"]["private_subnet"]["end_alloc"]
+                        if "gateway" in data["network"]["private_subnet"]:
+                            subnet.gateway = data["network"]["private_subnet"]["gateway"]
+                        if "enable_dhcp" in data["network"]["private_subnet"]:
+                            subnet.enableDhcp = data["network"]["private_subnet"]["enable_dhcp"]
+                        if "description" in data["network"]["private_subnet"]:
+                            subnet.description = data["network"]["private_subnet"]["description"]
+                    if "attach_priv" in data["network"]:
+                        lab["attach_priv"] = data["network"]["attach_priv"]
+                    if "attach_pub" in data["network"]:
+                        lab["attach_pub"] = data["network"]["attach_pub"]
+                lab["project"] = project
+                lab["user"] = user
+                lab["network"] = network
+                lab["router"] = router
+                lab["subnet"] = subnet
+
                 # Create project and user for this project give
                 osKSProject.createProject(name=lab["project"].name)
                 lab["project"] = osKSProject.findProject(lab["project"].name)
@@ -100,58 +143,6 @@ class MenagerLab:
             return data
         except Exception as error:
             return(dict(current="Laboratory manager", error=repr(error)))
-
-    def parseJSONCreate(self, data):
-        project = OSKeystone.OSKeystoneProject()
-        user = OSKeystone.OSKeystoneUser()
-        network = OSNeutron.OSNetwork()
-        router = OSNeutron.OSRouter()
-        subnet = OSNeutron.OSSubnet()
-
-        returnDict = {}
-
-        try:
-            if "project_name" in data:
-                project.name = data["project_name"]
-            if "user" in data:
-                if "username" in data["user"]:
-                    user.username = data["user"]["username"]
-                if "password" in data["user"]:
-                    user.password = data["user"]["password"]
-            if "network" in data:
-                if "network_name" in data["network"]:
-                    network.name = data["network"]["network_name"]
-                if "router_name" in data["network"]:
-                    router.name = data["network"]["router_name"]
-                if "private_subnet" in data["network"]:
-                    if "name" in data["network"]["private_subnet"]:
-                        subnet.name = data["network"]["private_subnet"]["name"]
-                    if "cidr" in data["network"]["private_subnet"]:
-                        subnet.cidr = data["network"]["private_subnet"]["cidr"]
-                    if "start_alloc" in data["network"]["private_subnet"]:
-                        subnet.startAlloc = data["network"]["private_subnet"]["start_alloc"]
-                    if "end_alloc" in data["network"]["private_subnet"]:
-                        subnet.endAlloc = data["network"]["private_subnet"]["end_alloc"]
-                    if "gateway" in data["network"]["private_subnet"]:
-                        subnet.gateway = data["network"]["private_subnet"]["gateway"]
-                    if "enable_dhcp" in data["network"]["private_subnet"]:
-                        subnet.enableDhcp = data["network"]["private_subnet"]["enable_dhcp"]
-                    if "description" in data["network"]["private_subnet"]:
-                        subnet.description = data["network"]["private_subnet"]["description"]
-                if "attach_priv" in data["network"]:
-                    returnDict["attach_priv"] = data["network"]["attach_priv"]
-                if "attach_pub" in data["network"]:
-                    returnDict["attach_pub"] = data["network"]["attach_pub"]
-
-            returnDict["project"] = project
-            returnDict["user"] = user
-            returnDict["network"] = network
-            returnDict["router"] = router
-            returnDict["subnet"] = subnet
-
-            return returnDict
-        except IndexError:
-            return("Failed to parse json!")
 
     @cherrypy.expose
     @cherrypy.tools.json_in()

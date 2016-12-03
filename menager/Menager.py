@@ -2,6 +2,7 @@ import cherrypy
 import json
 from menager.MenagerTools import MenagerTool
 from menager.MenagerAuth import MenagerAuth
+from menager.MenagerImage import MenagerImage
 from menager.MenagerLab import MenagerLab
 
 
@@ -24,8 +25,10 @@ class Menager:
     def __init__(self):
         self.menagerAuth = MenagerAuth()
         self.menagerLab = MenagerLab()
+        self.menagerImage = MenagerImage()
         self.menagerAuth.keystoneAuthList = self.keystoneAuthList
         self.menagerLab.keystoneAuthList = self.keystoneAuthList
+        self.menagerImage.keystoneAuthList = self.keystoneAuthList
 
     def bindUser(self, body):
         print(body)
@@ -47,6 +50,18 @@ class Menager:
         if len(vpath) == 2 and "laboratory" in vpath and "delete" in vpath:
             vpath.pop(0)
             return self.menagerLab
+        if len(vpath) == 1 and "images" in vpath:
+            vpath.pop(0)
+            return self.menagerImage
+        if len(vpath) == 2 and "images" in vpath and "list" in vpath:
+            vpath.pop(0)
+            return self.menagerImage
+        if len(vpath) == 2 and "images" in vpath and "create" in vpath:
+            vpath.pop(0)
+            return self.menagerImage
+        if len(vpath) == 2 and "images" in vpath and "delete" in vpath:
+            vpath.pop(0)
+            return self.menagerImage
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -57,7 +72,7 @@ class Menager:
         """
         if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
             session_id = cherrypy.request.cookie["ReservationService"].value
-            data = json.dumps(dict(current="Global manager", response=self.keystoneAuthList[session_id].username))
+            data = dict(current="Global manager", response=self.keystoneAuthList[session_id].username)
         else:
-            data = json.dumps(dict(current="Global manager", response='not authorized'))
+            data = dict(current="Global manager", response='not authorized')
         return data

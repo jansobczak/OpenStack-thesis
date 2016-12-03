@@ -79,6 +79,8 @@ class MenagerAuth:
                 projectDomainName = data["project_domain_name"]
             if "project_id" in data:
                 projectId = data["project_id"]
-            return OSKeystone.OSKeystoneAuth(auth_url=authUrl, project_domain_name=projectDomainName, project_name=projectName, user_domain=userDomain, username=username, password=password, project_id=projectId)
+            if "glance_endpoint" in data:
+                glanceEndpoint = data["glance_endpoint"]
+            return OSKeystone.OSKeystoneAuth(auth_url=authUrl, project_domain_name=projectDomainName, project_name=projectName, user_domain=userDomain, username=username, password=password, project_id=projectId, glance_endpoint=glanceEndpoint)
         except IndexError:
             return("JSON cred invalid!")

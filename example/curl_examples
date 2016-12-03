@@ -2,25 +2,44 @@
 # Auth test #
 #############
 # Auth as admin
-curl -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @auth.json  http://openstack.pw.net:8080/auth/
+curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_admin.json  http://parrot.soit.com.pl:8080/auth/ | python -m json.tool
 
 # Check session
-curl -L -X GET --cookie cookies -d @auth.json  http://openstack.pw.net:8080/
+curl -s -L -X GET --cookie cookies http://parrot.soit.com.pl:8080/ | python -m json.tool
 
 # Deauthenticate
-curl -H "Content-Type: application/json" -L -X POST --cookie cookies -d @auth.json  http://openstack.pw.net:8080/deauth/
+curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @../configs/config_admin.json  http://parrot.soit.com.pl:8080/deauth/ | python -m json.tool
 
 ###################
 # Laboratory test #
 ###################
 # Auth as admin
-curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @auth.json  http://openstack.pw.net:8080/auth/ | python -m json.tool
-
-# List laboratories
-curl -s -L -X GET --cookie cookies http://openstack.pw.net:8080/laboratory/list | python -m json.tool
+curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_admin.json  http://parrot.soit.com.pl:8080/auth/ | python -m json.tool
 
 # Create laboratory
-curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @laboratory/create_project.json  http://openstack.pw.net:8080/laboratory/create | python -m json.tool
+curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @laboratory/create_project.json  http://parrot.soit.com.pl:8080/laboratory/create | python -m json.tool
+
+# List laboratories
+curl -s -L -X GET --cookie cookies http://parrot.soit.com.pl:8080/laboratory/list | python -m json.tool
 
 # Delete laboratory
-curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @laboratory/delete_project.json http://openstack.pw.net:8080/laboratory/delete | python -m json.tool
+curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @laboratory/delete_project.json http://parrot.soit.com.pl:8080/laboratory/delete | python -m json.tool
+
+#Auth as test_admin
+curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_test.json  http://parrot.soit.com.pl:8080/auth/ | python -m json.tool
+
+###################
+#    Image test   #
+###################
+# Auth as admin
+curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_admin.json  http://parrot.soit.com.pl:8080/auth/ | python -m json.tool
+
+# List images
+curl -s -L -X GET --cookie cookies http://parrot.soit.com.pl:8080/images/list | python -m json.tool
+
+# Create image
+curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @images/create_image.json  http://parrot.soit.com.pl:8080/images/create | python -m json.tool
+
+# Delete image
+curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @images/delete_image.json  http://parrot.soit.com.pl:8080/images/delete | python -m json.tool
+

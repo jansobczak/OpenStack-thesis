@@ -1,5 +1,3 @@
-import json
-import sys
 import collections
 
 
@@ -16,11 +14,12 @@ class OSTools(object):
         try:
             returnValue = []
             if isinstance(objects, collections.Iterable):
-                for object in objects:
-                    returnValue.append(object.to_dict())
+                for obj in objects:
+                    returnValue.append(obj.to_dict())
                 return returnValue
             else:
-                return returnValue.append(objects.to_dict())
+                returnValue.append(objects.to_dict())
+                return returnValue
         except Exception as e:
             raise e
 

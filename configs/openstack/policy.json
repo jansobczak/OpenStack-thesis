@@ -1,0 +1,14 @@
+{
+    //Alias: role
+    //Create alias named admin_required 
+    "admin_required": "role:admin",
+    "cloud_admin": "rule:admin_required and domain_id:admin_domain_id",
+    "bind_role": "role:bind",
+    "deny_bind_role": "not role:bind",
+
+
+    "default": "rule:admin_required",
+    //"compute:get_all": "rule:admin_required",
+    "compute:get_all": "deny_bind_role",
+    
+}
