@@ -119,21 +119,21 @@ class MenagerLab:
                 osNeuNetwork = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
                 osNeuRouter = OSNeutron.OSRouter(session=osKSAuth.createKeyStoneSession())
                 # Create private network for laboratory
-                osNeuNetwork.createNetwork(lab["network"].name, lab["project"].id)
+                osNeuNetwork.create(lab["network"].name, lab["project"].id)
                 # As for this version of code we assume one private network for laboratory
-                lab["network"] = osNeuNetwork.findNetwork(name=lab["network"].name, project_id=lab["project"].id)[0]
+                lab["network"] = osNeuNetwork.find(name=lab["network"].name, project_id=lab["project"].id)[0]
                 # Create subnet and attach it to network
-                osNeuSubnet.createSubnet(lab["subnet"].name, lab["network"]["id"], lab["subnet"].cidr, lab["subnet"].gateway, lab["subnet"].startAlloc, lab["subnet"].endAlloc, lab["subnet"].enableDhcp, lab["subnet"].description)
+                osNeuSubnet.create(lab["subnet"].name, lab["network"]["id"], lab["subnet"].cidr, lab["subnet"].gateway, lab["subnet"].startAlloc, lab["subnet"].endAlloc, lab["subnet"].enableDhcp, lab["subnet"].description)
                 # Create router
-                osNeuRouter.createRouter(lab["router"].name)
+                osNeuRouter.create(lab["router"].name)
                 # Find subnet and router id
-                lab["router"] = osNeuRouter.findRouter(name=lab["router"].name, project_id=lab["project"].id)
-                lab["subnet"] = osNeuSubnet.findSubnet(name=lab["subnet"].name, project_id=lab["project"].id)
+                lab["router"] = osNeuRouter.find(name=lab["router"].name, project_id=lab["project"].id)
+                lab["subnet"] = osNeuSubnet.find(name=lab["subnet"].name, project_id=lab["project"].id)
                 # Add interface and configure gateway
                 for x in range(0, len(lab["router"])):
                     for y in range(0, len(lab["subnet"])):
                         osNeuRouter.addInterface(lab["router"][x]["id"], lab["subnet"][y]["id"])
-                    externalNetwork = osNeuNetwork.findNetwork(name="public")[0]
+                    externalNetwork = osNeuNetwork.find(name="public")[0]
                     osNeuRouter.addGateway(lab["router"][x]["id"], externalNetwork["id"])
                 # Rebind user
                 self.keystoneAuthList[session_id] = osKSAuthBack
@@ -162,9 +162,9 @@ class MenagerLab:
                 osKSAuth = self.keystoneAuthList[session_id]
                 # Delete router
                 osNeuRouter = OSNeutron.OSRouter(session=osKSAuth.createKeyStoneSession())
-                router = osNeuRouter.findRouter(project_id=project_id)
+                router = osNeuRouter.find(project_id=project_id)
                 osNeuSubnet = OSNeutron.OSSubnet(session=osKSAuth.createKeyStoneSession())
-                subnets = osNeuSubnet.findSubnet(project_id=project_id)
+                subnets = osNeuSubnet.find(project_id=project_id)
                 for x in range(0, len(router)):
                     for y in range(0, len(subnets)):
                         if router[x]["id"] is not None and subnets[y]["id"] is not None:
@@ -172,23 +172,23 @@ class MenagerLab:
                         else:
                             raise Exception("Can't find subnet for router in laboratory!")
                     if router[x]["id"] is not None:
-                        osNeuRouter.deleteRouter(router[x]["id"])
+                        osNeuRouter.delete(router[x]["id"])
                     else:
                         raise Exception("Can't find router in laboratory!")
 
                 # Delete subnets
                 for i in range(0, len(subnets)):
                     if subnets[i]["id"] is not None:
-                        osNeuSubnet.deleteSubnet(subnets[i]["id"])
+                        osNeuSubnet.delete(subnets[i]["id"])
                     else:
                         raise Exception("Can't find subnet in laboratory!")
 
                 # Delete network
                 osNeuNetwork = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
-                networks = osNeuNetwork.findNetwork(project_id=project_id)
+                networks = osNeuNetwork.find(project_id=project_id)
                 for i in range(0, len(networks)):
                     if networks[i]["id"] is not None:
-                        osNeuNetwork.deleteNetwork(networks[i]["id"], project_id)
+                        osNeuNetwork.delete(networks[i]["id"], project_id)
                     else:
                         raise Exception("Can't find network in laboratory!")
 
