@@ -79,10 +79,10 @@ class OSSubnet(OSNeutron):
         self.endAlloc = kwargs.get("endAlloc")
         self.enableDhcp = kwargs.get("enableDhcp")
 
-    def listSubnet(self):
+    def list(self):
         return self.client.list_subnets()
 
-    def createSubnet(self, name, network_id, cidr, gateway_ip, start_alloc, end_alloc, enable_dhcp, description=""):
+    def create(self, name, network_id, cidr, gateway_ip, start_alloc, end_alloc, enable_dhcp, description=""):
         """
         This create subnets
         Arguments:
@@ -113,7 +113,7 @@ class OSSubnet(OSNeutron):
             }
         })
 
-    def findSubnet(self, **kwargs):
+    def find(self, **kwargs):
         """Find subnet
         Find subnet based on arguments:
         - name
@@ -133,9 +133,9 @@ class OSSubnet(OSNeutron):
         subnets = self.client.list_subnets()["subnets"]
         return self.findItem(subnets, name=name, item_id=subnet_id, item_id_name="id", project_id=project_id)
 
-    def deleteSubnet(self, subnet_id):
+    def delete(self, subnet_id):
         if not OSTools.OSTools.isNeutronID(subnet_id):
-            subnet_id = self.findSubnet(name=subnet_id)["id"]
+            subnet_id = self.find(name=subnet_id)["id"]
         return self.client.delete_subnet(subnet_id)
 
 
@@ -153,10 +153,10 @@ class OSNetwork(OSNeutron):
         self.adminStateUp = kwargs.get("adminStateUp")
         self.tenatId = kwargs.get("tenatId")
 
-    def listNetwork(self):
+    def list(self):
         return self.client.list_networks()
 
-    def createNetwork(self, name, project_id):
+    def create(self, name, project_id):
         """
         This create newtork.
         Openstack network can live without any subnet.
@@ -169,7 +169,7 @@ class OSNetwork(OSNeutron):
                 "project_id": project_id}
         })
 
-    def findNetwork(self, **kwargs):
+    def find(self, **kwargs):
         """Find network
         Find network based on arguments:
         - name
@@ -187,23 +187,23 @@ class OSNetwork(OSNeutron):
         name = kwargs.get("name")
         project_id = kwargs.get("project_id")
         network_id = kwargs.get("network_id")
-        networks = self.listNetwork()["networks"]
+        networks = self.list()["networks"]
         return self.findItem(networks, name=name, item_id=network_id, item_id_name="id", project_id=project_id)
 
-    def deleteNetwork(self, network, project_id):
+    def delete(self, network, project_id):
         # Check if network is name or id
         if not OSTools.OSTools.isNeutronID(network):
-            network = self.findNetwork(name=network, project_id=project_id)
+            network = self.find(name=network, project_id=project_id)
         return self.client.delete_network(network)
 
 
 class OSRouter(OSNeutron):
     name = None
 
-    def listRouters(self):
+    def list(self):
         return self.client.list_routers()
 
-    def createRouter(self, name):
+    def create(self, name):
         """Create new router
         Args:
             name: Name of the new router
@@ -217,14 +217,14 @@ class OSRouter(OSNeutron):
                 "admin_state_up": True}
         })
 
-    def deleteRouter(self, router_id):
+    def delete(self, router_id):
         """Delete router
         Args:
             router_id: Router ID
         """
         self.client.delete_router(router_id)
 
-    def findRouter(self, **kwargs):
+    def find(self, **kwargs):
         """Find router
         Find router based on arguments:
         - name
@@ -246,21 +246,21 @@ class OSRouter(OSNeutron):
 
     def addInterface(self, router_id, subnet_id):
         if not OSTools.OSTools.isNeutronID(router_id):
-            router_id = self.findRouter(name=router_id)["id"]
+            router_id = self.find(name=router_id)["id"]
         body = {"subnet_id": subnet_id}
         return self.client.add_interface_router(router_id, body)
 
     def deleteInterface(self, router_id, subnet_id):
         if not OSTools.OSTools.isNeutronID(router_id):
-            router_id = self.findRouter(name=router_id)["id"]
+            router_id = self.find(name=router_id)["id"]
         if not OSTools.OSTools.isNeutronID(subnet_id):
             osNeuSubnet = OSSubnet(session=self.session)
-            subnet_id = osNeuSubnet.findSubnet(name=subnet_id)["id"]
+            subnet_id = osNeuSubnet.find(name=subnet_id)["id"]
         body = {"subnet_id": subnet_id}
         self.client.remove_interface_router(router_id, body)
 
     def addGateway(self, router_id, network_id):
         if not OSTools.OSTools.isNeutronID(router_id):
-            router_id = self.findRouter(name=router_id)["id"]
+            router_id = self.find(name=router_id)["id"]
         body = {"network_id": network_id}
         return self.client.add_gateway_router(router_id, body)

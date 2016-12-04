@@ -3,47 +3,28 @@ from novaclient import client as NovaClient
 
 
 class OSNova:
-    """Class for Openstack module Nova"""
+    """
+    Manipulations with Nova component OpenStack
+    """
     novaClient = None
 
     def __init__(self, session):
         self.novaClient = NovaClient.Client(2, session=session)
 
 
-class OSImages(OSNova):
-    """Class for managing Images in OpenStack"""
+class OSInstances(OSNova):
 
-    def get(self):
-        return self.novaClient.images.list()
-
-    def getFlavors(self):
-        return self.novaClient.flavors.list()
-
-    def getServers(self):
+    def list(self):
         return self.novaClient.servers.list()
 
-    def getNetworks(self):
-        return self.novaClient.networks.list()
-
-    def getKeyPairs(self):
-        return self.novaClient.keypairs.list()
-
-    def getKeyPair(self, keypair):
-        return self.novaClient.keypairs.get(keypair)
-
-    def createServer(self, image, flavor, network, keypair, server_name):
-        print("Create server")
-        image = self.novaClient.images.find(name=image)
-        flavor = self.novaClient.flavors.find(name=flavor)
-        net = self.novaClient.networks.find(label=network)
-        nics = [{"net-id": net.id}]
+    def create(self, server_name, image, flavor, network, keypair):
+        nics = [{"net-id": network["id"]}]
         instance = self.novaClient.servers.create(
             name=server_name,
             image=image,
             flavor=flavor,
-            key_name=keypair,
-            nics=nics,
-            file="setting_instance_example.txt")
+            key_name=keypair.name,
+            nics=nics)
 
         status = instance.status
         while status == "BUILD":
@@ -51,54 +32,92 @@ class OSImages(OSNova):
             # Retrieve the instance again so the status field updates
             instance = self.novaClient.servers.get(instance.id)
             status = instance.status
-        return "status: %s" % status
+        return instance
 
-    def stopServer(self, server_name):
-        server = self.findServer(server_name)
-        if server is None:
-            print("Server %s does not exist" % server_name)
+    def delete(self, id):
+        inst = self.find(inst_id=id)
+        if inst is not None:
+            inst.delete()
+
+    def find(self, **kwargs):
+        """Find items
+        Find items based on arguments:
+        - name
+        - item ID
+        Args:
+            name: Name to search for (default: {None})
+            item_id: Item ID to search for (default: {None})
+        Returns:
+            One items or array of items
+            One item if item_id only
+            Array of items if project_id or name
+            Mixed
+        """
+        name = kwargs.get("name")
+        item_id = kwargs.get("inst_id")
+        items = self.list()
+        if item_id is not None:
+            for item in items:
+                if item.id == item_id:
+                    return item
+
+        if name is not None:
+            returnArray = []
+            for item in items:
+                if item.name == name:
+                    returnArray.append(item)
+            return returnArray
         else:
-            print("Stoping server..")
-            if server.status != "SHUTOFF":
-                self.novaClient.servers.stop(server)
-                print("Server %s deleted" % server_name)
-            else:
-                print("Server %s already stopped" % server_name)
-            return server.id
+            return None
 
-    def startServer(self, server_name):
-        server = self.findServer(server_name)
-        if server is None:
-            ("Server %s does not exist" % server_name)
+
+class OSKeypair(OSNova):
+
+    def list(self):
+        return self.novaClient.keypairs.list()
+
+    def create(self, name):
+        return self.novaClient.keypairs.create(name)
+
+    def delete(self, key):
+        keypair = self.find(name=key)
+        if keypair is not None:
+            self.novaClient.keypairs.delete(keypair)
+
+    def find(self, **kwargs):
+        """This find item based on kwargs
+        Args:
+            **kwargs: name=""
+        Returns:
+            Keypair object
+        """
+        name = kwargs.get("name")
+        items = self.list()
+        if name is not None:
+            for item in items:
+                if item.name == name:
+                    return item
         else:
-            print("Starting server..")
-            if server.status != "ACTIVE":
-                self.novaClient.servers.start(server)
-                print("Server %s started" % server_name)
-            else:
-                print("Server %s already started" % server_name)
-            return server.id
+            return None
 
-    def deleteServer(self, server_name):
-        server = self.findServer(server_name)
-        if server is None:
-            ("Server %s does not exist" % server_name)
+
+class OSFlavor(OSNova):
+
+    def list(self):
+        return self.novaClient.flavors.list()
+
+    def find(self, **kwargs):
+        """This find item based on kwargs
+        Args:
+            **kwargs: name=""
+        Returns:
+            Keypair object
+        """
+        name = kwargs.get("name")
+        items = self.list()
+        if name is not None:
+            for item in items:
+                if item.name == name:
+                    return item
         else:
-            print("Deleting server..")
-            self.novaClient.servers.delete(server)
-            print("Server %s deleted" % server_name)
-            return server.id
-
-    def findServer(self, server_name):
-        servers_list = self.novaClient.servers.list()
-        returnServer = None
-        for server in servers_list:
-            if server.name == server_name:
-                print("This server %s exists" % server_name)
-                returnServer = server
-                break
-        return returnServer
-
-    def getServerPassword(self, instance_id):
-        instance = self.novaClient.servers.find(id=instance_id)
-        print(instance.change_password("ospass"))
+            return None

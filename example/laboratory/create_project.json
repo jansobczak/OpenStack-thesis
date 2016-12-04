@@ -7,7 +7,7 @@
 	},
 	"network":
 	{
-		"network_name": "test_network",
+		"network_name": "private",
 		"private_subnet": 
 		{
 			"name": "private",

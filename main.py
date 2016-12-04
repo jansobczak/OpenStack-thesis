@@ -7,7 +7,7 @@ osKSAuth = OSKeystone.OSKeystoneAuth(filename="configs/config_admin.json")
 osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())
 osNeutron = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
 
-network_id = osNeutron.findNetwork("test_network")
+network_id = osNeutron.find("test_network")
 project = osKSProject.findProject("test_project")
 
 print(project.id)
@@ -19,7 +19,7 @@ osKSAuth.username = "test_admin"
 osKSAuth.password = "qwe123"
 
 osNeuSubnet = OSNeutron.OSSubnet(session=osKSAuth.createKeyStoneSession())
-osNeuSubnet.createSubnet("private", network_id, "10.0.10.0/24", "10.0.10.1", "10.0.10.2", "10.0.10.254", True)
+osNeuSubnet.create("private", network_id, "10.0.10.0/24", "10.0.10.1", "10.0.10.2", "10.0.10.254", True)
 
 """
 rest_service = RESTservice.RESTservice()
