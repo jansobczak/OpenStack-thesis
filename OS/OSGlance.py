@@ -68,12 +68,10 @@ class OSGlance:
         """Find items
         Find items based on arguments:
         - name
-        - project ID
         - item ID
         Args:
             name: Name to search for (default: {None})
             item_id: Item ID to search for (default: {None})
-            project_id: Project ID  (default: {None})
         Returns:
             One items or array of items
             One item if item_id only

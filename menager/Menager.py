@@ -4,6 +4,7 @@ from menager.MenagerTools import MenagerTool
 from menager.MenagerAuth import MenagerAuth
 from menager.MenagerImage import MenagerImage
 from menager.MenagerLab import MenagerLab
+from menager.MenagerInst import MenagerInst
 
 
 class Menager:
@@ -26,9 +27,11 @@ class Menager:
         self.menagerAuth = MenagerAuth()
         self.menagerLab = MenagerLab()
         self.menagerImage = MenagerImage()
+        self.menagerInst = MenagerInst()
         self.menagerAuth.keystoneAuthList = self.keystoneAuthList
         self.menagerLab.keystoneAuthList = self.keystoneAuthList
         self.menagerImage.keystoneAuthList = self.keystoneAuthList
+        self.menagerInst.keystoneAuthList = self.keystoneAuthList
 
     def bindUser(self, body):
         print(body)
@@ -38,6 +41,7 @@ class Menager:
             return self.menagerAuth.auth
         if len(vpath) == 1 and "deauth" in vpath:
             return self.menagerAuth.deauth
+
         if len(vpath) == 1 and "laboratory" in vpath:
             vpath.pop(0)
             return self.menagerLab
@@ -50,6 +54,7 @@ class Menager:
         if len(vpath) == 2 and "laboratory" in vpath and "delete" in vpath:
             vpath.pop(0)
             return self.menagerLab
+
         if len(vpath) == 1 and "images" in vpath:
             vpath.pop(0)
             return self.menagerImage
@@ -62,6 +67,13 @@ class Menager:
         if len(vpath) == 2 and "images" in vpath and "delete" in vpath:
             vpath.pop(0)
             return self.menagerImage
+
+        if len(vpath) == 1 and "instances" in vpath:
+            vpath.pop(0)
+            return self.menagerInst
+        if len(vpath) == 2 and "instances" in vpath and "list" in vpath:
+            vpath.pop(0)
+            return self.menagerInst
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

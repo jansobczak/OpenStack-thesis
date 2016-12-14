@@ -43,3 +43,13 @@ curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @imag
 # Delete image
 curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @images/delete_image.json  http://parrot.soit.com.pl:8080/images/delete | python -m json.tool
 
+###################
+#  Instance test  #
+###################
+# Auth as test_admin
+curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_test.json  http://parrot.soit.com.pl:8080/auth/ | python -m json.tool
+
+# List images
+curl -s -L -X GET --cookie cookies http://parrot.soit.com.pl:8080/instances/list | python -m json.tool
+
+
