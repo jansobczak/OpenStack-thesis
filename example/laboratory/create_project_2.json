@@ -1,0 +1,30 @@
+{
+    "project_name": "laboratory_test2",
+    "lab_admin":
+    {
+        "username": "lab_admin_laboratory_test2",
+        "password": "qwe123"
+    },
+    "bind_user":
+    {
+        "username": "bind_user_laboratory_test2",
+        "password": "qwe123"
+    },
+    "network":
+    {
+        "network_name": "private",
+        "private_subnet": 
+        {
+            "name": "private",
+            "cidr": "10.0.11.0/24",
+            "gateway": "10.0.11.1",
+            "start_alloc": "10.0.11.2",
+            "end_alloc": "10.0.11.254",
+            "enable_dhcp": "true",
+            "description": ""
+        },
+        "router_name": "router",
+        "attach_priv": "true",
+        "attach_pub": "true"
+    }
+}

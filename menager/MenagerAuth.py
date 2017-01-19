@@ -21,10 +21,29 @@ class MenagerAuth:
         :returns: JSON response
         :rtype: {string}
         """
-        input_json = cherrypy.request.json
-        self.keystoneAuthList[str(cherrypy.session.id)] = self.parseJson(input_json)
-        data = dict(current="Authorization manager", user_status="authorized", username=self.keystoneAuthList[str(cherrypy.session.id)].username)
-        return data
+        try:
+            input_data = self.parseJson(cherrypy.request.json)
+            # Check if users exists!
+            osKSAuth = input_data
+            osKSAuth.createKeyStoneSession().get_token()
+            # Bind admin and check group
+            osKSAuth = OSKeystone.OSKeystoneAuth(filename="configs/config_admin.json")
+            osKSUser = OSKeystone.OSKeystoneUser(session=osKSAuth.createKeyStoneSession())
+            osKSRoles = OSKeystone.OSKeystoneRoles(session=osKSAuth.createKeyStoneSession())
+            osUserRoles = osKSRoles.getUserRole(osKSUser.findUser(name=input_data.username)[0].id)
+            print(osUserRoles)
+            if "admin" in osUserRoles:
+                input_data.userType = "admin"
+            elif "lab_admin" in osUserRoles:
+                input_data.userType = "lab_admin"
+            elif "user" in osUserRoles:
+                input_data.userType = "user"
+            self.keystoneAuthList[str(cherrypy.session.id)] = input_data
+            data = dict(current="Authorization manager", user_status="authorized", username=self.keystoneAuthList[str(cherrypy.session.id)].username, type=input_data.userType)
+            return data
+        except Exception as e:
+            data = dict(current="Authorization manager", user_status="not authorized", error=str(e))
+            return data
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

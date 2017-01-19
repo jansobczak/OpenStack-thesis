@@ -10,7 +10,7 @@ class MenagerImage:
     osKSGlance = None
 
     def sessionCheck(self):
-        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
+        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
             session_id = cherrypy.request.cookie["ReservationService"].value
             osKSAuth = self.keystoneAuthList[session_id]
             session = osKSAuth.createKeyStoneSession()
@@ -23,9 +23,9 @@ class MenagerImage:
     @cherrypy.tools.json_out()
     def list(self):
         if self.sessionCheck():
-            return dict(current="Laboratory manager", response=OSTools.OSTools.prepareJSON(self.osKSGlance.list()))
+            return dict(current="Image manager", response=OSTools.OSTools.prepareJSON(self.osKSGlance.list()))
         else:
-            return dict(current="Laboratory manager", user_status="not authorized")
+            return dict(current="Image manager", user_status="not authorized")
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -34,7 +34,7 @@ class MenagerImage:
         try:
             # Check session
             if not self.sessionCheck():
-                return dict(current="Laboratory manager", user_status="not authorized")
+                return dict(current="Image manager", user_status="not authorized")
             # Parse incoming JSON
             data = cherrypy.request.json
             if "name" in data:
@@ -61,7 +61,7 @@ class MenagerImage:
         try:
             # Check session
             if not self.sessionCheck():
-                return dict(current="Laboratory manager", user_status="not authorized")
+                return dict(current="Image manager", user_status="not authorized")
             # Parse incoming JSON
             data = cherrypy.request.json
             imageName = None

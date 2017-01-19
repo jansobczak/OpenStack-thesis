@@ -1,10 +1,10 @@
 {
     "user_domain": "Default",
-    "username": "test_admin",
+    "username": "lab_admin_laboratory_test",
     "password": "qwe123",
     "auth_url": "http://openstack.soit.com.pl/identity/v3",
     "project_domain_name": "default",
-    "project_name": "test_project",
-    "project_id": "f68bb47e4f9f42ba9e3bf9197ec76d87",
+    "project_name": "laboratory_test",
+    "project_id": "1fc8dbf21bf049dd9d1f0b10e361fdff",
     "glance_endpoint": "http://openstack.soit.com.pl:9292"
 }

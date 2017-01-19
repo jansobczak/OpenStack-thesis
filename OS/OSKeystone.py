@@ -135,14 +135,71 @@ class OSKeystoneRoles(OSKeystone):
     def listRoles(self):
         return self.client.roles.list()
 
-    def findRole(self, name):
+    def findRoles(self, **kwargs):
+        """
+        Find user by:
+        - name
+        - role_id
+        Arguments:
+            **kwargs -- name, role_id
+        Returns:
+            One users or array of users
+            One item if item_id
+            Array of users if role_id or name
+            Mixed
+        """
+        name = kwargs.get("name")
+        role_id = kwargs.get("role_id")
         roles = self.listRoles()
-        for role in roles:
-            if role.name == name:
-                return role.id
+        if name is not None:
+            if role_id is not None:
+                returnArray = []
+                for i in range(0, len(roles)):
+                    if hasattr(roles[i], "name") and roles[i].name == name and hasattr(roles[i], "id") and roles[i].id == role_id:
+                        returnArray.append(roles[i])
+                return returnArray
+            else:
+                returnArray = []
+                for i in range(0, len(roles)):
+                    if hasattr(roles[i], "name") and roles[i].name == name:
+                        returnArray.append(roles[i])
+                return returnArray
+        else:
+            if role_id is not None:
+                returnArray = []
+                for i in range(0, len(roles)):
+                    if hasattr(roles[i], "id") and roles[i].id == role_id:
+                        returnArray.append(roles[i])
+                return returnArray
+            else:
+                return None
 
     def grantUser(self, user_id, project_id, role_id):
         return self.client.roles.grant(role_id, user=user_id, project=project_id)
+
+    def getUserRole(self, user_id):
+        """Get name of roles connected with users
+        Args:
+            user_id: ID of user
+        Returns:
+            One or many names of roles
+            Array
+        """
+        userRoles = self.client.role_assignments.list(user=user_id)
+        if userRoles is not None:
+            returnArray = []
+            for i in range(0, len(userRoles)):
+                if hasattr(userRoles[i], "role") and userRoles[i].role is not None:
+                    role = userRoles[i].role
+                    roles = self.findRoles(role_id=role["id"])
+                    if roles is not None:
+                        returnArray.append(roles[0].name)
+                else:
+                    continue
+            # Delete duplicates
+            return list(set(returnArray))
+        else:
+            return None
 
 
 class OSKeystoneAuth:

@@ -3,7 +3,7 @@ from OS import OSNova
 from OS import OSGlance
 from OS import OSNeutron
 
-osKSAuth = OSKeystone.OSKeystoneAuth(filename="configs/config_test.json")
+osKSAuth = OSKeystone.OSKeystoneAuth(filename="configs/config_admin.json")
 session = osKSAuth.createKeyStoneSession()
 
 osKSGlance = OSGlance.OSGlance(endpoint=osKSAuth.glance_endpoint, token=session.get_token())
@@ -26,4 +26,3 @@ if keypair is None:
 network = osKSNetwork.find(project_id=osKSAuth.project_id, name="private")[0]
 
 instance = osKSInst.create("test_instance", image, flavor, network, keypair)
-instacne.status()

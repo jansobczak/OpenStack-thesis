@@ -31,7 +31,7 @@ class MenagerLab:
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def list(self):
-        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
+        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
             session_id = cherrypy.request.cookie["ReservationService"].value
             osKSAuth = self.keystoneAuthList[session_id]
             osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())
@@ -45,7 +45,7 @@ class MenagerLab:
     @cherrypy.tools.json_out()
     def create(self):
         try:
-            if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
+            if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_admin=True):
                 session_id = cherrypy.request.cookie["ReservationService"].value
                 osKSAuth = self.keystoneAuthList[session_id]
                 osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())
@@ -53,7 +53,8 @@ class MenagerLab:
                 osKSUser = OSKeystone.OSKeystoneUser(session=osKSAuth.createKeyStoneSession())
                 # Parse incoming JSON
                 project = OSKeystone.OSKeystoneProject()
-                user = OSKeystone.OSKeystoneUser()
+                labAdminUser = OSKeystone.OSKeystoneUser()
+                bindUser = OSKeystone.OSKeystoneUser()
                 network = OSNeutron.OSNetwork()
                 router = OSNeutron.OSRouter()
                 subnet = OSNeutron.OSSubnet()
@@ -61,11 +62,17 @@ class MenagerLab:
                 data = cherrypy.request.json
                 if "project_name" in data:
                     project.name = data["project_name"]
-                if "user" in data:
-                    if "username" in data["user"]:
-                        user.username = data["user"]["username"]
-                    if "password" in data["user"]:
-                        user.password = data["user"]["password"]
+                if "lab_admin" in data:
+                    if "username" in data["lab_admin"]:
+                        labAdminUser.username = data["lab_admin"]["username"]
+                    if "password" in data["lab_admin"]:
+                        labAdminUser.password = data["lab_admin"]["password"]
+
+                if "bind_user" in data:
+                    if "username" in data["bind_user"]:
+                        bindUser.username = data["bind_user"]["username"]
+                    if "password" in data["bind_user"]:
+                        bindUser.password = data["bind_user"]["password"]
                 if "network" in data:
                     if "network_name" in data["network"]:
                         network.name = data["network"]["network_name"]
@@ -91,7 +98,8 @@ class MenagerLab:
                     if "attach_pub" in data["network"]:
                         lab["attach_pub"] = data["network"]["attach_pub"]
                 lab["project"] = project
-                lab["user"] = user
+                lab["lab_admin"] = labAdminUser
+                lab["bind_user"] = bindUser
                 lab["network"] = network
                 lab["router"] = router
                 lab["subnet"] = subnet
@@ -99,21 +107,29 @@ class MenagerLab:
                 # Create project and user for this project give
                 osKSProject.createProject(name=lab["project"].name)
                 lab["project"] = osKSProject.findProject(lab["project"].name)
-                # Create new user make him admin
-                osKSUser.createUser(lab["user"].username, lab["user"].password, lab["project"].id)
+
+                # Create new user make him admin of this new lab
+                osKSUser.createUser(lab["lab_admin"].username, lab["lab_admin"].password, lab["project"].id)
                 # As for this version of code we assume one user is present with that name
-                password = lab["user"].password
-                lab["user"] = osKSUser.findUser(name=lab["user"].username, project_id=lab["project"].id)[0]
-                lab["user"].password = password
+                password = lab["lab_admin"].password
+                lab["lab_admin"] = osKSUser.findUser(name=lab["lab_admin"].username, project_id=lab["project"].id)[0]
+                lab["lab_admin"].password = password
                 # Grant Admin to this project
-                osKSRoles.grantUser(lab["user"].id, lab["project"].id, osKSRoles.findRole("admin"))
-                osKSRoles.grantUser(osKSUser.findUser(name="admin")[0].id, lab["project"].id, osKSRoles.findRole("admin"))
+                osKSRoles.grantUser(lab["lab_admin"].id, lab["project"].id, osKSRoles.findRoles(name="lab_admin")[0].id)
+                osKSRoles.grantUser(osKSUser.findUser(name="admin")[0].id, lab["project"].id, osKSRoles.findRoles(name="admin")[0].id)
+
+                # Create new bind user
+                osKSUser.createUser(lab["bind_user"].username, lab["bind_user"].password, lab["project"].id)
+                # Gran bind_user access to this project as user
+                lab["bind_user"] = osKSUser.findUser(name=lab["bind_user"].username, project_id=lab["project"].id)[0]
+                osKSRoles.grantUser(lab["lab_admin"].id, lab["project"].id, osKSRoles.findRoles(name="user")[0].id)
+
                 # Bind Auth to new project
                 osKSAuthBack = deepcopy(osKSAuth)
                 osKSAuth.project_id = lab["project"].id
                 osKSAuth.project_name = lab["project"].name
-                osKSAuth.username = lab["user"].name
-                osKSAuth.password = lab["user"].password
+                osKSAuth.username = lab["lab_admin"].name
+                osKSAuth.password = lab["lab_admin"].password
                 # Update sessions
                 osNeuSubnet = OSNeutron.OSSubnet(session=osKSAuth.createKeyStoneSession())
                 osNeuNetwork = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
@@ -148,64 +164,67 @@ class MenagerLab:
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def delete(self):
-        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
-            session_id = cherrypy.request.cookie["ReservationService"].value
-            input_json = cherrypy.request.json
-            project_id = None
-            try:
-                if "project_id" in input_json:
-                    project_id = input_json["project_id"]
-            except Exception:
-                return("Failed to parse json!")
+        try:
+            if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_admin=True):
+                session_id = cherrypy.request.cookie["ReservationService"].value
+                input_json = cherrypy.request.json
+                project_id = None
+                try:
+                    if "project_id" in input_json:
+                        project_id = input_json["project_id"]
+                except Exception:
+                    return("Failed to parse json!")
 
-            if project_id is not None:
-                osKSAuth = self.keystoneAuthList[session_id]
-                # Delete router
-                osNeuRouter = OSNeutron.OSRouter(session=osKSAuth.createKeyStoneSession())
-                router = osNeuRouter.find(project_id=project_id)
-                osNeuSubnet = OSNeutron.OSSubnet(session=osKSAuth.createKeyStoneSession())
-                subnets = osNeuSubnet.find(project_id=project_id)
-                for x in range(0, len(router)):
-                    for y in range(0, len(subnets)):
-                        if router[x]["id"] is not None and subnets[y]["id"] is not None:
-                            osNeuRouter.deleteInterface(router[x]["id"], subnets[y]["id"])
+                if project_id is not None:
+                    osKSAuth = self.keystoneAuthList[session_id]
+                    # Delete router
+                    osNeuRouter = OSNeutron.OSRouter(session=osKSAuth.createKeyStoneSession())
+                    router = osNeuRouter.find(project_id=project_id)
+                    osNeuSubnet = OSNeutron.OSSubnet(session=osKSAuth.createKeyStoneSession())
+                    subnets = osNeuSubnet.find(project_id=project_id)
+                    for x in range(0, len(router)):
+                        for y in range(0, len(subnets)):
+                            if router[x]["id"] is not None and subnets[y]["id"] is not None:
+                                osNeuRouter.deleteInterface(router[x]["id"], subnets[y]["id"])
+                            else:
+                                raise Exception("Can't find subnet for router in laboratory!")
+                        if router[x]["id"] is not None:
+                            osNeuRouter.delete(router[x]["id"])
                         else:
-                            raise Exception("Can't find subnet for router in laboratory!")
-                    if router[x]["id"] is not None:
-                        osNeuRouter.delete(router[x]["id"])
-                    else:
-                        raise Exception("Can't find router in laboratory!")
+                            raise Exception("Can't find router in laboratory!")
 
-                # Delete subnets
-                for i in range(0, len(subnets)):
-                    if subnets[i]["id"] is not None:
-                        osNeuSubnet.delete(subnets[i]["id"])
-                    else:
-                        raise Exception("Can't find subnet in laboratory!")
+                    # Delete subnets
+                    for i in range(0, len(subnets)):
+                        if subnets[i]["id"] is not None:
+                            osNeuSubnet.delete(subnets[i]["id"])
+                        else:
+                            raise Exception("Can't find subnet in laboratory!")
 
-                # Delete network
-                osNeuNetwork = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
-                networks = osNeuNetwork.find(project_id=project_id)
-                for i in range(0, len(networks)):
-                    if networks[i]["id"] is not None:
-                        osNeuNetwork.delete(networks[i]["id"], project_id)
-                    else:
-                        raise Exception("Can't find network in laboratory!")
+                    # Delete network
+                    osNeuNetwork = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
+                    networks = osNeuNetwork.find(project_id=project_id)
+                    for i in range(0, len(networks)):
+                        if networks[i]["id"] is not None:
+                            osNeuNetwork.delete(networks[i]["id"], project_id)
+                        else:
+                            raise Exception("Can't find network in laboratory!")
 
-                # Delete user
-                osKSUser = OSKeystone.OSKeystoneUser(session=osKSAuth.createKeyStoneSession())
-                users = osKSUser.findUser(project_id=project_id)
-                for i in range(0, len(users)):
-                    if users[i].id is not None:
-                        osKSUser.deleteUser(users[i].id)
-                # Delete project
-                osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())
-                osKSProject.deleteProject(project_id)
+                    # Delete user
+                    osKSUser = OSKeystone.OSKeystoneUser(session=osKSAuth.createKeyStoneSession())
+                    users = osKSUser.findUser(project_id=project_id)
+                    for i in range(0, len(users)):
+                        if users[i].id is not None:
+                            osKSUser.deleteUser(users[i].id)
+                    # Delete project
+                    osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())
+                    osKSProject.deleteProject(project_id)
 
-            data = dict(current="Laboratory manager", operation="ok")
-        else:
-            data = dict(current="Laboratory manager", user_status="not authorized")
-        return data
+                data = dict(current="Laboratory manager", operation="ok")
+            else:
+                data = dict(current="Laboratory manager", user_status="not authorized")
+            return data
+        except Exception as error:
+            return(dict(current="Laboratory manager", error=repr(error)))
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

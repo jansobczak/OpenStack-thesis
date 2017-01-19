@@ -49,7 +49,12 @@ curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @imag
 # Auth as test_admin
 curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_test.json  http://parrot.soit.com.pl:8080/auth/ | python -m json.tool
 
-# List images
+# List instances
 curl -s -L -X GET --cookie cookies http://parrot.soit.com.pl:8080/instances/list | python -m json.tool
+
+# Start instance
+
+# Stop instance 
+
 
 

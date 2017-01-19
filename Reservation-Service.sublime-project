@@ -5,7 +5,7 @@
 	},
 	"SublimeLinter":
 	{
-		"@python": 3.5,
+		"@python": 2.6,
 		"linters":
 		{
 			"pep8":
@@ -22,7 +22,7 @@
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Anaconda Python Builder",
 			"selector": "source.python",
-			"shell_cmd": "\"/usr/local/bin/python3.5\" -u \"$file\""
+			"shell_cmd": "\"/usr/local/bin/python3.6\" -u \"$file\""
 		}
 	],
 	"folders":
@@ -43,7 +43,7 @@
 		[
 			"E501"
 		],
-		"python_interpreter": "/usr/local/bin/python3.5",
+		"python_interpreter": "/usr/local/bin/python3.6",
 		"smart_indent": true,
 		"spell_check": false,
 		"tab_size": 4,

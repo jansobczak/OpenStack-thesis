@@ -4,24 +4,280 @@
 		"selected_items":
 		[
 			[
-				"OS",
-				"OSKeystoneAuth\tmodule"
+				"json",
+				"json_in"
 			],
 			[
-				"pr",
-				"project_id"
+				"js",
+				"json_out"
+			],
+			[
+				"os",
+				"osKSInst\tstatement"
+			],
+			[
+				"me",
+				"menagerInst\tstatement"
+			],
+			[
+				"Me",
+				"MenagerInst\timport"
+			],
+			[
+				"OSKe",
+				"OSKeypair\tclass"
+			],
+			[
+				"Os",
+				"OSInstances\tclass"
+			],
+			[
+				"osKs",
+				"osKSInst\tstatement"
+			],
+			[
+				"OSN",
+				"OSNova\tmodule"
+			],
+			[
+				"osS",
+				"osKSKey\tstatement"
+			],
+			[
+				"osNe",
+				"OSNetwork"
+			],
+			[
+				"create",
+				"createKeyStoneSession\tfunction"
+			],
+			[
+				"osKS",
+				"osKSAuth\tstatement"
+			],
+			[
+				"OS",
+				"OSNetwork\tclass"
+			],
+			[
+				"crea",
+				"createNovaSession\tfunction"
+			],
+			[
+				"osGla",
+				"osKSGlance\tstatement"
+			],
+			[
+				"netw",
+				"network_id\tparam"
+			],
+			[
+				"falv",
+				"flavor_id\tparam"
+			],
+			[
+				"keyp",
+				"keypairs"
+			],
+			[
+				"nova",
+				"novaclient"
+			],
+			[
+				"server",
+				"servers"
+			],
+			[
+				"nov",
+				"novaclient"
+			],
+			[
+				"no",
+				"NovaClient"
+			],
+			[
+				"re",
+				"returnValue"
+			],
+			[
+				"image",
+				"imageName"
+			],
+			[
+				"fi",
+				"filePath"
+			],
+			[
+				"is",
+				"isPublic"
+			],
+			[
+				"chec",
+				"sessionCheck\tfunction"
+			],
+			[
+				"ses",
+				"sessionCheck\tfunction"
+			],
+			[
+				"de",
+				"delete"
+			],
+			[
+				"find",
+				"findRes\tstatement"
+			],
+			[
+				"glance",
+				"glance_endpoint"
+			],
+			[
+				"mene",
+				"menagerImage\tstatement"
+			],
+			[
+				"try",
+				"try\tTry/Except"
+			],
+			[
+				"Nov",
+				"NovaClient\tmodule"
+			],
+			[
+				"admi",
+				"admin_required"
+			],
+			[
+				"OSKeystone",
+				"OSKeystoneAuth\tclass"
+			],
+			[
+				"dele",
+				"deleteUser\tfunction"
 			],
 			[
 				"user",
-				"user_domain"
+				"users\tstatement"
 			],
 			[
-				"proje",
-				"project_domain_name"
+				"net",
+				"network"
+			],
+			[
+				"dle",
+				"deleteRouter\tfunction"
+			],
+			[
+				"sunb",
+				"subnets\tstatement"
+			],
+			[
+				"subnet",
+				"subnet_id\tparam"
+			],
+			[
+				"subne",
+				"subnet_id\tparam"
 			],
 			[
 				"pro",
-				"project_name\tstatement"
+				"project_id\tstatement"
+			],
+			[
+				"f",
+				"findUser\tfunction"
+			],
+			[
+				"r",
+				"RESTservice\tmodule"
+			],
+			[
+				"defa",
+				"default_project_id"
+			],
+			[
+				"ro",
+				"router_id\tstatement"
+			],
+			[
+				"ne",
+				"network_id\tstatement"
+			],
+			[
+				"sub",
+				"subnet_id\tstatement"
+			],
+			[
+				"pr",
+				"project_id\tparam"
+			],
+			[
+				"p",
+				"project_id\tparam"
+			],
+			[
+				"ite",
+				"item_id_name\tparam"
+			],
+			[
+				"ret",
+				"returnArray\tstatement"
+			],
+			[
+				"proj",
+				"project_id\tstatement"
+			],
+			[
+				"projec",
+				"project_id\tstatement"
+			],
+			[
+				"router",
+				"router_id\tparam"
+			],
+			[
+				"proje",
+				"project_id\tstatement"
+			],
+			[
+				"lab",
+				"labProject\tstatement"
+			],
+			[
+				"poj",
+				"project_id\tstatement"
+			],
+			[
+				"su",
+				"subnets\tstatement"
+			],
+			[
+				"subn",
+				"subnet_id\tstatement"
+			],
+			[
+				"netowr",
+				"network"
+			],
+			[
+				"project",
+				"project_id"
+			],
+			[
+				"networ",
+				"network_id"
+			],
+			[
+				"osNE",
+				"osNeuSubnet\tstatement"
+			],
+			[
+				"true",
+				"trim_automatic_white_space"
+			],
+			[
+				"OSNe",
+				"OSNeutron\tmodule"
 			],
 			[
 				"sess",
@@ -60,10 +316,6 @@
 				"userDomain\tstatement"
 			],
 			[
-				"proj",
-				"projectName"
-			],
-			[
 				"au",
 				"authUrl"
 			],
@@ -74,10 +326,6 @@
 			[
 				"aut",
 				"auth_url"
-			],
-			[
-				"os",
-				"OSKeystoneAuth\tclass"
 			],
 			[
 				"keystone",
@@ -100,20 +348,8 @@
 				"username\tstatement"
 			],
 			[
-				"me",
-				"menagerAuth"
-			],
-			[
-				"Me",
-				"Menager"
-			],
-			[
 				"Re",
 				"ReservationService"
-			],
-			[
-				"de",
-				"deleteUser\tfunction"
 			],
 			[
 				"get",
@@ -124,32 +360,12 @@
 				"OSTools.toJSON"
 			],
 			[
-				"find",
-				"findUser"
-			],
-			[
 				"list",
 				"listUser\tfunction"
 			],
 			[
-				"crea",
-				"createUser\tfunction"
-			],
-			[
-				"OSKe",
-				"OSKeystoneClient\t(RESTservice.py)"
-			],
-			[
 				"v",
 				"v3\tmodule"
-			],
-			[
-				"projec",
-				"project_id"
-			],
-			[
-				"dele",
-				"deleteProject\tfunction"
 			],
 			[
 				"for",
@@ -172,20 +388,12 @@
 				"listProject\tfunction"
 			],
 			[
-				"re",
-				"response\tstatement"
-			],
-			[
 				"el",
 				"else〔keyword〕"
 			],
 			[
 				"objec",
 				"objects"
-			],
-			[
-				"Os",
-				"OSTools\tclass"
 			],
 			[
 				"ob",
@@ -232,14 +440,6 @@
 				"client"
 			],
 			[
-				"subn",
-				"show_subnet\tfunction"
-			],
-			[
-				"sub",
-				"subnets_path\tstatement"
-			],
-			[
 				"l",
 				"list_firewalls\tfunction"
 			],
@@ -249,10 +449,6 @@
 			],
 			[
 				"prjec",
-				"projectManager"
-			],
-			[
-				"project",
 				"projectManager"
 			],
 			[
@@ -318,207 +514,28 @@
 			[
 				"local",
 				"localContractorID"
-			],
-			[
-				"inv",
-				"invoice"
-			],
-			[
-				"val",
-				"value"
-			],
-			[
-				"tye",
-				"type=\"text"
-			],
-			[
-				"table",
-				"tableData"
-			],
-			[
-				"if",
-				"if\tif"
-			],
-			[
-				"delte",
-				"deleteContractorButton\t(index.php)"
-			],
-			[
-				"contra",
-				"contractorID"
-			],
-			[
-				"contractorAc",
-				"contractorActiveButton"
-			],
-			[
-				"has",
-				"hasClass"
-			],
-			[
-				"contractorA",
-				"contractorActiveButton"
-			],
-			[
-				"conta",
-				"contractorActiveButton"
-			],
-			[
-				"btn-",
-				"btn-primary\t(ifirma_operations.php)"
-			],
-			[
-				"Ex",
-				"IFirmaException〔class〕"
-			],
-			[
-				"pe",
-				"performDbQuery"
-			],
-			[
-				"payme",
-				"paymentDate"
-			],
-			[
-				"contractor",
-				"contractorObject"
-			],
-			[
-				"prev",
-				"preventDefault"
-			],
-			[
-				"saveContractor",
-				"saveContractorButton\t(index.php)"
-			],
-			[
-				"contr",
-				"contractor"
-			],
-			[
-				"cont",
-				"contractor"
-			],
-			[
-				"con",
-				"contractors"
-			],
-			[
-				"arra",
-				"array\t$… = array (…)"
-			],
-			[
-				"ret",
-				"returnArray"
-			],
-			[
-				"fun",
-				"functionName"
-			],
-			[
-				"cur",
-				"curFunction"
-			],
-			[
-				"__F",
-				"__FUNCTION__"
-			],
-			[
-				"Exception",
-				"Exception"
-			],
-			[
-				"getCont",
-				"getContractor"
-			],
-			[
-				"elementsMo",
-				"elementsModalTitle\t(index.php)"
-			],
-			[
-				"col-",
-				"col-sm-9\t(bootstrap.css)"
-			],
-			[
-				"rep",
-				"reponses"
-			],
-			[
-				"Ifirma",
-				"IFirma"
-			],
-			[
-				"stat",
-				"statistics"
-			],
-			[
-				"form",
-				"form-control"
-			],
-			[
-				"mayb",
-				"maybeStop"
-			],
-			[
-				"roo",
-				"rooms"
-			],
-			[
-				"le",
-				"length"
-			],
-			[
-				"ro",
-				"rooms"
-			],
-			[
-				"may",
-				"maybeStart"
-			],
-			[
-				"doCall",
-				"doCall()"
-			],
-			[
-				"setLo",
-				"setLocalAndSendAnswer"
-			],
-			[
-				"func",
-				"function"
-			],
-			[
-				"function",
-				"function〔keyword〕"
-			],
-			[
-				"start",
-				"startRTC()"
-			],
-			[
-				"style",
-				"style=〔attribute〕"
-			],
-			[
-				"margin",
-				"margin-top"
-			],
-			[
-				"lea",
-				"leaveRoom\t(main.js)"
-			],
-			[
-				"is",
-				"isChannelReady"
-			],
-			[
-				"doC",
-				"doCall()"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "menager/MenagerInst.py",
+			"settings":
+			{
+				"buffer_size": 4024,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "OS/OSKeystone.py",
+			"settings":
+			{
+				"buffer_size": 8283,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -527,10 +544,102 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 367.0,
-		"last_filter": "set pyt",
+		"height": 392.0,
+		"last_filter": "sync ",
 		"selected_items":
 		[
+			[
+				"sync ",
+				"SFTP: Sync Local -> Remote…"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"set js",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"ena",
+				"Package Control: Enable Package"
+			],
+			[
+				"disa",
+				"Package Control: Disable Package"
+			],
+			[
+				"enab",
+				"Package Control: Enable Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"code",
+				"SublimeCodeIntel: Disable Plugin"
+			],
+			[
+				"set py",
+				"Set Syntax: Python"
+			],
+			[
+				"remov",
+				"Package Control: Remove Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"int",
+				"Package Control: Install Package"
+			],
+			[
+				"in",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"i",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"col",
+				"Colorsublime: Browse Themes"
+			],
+			[
+				"rei",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"sftp sync",
+				"SFTP: Sync Both Directions…"
+			],
+			[
+				"lint me",
+				"SublimeLinter: Choose Mark Style"
+			],
+			[
+				"lint",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"install p",
+				"Package Control: Install Package"
+			],
 			[
 				"set pyt",
 				"Set Syntax: Python3"
@@ -560,20 +669,8 @@
 				"SublimeLinter: Disable Linter"
 			],
 			[
-				"insta",
-				"Package Control: Install Package"
-			],
-			[
-				"lint",
-				"SublimeLinter: Toggle Linter"
-			],
-			[
 				"set sy pyt",
 				"Set Syntax: Python3"
-			],
-			[
-				"install ",
-				"Package Control: Install Package"
 			],
 			[
 				"remove",
@@ -618,10 +715,6 @@
 			[
 				"aa",
 				"Anaconda: Set Python interpreter"
-			],
-			[
-				"install",
-				"Package Control: Install Package"
 			],
 			[
 				"enable",
@@ -744,19 +837,11 @@
 				"JSON Reindent: reindent file or selection"
 			],
 			[
-				"json",
-				"JSON Reindent: reindent file or selection"
-			],
-			[
 				"reident",
 				"Indentation: Reindent Lines"
 			],
 			[
 				"pack in",
-				"Package Control: Install Package"
-			],
-			[
-				"in",
 				"Package Control: Install Package"
 			],
 			[
@@ -880,10 +965,6 @@
 				"PHP Code Sniffer: Switch coding standard"
 			],
 			[
-				"code",
-				"PHP Code Sniffer: Sniff this file"
-			],
-			[
 				"packe",
 				"Package Control: List Packages"
 			],
@@ -978,55 +1059,17 @@
 			[
 				"proje",
 				"Project: Add Folder"
-			],
-			[
-				"sublimecode",
-				"SublimeCodeIntel: Enable Live Autocompletion for Current Language"
-			],
-			[
-				"renmae",
-				"SublimeLinter: Enable Debug Mode"
-			],
-			[
-				"pacga",
-				"Package Control: Remove Package"
-			],
-			[
-				"install pa",
-				"Package Control: Install Package"
-			],
-			[
-				"code sni",
-				"PHP Code Sniffer: Sniff this file"
-			],
-			[
-				":",
-				":w - Save"
-			],
-			[
-				"side",
-				"View: Toggle Side Bar"
-			],
-			[
-				"col",
-				"Colorsublime: Install Theme"
-			],
-			[
-				"coloro",
-				"Colorsublime: Browse Themes"
-			],
-			[
-				"page",
-				"Package Control: Install Package"
 			]
 		],
-		"width": 593.0
+		"width": 485.0
 	},
 	"console":
 	{
 		"height": 609.0,
 		"history":
 		[
+			"import socket; socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(/Users/jansobczak/Library/Application Support/Anaconda/Reservation-Service/anaconda.sock);",
+			"import socket; socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(/Users/jansobczak/Library/Application Support/Anaconda/Reservation-Service/anaconda.sock)",
 			"import urllib.request,os,hashlib;",
 			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
 			"help",
@@ -1046,14 +1089,46 @@
 	"expanded_folders":
 	[
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/__pycache__",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example/laboratory",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/menager",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OS",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/restservice"
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/tests"
 	],
 	"file_history":
 	[
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example/curl_examples",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/menager/MenagerInst.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/menager/Menager.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OS/OSGlance.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OS/OSNova.py",
+		"/Users/jansobczak/Dropbox/Politechnika/SDI/Prezentacja Inżynierka/OpenStack®_Logo_2016.svg",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/menager/MenagerImage.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/menager/MenagerLab.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/tests/osNova.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OS/OSKeystone.py",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/main.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OS/OSNeutron.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example/laboratory/create_project.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OS/OSTools.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/configs/config_test.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example/instances/create_instance.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OS/OSKeypair.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example/images/delete_image.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example/images/create_image.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/menager/MenagerAuth.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/configs/config_admin.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/configs/openstack/policy.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/configs/openstack/windows_image.txt",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example/laboratory/delete_project.json",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/sftp-config.json",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/menager/MenagerTools.py",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OS/OSMain.py",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/DocBlockr_Python/DocblockrPython.sublime-settings",
+		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/Reservation-Service.sublime-project",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/Anaconda/Anaconda.sublime-settings",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/DocblockrPython.sublime-settings",
+		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/restservice/RESTservice.py",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/Menager/Menager.py",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/__init__.py",
@@ -1072,13 +1147,8 @@
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/example/curl_test.sh",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OSKeystoneClient.py",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/config_admin.json",
-		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
-		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/DocblockrPython.sublime-settings",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/OSNeutron.py",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/credential.py",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/Reservation-Service.sublime-project",
-		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/DocBlockr_Python/DocblockrPython.sublime-settings",
-		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/Anaconda/Anaconda.sublime-settings",
 		"/Users/jansobczak/Library/Application Support/Sublime Text 3/Packages/User/Python.sublime-settings",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/config.json",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/REST_service.py",
@@ -1154,32 +1224,7 @@
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/.gitgnore",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack/test.py",
 		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/sftp-config.json",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/wifi_analyse.py",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/rpiscanner.sh",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/PcapViz/pcapviz/core.py",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/PcapViz/main.py",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/PcapViz/pcapviz/__init__.py",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/PcapViz/pcapviz/sources.py",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/PcapViz/main.py",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/PcapViz/pcapviz/core.py",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/channel_hoping.sh",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/sftp-config.json",
-		"/Users/jansobczak/Documents/Projekty/Politechnika/LAN/sftp-server",
-		"/Users/jansobczak/Documents/Projekty/Praca/Dataroom/inc/mail_sent.php",
-		"/Users/jansobczak/Dropbox/Scripts/Apple/PowerPoint - mac.remote.applescript",
-		"/Users/jansobczak/Dropbox/Scripts/MikroTik/Wifi clients drop.rsc",
-		"/Users/jansobczak/Dropbox/Scripts/MikroTik/AutoBackUp.rsc",
-		"/Users/jansobczak/Dropbox/Scripts/MikroTik/AutoBackFTP.rsc",
-		"/Users/jansobczak/Dropbox/Scripts/MikroTik/AutoUpgrade.rsc",
-		"/Users/jansobczak/Dropbox/Scripts/MikroTik/PPPOE restart.rsc",
-		"/Users/jansobczak/Dropbox/Scripts/MikroTik/PPPOE monitor.rsc",
-		"/Users/jansobczak/Dropbox/Scripts/MikroTik/PPPOE monitor",
-		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/mail_sent.php",
-		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/config.php",
-		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/js/main.js",
-		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/inc/link_class.php",
-		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/links.php",
-		"/Users/jansobczak/Documents/Projekty/Praca/DataRoom 2/dev/js/index.js"
+		"/Users/jansobczak/Documents/Projekty/Politechnika/RPi-packet-analyser/wifi_analyse.py"
 	],
 	"find":
 	{
@@ -1190,6 +1235,7 @@
 		"height": 93.0,
 		"where_history":
 		[
+			"/Users/jansobczak/Documents/Projekty/Politechnika/Praca dyplomowa openStack",
 			"",
 			"/Users/jansobczak/Documents/Projekty/PortraitInstitute/wp-content/themes/clean-photo-wp-theme/",
 			"/Users/jansobczak/Documents/Projekty/PortraitInstitute/wp-content/themes/clean-photo-wp-theme/demo-installer",
@@ -1201,6 +1247,63 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"json_out",
+			"kwargs",
+			"findRouter",
+			"findSubnet",
+			"deleteSubnet",
+			"deleteRouter",
+			"createRouter",
+			"createSubnet",
+			"listSubnet",
+			"listRouters",
+			"deleteNetwork",
+			"findNetwork",
+			"createNetwork",
+			"listNetwork",
+			"keypair",
+			"novaclient",
+			"obj",
+			"project_name",
+			"auth_url",
+			"password",
+			"username",
+			"file",
+			"i",
+			"name",
+			"[\"project_id\"]",
+			"[\"name\"]",
+			"prepareJSON",
+			"OSTool.",
+			"openstack.soit.com.pl",
+			"openstack.pw.net",
+			"returnDict",
+			"users[i].def",
+			"if users[i].default_project_id is not None and users[i].default_project_id == project_id:",
+			"network",
+			"subnet",
+			"i",
+			"Network",
+			"find",
+			"network",
+			"items",
+			"subnet_id",
+			"items",
+			"network_id",
+			"networks",
+			"network",
+			"subnet",
+			"osNeuSubnet",
+			"Exception",
+			"networks",
+			"network_id",
+			"network",
+			"network_id",
+			"router",
+			"routers",
+			"subnets",
+			"subnet_id",
+			"OSKeystoneProject",
 			"JSON ",
 			"=",
 			"password",
@@ -1271,64 +1374,7 @@
 			"getRemo",
 			"pc",
 			"extractSDp",
-			"removeCn",
-			"extractSd",
-			"extract",
-			"preferOpus",
-			"requestTurn",
-			"doCall",
-			"turnRE",
-			"pc",
-			"stopRTC",
-			"stop()",
-			"bye",
-			"createPeerConnection",
-			"pc",
-			"room",
-			"sendMessage",
-			"message",
-			"joined",
-			"createAnswer",
-			"answer",
-			"sendMe",
-			"sendME",
-			"handle",
-			"offer",
-			"strem",
-			"maybeStop",
-			"gotStream",
-			"socket.emit",
-			"hangup",
-			"doAn",
-			"becasue",
-			"This is unused?",
-			"//Static server to serve socket.io to webbrowser",
-			"then",
-			"preferOpus",
-			"doCall",
-			"loginName",
-			"sdpCo",
-			"bye",
-			"ID",
-			"JSONresults",
-			"loginName",
-			"exampleInputName2",
-			"inputName",
-			"pc",
-			"inputEmail3",
-			"video",
-			"s",
-			"nova_client",
-			"os_connection.network.networks()",
-			"os_connection.compute.servers()",
-			"creds",
-			"novaClient",
-			"novaclient",
-			"conn",
-			"show",
-			"os_image",
-			"instances",
-			"instance"
+			"removeCn"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1336,6 +1382,16 @@
 		"regex": false,
 		"replace_history":
 		[
+			"find",
+			"delete",
+			"create",
+			"list",
+			"delete",
+			"find",
+			"create",
+			"list",
+			"parrot.soit.com.pl",
+			"openstack.soit.com.pl",
 			"\"",
 			"peerConnection",
 			"get",
@@ -1352,8 +1408,86 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "menager/MenagerInst.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4024,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3216,
+								3216
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": ".",
+									"selector": "source.python - string - comment - constant.numeric"
+								},
+								{
+									"characters": ".",
+									"selector": "source.python - string - constant.numeric"
+								}
+							],
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1110.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "OS/OSKeystone.py",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 8283,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2244,
+								2248
+							]
+						],
+						"settings":
+						{
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1942.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -1412,7 +1546,7 @@
 	"project": "Reservation-Service.sublime-project",
 	"replace":
 	{
-		"height": 46.0
+		"height": 64.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1486,7 +1620,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 257.0,
+	"side_bar_width": 183.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
