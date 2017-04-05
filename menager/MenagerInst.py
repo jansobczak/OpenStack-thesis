@@ -15,7 +15,7 @@ class MenagerInst:
     osKSNetwork = None
 
     def sessionCheck(self):
-        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
+        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
             session_id = cherrypy.request.cookie["ReservationService"].value
             osKSAuth = self.keystoneAuthList[session_id]
             session = osKSAuth.createNovaSession()
@@ -92,6 +92,22 @@ class MenagerInst:
             return(dict(current="Image manager", error=repr(error)))
         except Exception as error:
             return(dict(current="Image manager", error=repr(error)))
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def start(self):
+        try:
+            print("NotImplemented")
+        except Exception as error:
+            return(dict(current=""))
+        return None
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.json_in()
+    def stop(self):
+        return None
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
