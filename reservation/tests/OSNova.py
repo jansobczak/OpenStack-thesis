@@ -3,7 +3,7 @@ from OS import OSNova
 from OS import OSGlance
 from OS import OSNeutron
 
-osKSAuth = OSKeystone.OSKeystoneAuth(filename="configs/config_admin.json")
+osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
 session = osKSAuth.createKeyStoneSession()
 
 osKSGlance = OSGlance.OSGlance(endpoint=osKSAuth.glance_endpoint, token=session.get_token())

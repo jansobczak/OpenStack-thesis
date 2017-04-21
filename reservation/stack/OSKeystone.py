@@ -17,12 +17,16 @@ class OSKeystone:
         self.projectManager = KSProjectManager(self.client)
 
 
-class OSKeystoneProject(OSKeystone):
+class OSProject(OSKeystone):
     id = None
     name = None
     domain = None
 
     def __init__(self, **kwargs):
+        """Init class
+        Arguments:
+            **kwargs -- id, name, domain, session
+        """
         self.id = kwargs.get("id")
         self.name = kwargs.get("name")
         self.domain = kwargs.get("domain")
@@ -31,30 +35,44 @@ class OSKeystoneProject(OSKeystone):
             self.client = KSClient.Client(session=self.session)
             self.projectManager = KSProjectManager(self.client)
 
-    def createProject(self, name, domain="default"):
-        if self.findProject(name=name) is None:
+    def create(self, name, domain="default"):
+        """Create new project
+        This create new tenat and it is connected to current
+        authorized user
+        Arguments:
+            name -- name of project
+        Keyword arguments:
+            domain -- slected domain (default: {"default"})
+        Raises a {Exception}
+        Return Poject classs
+        """
+        if self.find(name=name) is None:
             return self.client.projects.create(name, domain)
         else:
             raise Exception("Project " + name + " already exists!")
 
-    def listProject(self):
+    def list(self):
+        """Return list of projects"""
         return self.client.projects.list()
 
-    def deleteProject(self, project_id):
+    def delete(self, project_id):
+        """Delete selected project id"""
         return self.client.projects.delete(project_id)
 
-    def getProject(self, project_id):
+    def get(self, project_id):
+        """Get object of project by id"""
         return self.client.projects.get(project_id)
 
-    def findProject(self, name):
-        projects = self.listProject()
+    def find(self, name):
+        """Get object of project search by name"""
+        projects = self.list()
         for project in projects:
             if project.name == name:
                 return project
         return None
 
 
-class OSKeystoneUser(OSKeystone):
+class OSUser(OSKeystone):
     username = None
     userDomain = None
     password = None
@@ -67,23 +85,40 @@ class OSKeystoneUser(OSKeystone):
         self.userDomain = kwargs.get("userDomain")
         self.password = kwargs.get("password")
 
-    def listUser(self):
+    def list(self):
+        """List all users
+        Returns:
+            Array of user object
+            Array
+        """
         return self.client.users.list()
 
-    def createUser(self, name, password, project_id, domain="default"):
-        users = self.findUser(name=name, project_id=project_id)
+    def create(self, name, password, project_id, domain="default"):
+        """Create new user
+        Args:
+            name: Name of user
+            password: Password for this user
+            project_id: Default project id can be null
+            domain: What domain (default: {"default"})
+        Returns:
+            Created user in user class
+            User
+        Raises:
+            Exception: Raise already exists!
+        """
+        users = self.find(name=name, project_id=project_id)
         if len(users) == 0:
             return self.client.users.create(name=name, password=password, default_project=project_id, domain=domain)
         else:
             raise Exception("User " + name + " already exists!")
 
-    def deleteUser(self, user_id):
+    def delete(self, user_id):
         return self.client.users.delete(user_id)
 
-    def getUser(self, user_id):
+    def get(self, user_id):
         return self.client.users.get(user_id)
 
-    def findUser(self, **kwargs):
+    def find(self, **kwargs):
         """
         Find user by:
         - name
@@ -100,7 +135,7 @@ class OSKeystoneUser(OSKeystone):
         name = kwargs.get("name")
         project_id = kwargs.get("project_id")
         user_id = kwargs.get("user_id")
-        users = self.listUser()
+        users = self.list()
         if user_id is not None:
             for i in range(0, len(users)):
                 if users[i].id == user_id:
@@ -130,12 +165,12 @@ class OSKeystoneUser(OSKeystone):
                 return None
 
 
-class OSKeystoneRoles(OSKeystone):
+class OSRole(OSKeystone):
 
-    def listRoles(self):
+    def list(self):
         return self.client.roles.list()
 
-    def findRoles(self, **kwargs):
+    def find(self, **kwargs):
         """
         Find user by:
         - name
@@ -150,7 +185,7 @@ class OSKeystoneRoles(OSKeystone):
         """
         name = kwargs.get("name")
         role_id = kwargs.get("role_id")
-        roles = self.listRoles()
+        roles = self.list()
         if name is not None:
             if role_id is not None:
                 returnArray = []
@@ -191,7 +226,7 @@ class OSKeystoneRoles(OSKeystone):
             for i in range(0, len(userRoles)):
                 if hasattr(userRoles[i], "role") and userRoles[i].role is not None:
                     role = userRoles[i].role
-                    roles = self.findRoles(role_id=role["id"])
+                    roles = self.find(role_id=role["id"])
                     if roles is not None:
                         returnArray.append(roles[0].name)
                 else:
@@ -202,7 +237,7 @@ class OSKeystoneRoles(OSKeystone):
             return None
 
 
-class OSKeystoneAuth:
+class OSAuth:
     auth_url = None
     project_domain_name = None
     project_name = None
@@ -220,6 +255,7 @@ class OSKeystoneAuth:
             self.project_domain_name = kwargs.get("project_domain_name")
             self.user_domain = kwargs.get("user_domain")
             self.username = kwargs.get("username")
+            self.project_id = kwargs.get("project_id")
             self.password = kwargs.get("password")
             self.glance_endpoint = kwargs.get("glance_endpoint")
         else:

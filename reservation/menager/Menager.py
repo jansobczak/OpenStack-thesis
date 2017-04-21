@@ -1,17 +1,18 @@
 import cherrypy
-import json
-from menager.MenagerTools import MenagerTool
-from menager.MenagerAuth import MenagerAuth
-from menager.MenagerImage import MenagerImage
-from menager.MenagerLab import MenagerLab
-from menager.MenagerInst import MenagerInst
+
+from .MenagerTools import MenagerTool
+from .MenagerAuth import MenagerAuth
+from .MenagerImage import MenagerImage
+from .MenagerLab import MenagerLab
+from .MenagerInst import MenagerInst
+from .MenagerSystem import MenagerSystem
 
 
 class Menager:
     """Service menager
     This class represent menager which organize all service abilities
     It should be spawn with CherryPy main class
-    :param keystoneAuthList: Dictionary of session_id - OSKeystoneAuth objects
+    :param keystoneAuthList: Dictionary of session_id - OSAuth objects
     :type keystoneAuthList: dict
     :param menagerAuth: MenagerAuth object
     :type menagerAuth: MenagerAuth
@@ -28,10 +29,12 @@ class Menager:
         self.menagerLab = MenagerLab()
         self.menagerImage = MenagerImage()
         self.menagerInst = MenagerInst()
+        self.menagerSystem = MenagerSystem()
         self.menagerAuth.keystoneAuthList = self.keystoneAuthList
         self.menagerLab.keystoneAuthList = self.keystoneAuthList
         self.menagerImage.keystoneAuthList = self.keystoneAuthList
         self.menagerInst.keystoneAuthList = self.keystoneAuthList
+        self.menagerSystem.keystoneAuthList = self.keystoneAuthList
 
     def bindUser(self, body):
         print(body)
@@ -74,6 +77,11 @@ class Menager:
         if len(vpath) == 2 and "instances" in vpath and "list" in vpath:
             vpath.pop(0)
             return self.menagerInst
+
+        if len(vpath) == 1 and "system" in vpath:
+            vpath.pop(0)
+            return self.menagerSystem
+
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

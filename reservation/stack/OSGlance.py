@@ -1,5 +1,5 @@
 from glanceclient import Client
-from OS import OSTools
+from .OSTools import OSTools
 import time
 
 
@@ -53,7 +53,7 @@ class OSGlance:
             Status of operation
             bool
         """
-        if not OSTools.OSTools.isNeutronID(image):
+        if not OSTools.isNeutronID(image):
             findRes = self.find(name=image)
             if findRes and len(findRes) > 0:
                 image = findRes[0]

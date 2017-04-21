@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-from restservice import RESTservice
-from OS import OSKeystone
-from OS import OSNeutron
+from reservation.restservice import RESTservice
+
+from reservation.stack import OSKeystone
+from reservation.stack import OSNeutron
+
 """
-osKSAuth = OSKeystone.OSKeystoneAuth(filename="configs/config_admin.json")
+osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
 osKSProject = OSKeystone.OSKeystoneProject(session=osKSAuth.createKeyStoneSession())
 osNeutron = OSNeutron.OSNetwork(session=osKSAuth.createKeyStoneSession())
 

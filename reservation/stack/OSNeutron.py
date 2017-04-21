@@ -1,5 +1,5 @@
 from neutronclient.v2_0 import client as NClient
-from OS import OSTools
+from .OSTools import OSTools
 
 
 class OSNeutron:
@@ -82,7 +82,7 @@ class OSSubnet(OSNeutron):
     def list(self):
         return self.client.list_subnets()
 
-    def create(self, name, network_id, cidr, gateway_ip, start_alloc, end_alloc, enable_dhcp, description=""):
+    def create(self, name, network_id, cidr, gateway_ip, project_id, enable_dhcp=True, description=""):
         """
         This create subnets
         Arguments:
@@ -103,13 +103,10 @@ class OSSubnet(OSNeutron):
                 "description": description,
                 "ip_version": 4,
                 "cidr": cidr,
-                "allocation_pools": [{
-                    "start": start_alloc,
-                    "end": end_alloc
-                }],
                 "gateway_ip": gateway_ip,
                 "enable_dhcp": enable_dhcp,
                 "dns_nameservers": ["8.8.8.8"],
+                "project_id": project_id,
             }
         })
 
@@ -134,7 +131,7 @@ class OSSubnet(OSNeutron):
         return self.findItem(subnets, name=name, item_id=subnet_id, item_id_name="id", project_id=project_id)
 
     def delete(self, subnet_id):
-        if not OSTools.OSTools.isNeutronID(subnet_id):
+        if not OSTools.isNeutronID(subnet_id):
             subnet_id = self.find(name=subnet_id)["id"]
         return self.client.delete_subnet(subnet_id)
 
@@ -188,7 +185,7 @@ class OSNetwork(OSNeutron):
         project_id = kwargs.get("project_id")
         network_id = kwargs.get("network_id")
         networks = self.list()["networks"]
-        return self.findItem(networks, name=name, item_id=network_id, item_id_name="id", project_id=project_id)
+        return self.findItem(items=networks, name=name, item_id=network_id, item_id_name="id", project_id=project_id)
 
     def delete(self, network, project_id):
         # Check if network is name or id

@@ -1,5 +1,5 @@
 import cherrypy
-from menager import Menager
+from reservation.menager.Menager import Menager
 
 
 class RESTservice(object):
@@ -21,7 +21,7 @@ class RESTservice(object):
                 "tools.response_headers.headers": [("Content-Type", "application/json")],
             }
         }
-        cherrypy.tree.mount(Menager.Menager(), "/", conf)
+        cherrypy.tree.mount(Menager(), "/", conf)
 
     def stop(self):
         cherrypy.engine.stop()

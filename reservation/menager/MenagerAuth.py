@@ -1,13 +1,14 @@
 import cherrypy
 
-from OS import OSKeystone
-from menager.MenagerTools import MenagerTool
+from reservation.stack import OSKeystone
+
+from .MenagerTools import MenagerTool
 
 
 class MenagerAuth:
     """Menage Authorization
 
-    :param keystoneAuthList: Dictionary of session_id - OSKeystoneAuth objects
+    :param keystoneAuthList: Dictionary of session_id - OSAuth objects
     :type keystoneAuthList: dictionary
     """
     keystoneAuthList = None
@@ -27,9 +28,9 @@ class MenagerAuth:
             osKSAuth = input_data
             osKSAuth.createKeyStoneSession().get_token()
             # Bind admin and check group
-            osKSAuth = OSKeystone.OSKeystoneAuth(filename="configs/config_admin.json")
-            osKSUser = OSKeystone.OSKeystoneUser(session=osKSAuth.createKeyStoneSession())
-            osKSRoles = OSKeystone.OSKeystoneRoles(session=osKSAuth.createKeyStoneSession())
+            osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
+            osKSUser = OSKeystone.OSUser(session=osKSAuth.createKeyStoneSession())
+            osKSRoles = OSKeystone.OSRole(session=osKSAuth.createKeyStoneSession())
             osUserRoles = osKSRoles.getUserRole(osKSUser.findUser(name=input_data.username)[0].id)
             print(osUserRoles)
             if "admin" in osUserRoles:
@@ -70,11 +71,11 @@ class MenagerAuth:
     def parseJson(self, data):
         """Parse incoming data
 
-        This create OSKeystoneAuth object required for authentication
+        This create OSAuth object required for authentication
         :param data: JSON data
         :type data: string
         :returns: object containing auth information
-        :rtype: {OSKeystoneAuth}
+        :rtype: {OSAuth}
         """
         userDomain = None
         username = None
@@ -100,6 +101,6 @@ class MenagerAuth:
                 projectId = data["project_id"]
             if "glance_endpoint" in data:
                 glanceEndpoint = data["glance_endpoint"]
-            return OSKeystone.OSKeystoneAuth(auth_url=authUrl, project_domain_name=projectDomainName, project_name=projectName, user_domain=userDomain, username=username, password=password, project_id=projectId, glance_endpoint=glanceEndpoint)
+            return OSKeystone.OSAuth(auth_url=authUrl, project_domain_name=projectDomainName, project_name=projectName, user_domain=userDomain, username=username, password=password, project_id=projectId, glance_endpoint=glanceEndpoint)
         except IndexError:
             return("JSON cred invalid!")
