@@ -1,16 +1,22 @@
 #Project
 config.json
 sftp-config.json
+
+#PyCharm
+*.idea
+*.idea/*
+
+#Sublime
+Reservation-Service.sublime-workspace
+Reservation-Service.sublime-project
+
+# Examples
+example/cookies
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-*.idea
-*.idea/*
-
-# Examples
-example/cookies
 
 # C extensions
 *.so
@@ -96,6 +102,3 @@ ENV/
 
 # Rope project settings
 .ropeproject
-
-# SFTP config
-sftp-config.json
