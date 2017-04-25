@@ -18,22 +18,19 @@ class OSHeat():
 
     def create(self, name, template):
 
+        return self.client.stacks.create(
+            files={},
+            disable_rollback="true",
+            stack_name=name,
+            template=template,
+            timeout_mins=30
+        )
+
+    def preview(self, name, template):
+
         return self.client.stacks.create({
             "files": {},
             "disable_rollback": "true",
-            "stack_name": name,
-            "template": template,
-            "timeout_mins": 30
-        })
-
-    def preview(self, name, flavor, template):
-
-        return self.client.stacks.create({
-            "files": {},
-            "disable_rollback": "true",
-            "parameters": {
-                "flavor": flavor
-            },
             "stack_name": name,
             "template": template,
             "timeout_mins": 30
@@ -47,11 +44,11 @@ class OSHeat():
             Status of operation
             bool
         """
-        if not OSTools.isID(name):
+        if not OSTools.isNeutronID(name):
             findRes = self.find(name=name)
             if findRes and len(findRes) > 0:
                 name = findRes[0]
-        imageObj = self.find(image_id=name.id)
+        imageObj = self.find(id=name)
         if imageObj:
             imageObj.delete()
             return True
@@ -73,7 +70,7 @@ class OSHeat():
             Mixed
         """
         name = kwargs.get("name")
-        item_id = kwargs.get("image_id")
+        item_id = kwargs.get("id")
         items = self.list()
         if item_id is not None:
             for item in items:
