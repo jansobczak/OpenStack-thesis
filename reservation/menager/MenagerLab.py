@@ -116,10 +116,6 @@ class MenagerLab:
             # Create project and user for this project give
             lab["project"] = osKSProject.createProject(name=lab["project"].name)
 
-            # Create new user make him admin of this new lab
-            lab["lab_admin"] = osKSUser.createUser(lab["lab_admin"].username, lab["lab_admin"].password, lab["project"].id)
-            # As for this version of code we assume one user is present with that name
-
             # Grant Admin to this project
             labAdminRole = osKSRoles.findRoles(name="lab_admin")
             if labAdminRole is not None and len(labAdminRole) > 1 and id in labAdminRole:
