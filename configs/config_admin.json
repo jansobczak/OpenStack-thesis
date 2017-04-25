@@ -5,6 +5,6 @@
 	"auth_url": "http://openstack.soit.com.pl/identity/v3",
 	"project_domain_name": "Default",
 	"project_name": "admin",
-	"project_id": "97409c8bda0f461096b93a16271adae6",
+	"project_id": "6c3b74b28b5b40dda3e77ff0fa0b6014",
     "glance_endpoint": "http://openstack.soit.com.pl:9292"
 }

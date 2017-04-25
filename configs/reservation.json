@@ -1,0 +1,8 @@
+{
+    "database": {
+        "host": "127.0.0.1",
+        "database": "reservation_service",
+        "user": "reservation_user",
+        "password": "qwe123qwe123"
+    }
+}
