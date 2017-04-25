@@ -80,21 +80,26 @@ class OSSubnet(OSNeutron):
         self.enableDhcp = kwargs.get("enableDhcp")
 
     def list(self):
+        """List all subnets
+        Returns:
+            Dictionary of subnets start with ["subnets"]
+            Dictionary
+        """
         return self.client.list_subnets()
 
     def create(self, name, network_id, cidr, gateway_ip, project_id, enable_dhcp=True, description=""):
-        """
-        This create subnets
-        Arguments:
-            name -- Name of subnet
-            network_id -- Network ID
-            cidr -- CIDR of network like 10.0.0.0/24
-            gateway_ip -- Gateway IP
-            start_alloc -- Start IP for allocation DHCP
-            end_alloc -- End IP for allocation DHCP
-            enable_dhcp -- Bool true or false
-        Keyword arguments:
-            description -- Description of this subnet (default: {""})
+        """This create subnet
+        Args:
+            name: Name of subnet
+            network_id: ID of network to attach this subnet
+            cidr: CIDR like 10.0.0.0/24
+            gateway_ip: Gateway IP address
+            project_id: ID of project to attach this subnet
+            enable_dhcp: Does enable DHCP? (default: {True})
+            description: Any valuable text (default: {""})
+        Returns:
+            Dictionary of subnet start with ["subnets"]
+            Dictionary
         """
         return self.client.create_subnet({
             "subnet": {
@@ -154,10 +159,13 @@ class OSNetwork(OSNeutron):
         return self.client.list_networks()
 
     def create(self, name, project_id):
-        """
-        This create newtork.
-        Openstack network can live without any subnet.
-        Tenat_id is project-id
+        """This create network in project
+        Args:
+            name: Name of new network
+            project_id: ID of project to atach new network
+        Returns:
+            Dictionary of new network
+            Dictionary
         """
         return self.client.create_network({
             "network": {
@@ -167,7 +175,7 @@ class OSNetwork(OSNeutron):
         })
 
     def find(self, **kwargs):
-        """Find network
+        """This find network
         Find network based on arguments:
         - name
         - project ID
@@ -180,7 +188,6 @@ class OSNetwork(OSNeutron):
             Array if project_id or name
             Mixed
         """
-
         name = kwargs.get("name")
         project_id = kwargs.get("project_id")
         network_id = kwargs.get("network_id")
@@ -242,6 +249,13 @@ class OSRouter(OSNeutron):
         return self.findItem(routers, name=name, item_id=router_id, item_id_name="id", project_id=project_id)
 
     def addInterface(self, router_id, subnet_id):
+        """Add new interface to router
+        Args:
+            router_id: ID of router to atach
+            subnet_id: ID of subnet to atach
+        Returns:
+            Dictionary
+        """
         if not OSTools.OSTools.isNeutronID(router_id):
             router_id = self.find(name=router_id)["id"]
         body = {"subnet_id": subnet_id}
