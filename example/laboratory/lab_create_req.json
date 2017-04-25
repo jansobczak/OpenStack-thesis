@@ -1,30 +1,59 @@
 {
-	"project_name": "laboratory_test",
-	"lab_admin":
-	{
-		"username": "lab_admin_laboratory_test",
-		"password": "qwe123"
+	"laboratory": {
+		"name": "test_lab",
+		"duration": "03:00:00",
+		"group": "test_lab_group"
 	},
-	"bind_user":
-	{
-		"username": "bind_user_laboratory_test",
-		"password": "qwe123"
+	"periods": [{
+		"start": "2017-04-20 12:00:00",
+		"stop":  "2017-04-25 12:00:00"
 	},
-	"network":
 	{
-		"network_name": "private",
-		"private_subnet": 
-		{
-			"name": "private",
-			"cidr": "10.0.11.0/24",
-			"gateway": "10.0.11.1",
-			"start_alloc": "10.0.11.2",
-			"end_alloc": "10.0.11.254",
-			"enable_dhcp": "true",
-			"description": ""
-		},
-		"router_name": "router",
-		"attach_priv": "true",
-		"attach_pub": "true"
+		"start": "2017-04-25 15:00:00",
+		"stop": "2017-04-30 12:00:00"
 	}
+	],
+	"template": {
+    "heat_template_version": "2015-04-30",
+    "description": "Test laboratory template",
+    "resources": {
+        "lab_network": {
+             "type": "OS::Neutron::Net"
+        },
+        "lab_subnet": {
+            "type": "OS::Neutron::Subnet",
+            "properties": {
+                "network_id": { "get_resource": "lab_network" },
+                "cidr": "10.0.1.0/24",
+                "dns_nameservers": [ "8.8.8.8", "8.8.4.4" ],
+                "ip_version": 4
+            }
+        },
+        "lab_router": {
+            "type": "OS::Neutron::Router",
+            "properties": {
+                "external_gateway_info": {
+                    "network": "public"
+                }
+            }
+        },
+        "lab_interface": {
+            "type": "OS::Neutron::RouterInterface",
+            "properties": {
+                "router_id": { "get_resource": "lab_router" },
+                "subnet": { "get_resource": "lab_subnet" }
+            }
+        },
+        "lab_instance": {
+            "type": "OS::Nova::Server",
+            "properties": {
+                "key_name": "test",
+                "image": "cirros-0.3.5-x86_64-disk",
+                "flavor": "cirros256",
+                "networks": [{
+                    "network": { "get_resource": "lab_network" }
+                }]
+            }
+        }
+    }
 }
