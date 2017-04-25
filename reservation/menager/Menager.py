@@ -7,6 +7,9 @@ from .MenagerLab import MenagerLab
 from .MenagerInst import MenagerInst
 from .MenagerSystem import MenagerSystem
 
+import reservation.service.ConfigParser as ConfigParser
+import reservation.service.MySQL as MySQL
+
 
 class Menager:
     """Service menager
@@ -35,6 +38,13 @@ class Menager:
         self.menagerImage.keystoneAuthList = self.keystoneAuthList
         self.menagerInst.keystoneAuthList = self.keystoneAuthList
         self.menagerSystem.keystoneAuthList = self.keystoneAuthList
+
+        con_conf = ConfigParser.configuration["database"]
+        MySQL.mysqlConn = MySQL.MySQL(
+            host=con_conf["host"],
+            user=con_conf["user"],
+            password=con_conf["password"],
+            database=con_conf["database"])
 
     def bindUser(self, body):
         print(body)
