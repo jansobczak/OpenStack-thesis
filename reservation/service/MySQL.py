@@ -106,7 +106,6 @@ class MySQL():
         self.conn.commit()
         return True
 
-
     def insert_template(self, **kwargs):
         """
         Insert into template table
@@ -125,7 +124,6 @@ class MySQL():
         cursor.close()
         self.conn.commit()
         return cursor.lastrowid
-
 
     def select_period(self, laboratory_id=None):
         cursor = self.conn.cursor(pymysql.cursors.DictCursor)
