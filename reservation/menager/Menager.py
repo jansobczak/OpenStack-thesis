@@ -58,15 +58,34 @@ class Menager:
         if len(vpath) == 1 and "laboratory" in vpath:
             vpath.pop(0)
             return self.menagerLab
+        # /laboratory/list
         if len(vpath) == 2 and "laboratory" in vpath and "list" in vpath:
-            vpath.pop(0)
-            return self.menagerLab
+            del vpath[:]
+            return self.menagerLab.list
+        if len(vpath) == 4 and "laboratory" in vpath and "list" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.menagerLab.list
+        if len(vpath) == 4 and "laboratory" in vpath and "list" in vpath and "name" in vpath:
+            cherrypy.request.params['name'] = vpath[3]
+            del vpath[:]
+            return self.menagerLab.list
+
         if len(vpath) == 2 and "laboratory" in vpath and "create" in vpath:
-            vpath.pop(0)
-            return self.menagerLab
+            del vpath[:]
+            return self.menagerLab.create
+
         if len(vpath) == 2 and "laboratory" in vpath and "delete" in vpath:
-            vpath.pop(0)
-            return self.menagerLab
+            del vpath[:]
+            return self.menagerLab.delete
+        if len(vpath) == 4 and "laboratory" in vpath and "delete" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.menagerLab.delete
+        if len(vpath) == 4 and "laboratory" in vpath and "delete" in vpath and "name" in vpath:
+            cherrypy.request.params['name'] = vpath[3]
+            del vpath[:]
+            return self.menagerLab.delete
 
         if len(vpath) == 1 and "images" in vpath:
             vpath.pop(0)

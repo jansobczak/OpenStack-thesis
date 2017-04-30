@@ -1,3 +1,5 @@
 {
-	"laboratory": "test_lab"
+	"laboratory": {
+        "name": "test_lab"
+    }
 }

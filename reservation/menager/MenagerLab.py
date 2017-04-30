@@ -32,20 +32,43 @@ class MenagerLab:
     mysqlConn = None
 
     @cherrypy.expose
+    @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def list(self):
-
+    def list(self, id=None, name=None):
         try:
-            if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
+            if not MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
                 data = dict(current="Laboratory manager", user_status="not authorized")
             else:
-                data = dict(current="Laboratory manager", user_status="not authorized")
-                labs = MySQL.mysqlConn.select_lab()
-                print(labs)
-                data = dict(current="Laboratory manager", response=OSTools.OSTools.prepareJSON(labs))
+                # Parse request if exists
+                labs = None
+                if id is not None:
+                    labs = MySQL.mysqlConn.select_lab(id=id)
+                elif name is not None:
+                    labs = MySQL.mysqlConn.select_lab(name=name)
+                elif hasattr(cherrypy.request, "json"):
+                    request = cherrypy.request.json
+                    reqLab = Laboratory().parseJSON(data=request)
+                    if reqLab.id is not None and reqLab.name is None:
+                        labs = MySQL.mysqlConn.select_lab(id=reqLab.id)
+                    elif reqLab.name is not None and reqLab.id is None:
+                        labs = MySQL.mysqlConn.select_lab(name=reqLab.name)
+                    elif reqLab.name is not None and reqLab.id is not None:
+                        raise Exception("Invalid request both id and name. Unknown laboratory")
+                    else:
+                        raise Exception("Invalid request no id or name. Unknown laboratory")
+                else:
+                    labs = MySQL.mysqlConn.select_lab()
+
+                preLabs = []
+                for lab in labs:
+                    preLabs.append(Laboratory().parseDict(lab).__dict__)
+
+                data = dict(current="Laboratory manager", response=preLabs)
         except Exception as e:
             data = dict(current="Laboratory manager", error=e)
         finally:
+            MySQL.mysqlConn.close()
+            MySQL.mysqlConn.commit()
             return data
 
     @cherrypy.expose
@@ -56,14 +79,22 @@ class MenagerLab:
             if not MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
                 data = dict(current="Laboratory manager", user_status="not authorized")
             else:
+                # Parse request
                 request = cherrypy.request.json
                 lab = Laboratory().parseJSON(data=request)
                 periods = Periods().parseJSON(data=request)
                 template = Template().parseJSON(data=request)
+                # Add data to database
                 template.id = MySQL.mysqlConn.insert_template(name=template.name, data=template.data)
-                lab.id = MySQL.mysqlConn.insert_lab(name=lab.name, duration=lab.duration, group=lab.group, template_id=template.id)
+                lab.id = MySQL.mysqlConn.insert_lab(name=lab.name,
+                                                    duration=lab.duration,
+                                                    group=lab.group,
+                                                    template_id=template.id)
                 for period in periods:
-                    period.id = MySQL.mysqlConn.insert_period(start=period.start, stop=period.stop, laboratory_id=lab.id)
+                    period.id = MySQL.mysqlConn.insert_period(start=period.start,
+                                                              stop=period.stop,
+                                                              laboratory_id=lab.id)
+                # Prepare data for showcase
                 lab = lab.__dict__
                 template = template.__dict__
                 tempPeriods = []
@@ -77,14 +108,51 @@ class MenagerLab:
         except Exception as e:
             data = dict(current="Laboratory manager", error=str(e))
         finally:
+            MySQL.mysqlConn.close()
+            MySQL.mysqlConn.commit()
             return data
-
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def delete(self):
-        return False
+    def delete(self, id=None, name=None):
+        try:
+            if not MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
+                data = dict(current="Laboratory manager", user_status="not authorized")
+            else:
+                # Parse request
+                status = False
+                if id is not None:
+                    status = MySQL.mysqlConn.delete_lab(id=id)
+                elif name is not None:
+                    status = MySQL.mysqlConn.delete_lab(name=name)
+                elif hasattr(cherrypy.request, "json"):
+                    request = cherrypy.request.json
+                    lab = Laboratory().parseJSON(data=request)
+                    # Search for lab
+                    if lab.id is not None and lab.name is None:
+                        status = MySQL.mysqlConn.delete_lab(id=lab.id)
+                    elif lab.name is not None and lab.id is None:
+                        status = MySQL.mysqlConn.delete_lab(name=lab.name)
+                    elif lab.name is not None and lab.id is not None:
+                        raise Exception("Invalid request both id and name. Unknown laboratory")
+                    else:
+                        raise Exception("Invalid request no id or name. Unknown laboratory")
+                    # Prepare data to showcase
+                else:
+                    raise Exception("Invalid request no id or name or compatible JSON")
+
+                if status:
+                    data = dict(current="Laboratory manager", status="deleted")
+                else:
+                    data = dict(current="Laboratory manager", status="not deleted or laboratory doesn't exists")
+
+        except Exception as e:
+            data = dict(current="Laboratory manager", error=e)
+        finally:
+            MySQL.mysqlConn.close()
+            MySQL.mysqlConn.commit()
+            return data
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

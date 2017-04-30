@@ -29,7 +29,6 @@ for period in periods:
 
 print(periodArray)
 
-
 lab = json.dumps(lab.__dict__)
 template = json.dumps(template.__dict__)
 
@@ -37,4 +36,13 @@ dictData = dict(laboratory=lab, periods=periodArray, template=template)
 
 json.dumps(dictData)
 
+# list all
 
+labs = MySQL.mysqlConn.select_lab()
+preLabs = []
+for lab in labs:
+    preLabs.append(Laboratory.Laboratory().parseDict(lab))
+
+
+print(preLabs)
+data = dict(current="Laboratory manager", response=labs)
