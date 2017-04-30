@@ -1,5 +1,6 @@
 class Laboratory:
 
+    id = None
     name = None
     duration = None
     group = None
@@ -20,3 +21,6 @@ class Laboratory:
             return self
         else:
             return None
+
+    def to_dict(self):
+        return dict(id=self.id, name=self.name, duration=self.duration, group=self.group)

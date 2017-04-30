@@ -1,5 +1,9 @@
 class Period:
 
+    id = None
+    start = None
+    stop = None
+
     def __init__(self, **kwargs):
         self.start = kwargs.get("start")
         self.stop = kwargs.get("stop")
@@ -7,15 +11,18 @@ class Period:
 
 class Periods:
 
-    @staticmethod
-    def parseJSON(data):
-        periods = []
+    period = []
+
+    def __init__(self):
+        self.period = []
+
+    def parseJSON(self, data):
         if "periods" in data:
             for period in data["periods"]:
                 if "start" in period and "stop" in period:
-                    periods.append(Period(start=period["start"], stop=period["stop"]))
+                    self.period.append(Period(start=period["start"], stop=period["stop"]))
                 else:
                     continue
-            return periods
+            return self.period
         else:
             return None

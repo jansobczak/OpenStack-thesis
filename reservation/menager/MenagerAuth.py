@@ -31,8 +31,7 @@ class MenagerAuth:
             osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
             osKSUser = OSKeystone.OSUser(session=osKSAuth.createKeyStoneSession())
             osKSRoles = OSKeystone.OSRole(session=osKSAuth.createKeyStoneSession())
-            osUserRoles = osKSRoles.getUserRole(osKSUser.findUser(name=input_data.username)[0].id)
-            print(osUserRoles)
+            osUserRoles = osKSRoles.getUserRole(osKSUser.find(name=input_data.username)[0].id)
             if "admin" in osUserRoles:
                 input_data.userType = "admin"
             elif "lab_admin" in osUserRoles:

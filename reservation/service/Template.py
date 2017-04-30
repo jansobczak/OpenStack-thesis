@@ -1,4 +1,6 @@
-class Template
+class Template:
+
+    id = None
     data = None
     name = None
 
@@ -13,5 +15,8 @@ class Template
             if "name" in data["template"]:
                 self.name = data["template"]["name"]
             return self
-        else
+        else:
             return None
+
+    def to_dict(self):
+        return dict(id=self.id, name=self.name, data=self.data)

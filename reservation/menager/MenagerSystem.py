@@ -5,10 +5,8 @@ class MenagerSystem():
     This class create roles
     """
 
-    def __init__(self):
-
-
     def createRoles(self):
         # Create role student
         # Create role lab_admin
-        # Create role 
+        # Create role
+        return False
