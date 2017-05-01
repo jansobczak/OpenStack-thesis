@@ -80,7 +80,6 @@ class OSUser(OSKeystone):
     def __init__(self, **kwargs):
         self.session = kwargs.get("session")
         self.client = KSClient.Client(session=self.session)
-        self.projectManager = KSProjectManager(self.client)
         self.username = kwargs.get("username")
         self.userDomain = kwargs.get("userDomain")
         self.password = kwargs.get("password")
@@ -165,6 +164,68 @@ class OSUser(OSKeystone):
                 return None
 
 
+class OSGroup(OSKeystone):
+
+    def __init__(self, **kwargs):
+        self.session = kwargs.get("session")
+        self.client = KSClient.Client(session=self.session)
+
+    def list(self):
+        return self.client.groups.list()
+
+    def create(self, name, domain="default"):
+        """Create new group
+        Args:
+            name: Name of group
+            domain: What domain (default: {"default"})
+        Returns:
+            Created group in class
+            Group
+        Raises:
+            Exception: Raise already exists!
+        """
+        groups = self.find(name=name)
+        if len(groups) == 0:
+            return self.client.groups.create(name=name, domain=domain)
+        else:
+            raise Exception("Group " + name + " already exists!")
+
+    def delete(self, group_id):
+        return self.client.groups.delete(group_id)
+
+    def get(self, group_id):
+        return self.client.groups.get(group_id)
+
+    def find(self, **kwargs):
+        """
+        Find user by:
+        - name
+        - group_id
+        Arguments:
+            **kwargs -- name, group_id
+        Returns:
+            One group or array of group
+            One item if item_id
+            Array of groups if or name
+            Mixed
+        """
+        name = kwargs.get("name")
+        user_id = kwargs.get("group_id")
+        users = self.list()
+        if user_id is not None:
+            for i in range(0, len(users)):
+                if users[i].id == user_id:
+                    return users[i]
+            return None
+
+        if name is not None:
+            returnArray = []
+            for i in range(0, len(users)):
+                if users[i].name == name:
+                    returnArray.append(users[i])
+            return returnArray
+
+
 class OSRole(OSKeystone):
 
     def list(self):
@@ -209,8 +270,14 @@ class OSRole(OSKeystone):
             else:
                 return None
 
+    def create(self, name):
+        return self.client.roles.create(name=name)
+
     def grantUser(self, user_id, project_id, role_id):
         return self.client.roles.grant(role_id, user=user_id, project=project_id)
+
+    def grantGroup(self, group_id, project_id, role_id):
+        return self.client.roles.grant(role_id, group=group_id, project=project_id)
 
     def getUserRole(self, user_id):
         """Get name of roles connected with users
@@ -226,6 +293,30 @@ class OSRole(OSKeystone):
             for i in range(0, len(userRoles)):
                 if hasattr(userRoles[i], "role") and userRoles[i].role is not None:
                     role = userRoles[i].role
+                    roles = self.find(role_id=role["id"])
+                    if roles is not None:
+                        returnArray.append(roles[0].name)
+                else:
+                    continue
+            # Delete duplicates
+            return list(set(returnArray))
+        else:
+            return None
+
+    def getGroupRole(self, group_id):
+        """Get name of roles connected with group
+        Args:
+            group_id: ID of group
+        Returns:
+            One or many names of roles
+            Array
+        """
+        groupRoles = self.client.role_assignments.list(user=group_id)
+        if groupRoles is not None:
+            returnArray = []
+            for i in range(0, len(groupRoles)):
+                if hasattr(groupRoles[i], "role") and groupRoles[i].role is not None:
+                    role = groupRoles[i].role
                     roles = self.find(role_id=role["id"])
                     if roles is not None:
                         returnArray.append(roles[0].name)
