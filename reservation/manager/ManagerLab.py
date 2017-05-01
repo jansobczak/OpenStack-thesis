@@ -74,12 +74,16 @@ class ManagerLab:
                 if not len(defaults) > 0:
                     raise Exception("No defaults values. OpenStack might be not configured properly")
 
+                defaults = defaults[0]
+
                 # Add data to database
-                template.id = MySQL.mysqlConn.insert_template(name=template.name, data=template.data)
                 lab.id = MySQL.mysqlConn.insert_lab(name=lab.name,
                                                     duration=lab.duration,
                                                     group=lab.group,
                                                     template_id=template.id)
+                template.id = MySQL.mysqlConn.insert_template(name=template.name,
+                                                              data=template.data,
+                                                              laboratory_id=lab.id)
                 for period in periods:
                     period.id = MySQL.mysqlConn.insert_period(start=period.start,
                                                               stop=period.stop,
@@ -90,8 +94,8 @@ class ManagerLab:
                 osRole = OSRole(session=session)
                 group = osGroup.create(name=lab.group)
                 osRole.grantGroup(group_id=group.id,
-                                  project_id=defaults["project_id"],
-                                  role_id=defaults["role_lab_access_id"])
+                                  project_id=defaults["project"],
+                                  role_id=defaults["role_lab"])
                 # Prepare data for showcase
                 lab = lab.__dict__
                 template = template.__dict__
@@ -103,11 +107,13 @@ class ManagerLab:
                             laboratory=lab,
                             template=template,
                             periods=periods)
+                MySQL.mysqlConn.commit()
         except Exception as e:
+            if group is not None and osGroup is not None:
+                osGroup.delete(id=group.id)
             data = dict(current="Laboratory manager", error=str(e))
         finally:
             MySQL.mysqlConn.close()
-            MySQL.mysqlConn.commit()
             return data
 
     @cherrypy.expose
@@ -144,12 +150,11 @@ class ManagerLab:
                     data = dict(current="Laboratory manager", status="deleted")
                 else:
                     data = dict(current="Laboratory manager", status="not deleted or laboratory doesn't exists")
-
+                MySQL.mysqlConn.commit()
         except Exception as e:
             data = dict(current="Laboratory manager", error=e)
         finally:
             MySQL.mysqlConn.close()
-            MySQL.mysqlConn.commit()
             return data
 
     @cherrypy.expose

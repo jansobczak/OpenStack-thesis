@@ -67,7 +67,7 @@ class ManagerSystem():
                             role_moderator=OSTools.prepareJSON(modRole),
                             group_students=OSTools.prepareJSON(studRole),
                             group_moderator=OSTools.prepareJSON(modRole))
-
+                MySQL.mysqlConn.commit()
         except Exception as e:
             if not len(defaults) > 0:
                 if studRole is not None and osRole is not None:
@@ -85,7 +85,6 @@ class ManagerSystem():
             data = dict(current="System manager", error=str(e))
         finally:
             MySQL.mysqlConn.close()
-            MySQL.mysqlConn.commit()
             return data
 
     def __createOS(self, name, osObject):

@@ -102,11 +102,10 @@ class MySQL():
         name = kwargs.get("name")
         duration = kwargs.get("duration")
         group = kwargs.get("group")
-        template_id = kwargs.get("template_id")
 
         self.cursor = self.conn.cursor()
-        sql = "INSERT INTO laboratory VALUES(DEFAULT, %s, %s, %s, %s);"
-        self.cursor.execute(sql, (name, duration, group, template_id))
+        sql = "INSERT INTO laboratory VALUES(DEFAULT, %s, %s, %s);"
+        self.cursor.execute(sql, (name, duration, group))
         return self.cursor.lastrowid
 
     def select_template(self, **kwargs):
@@ -150,19 +149,20 @@ class MySQL():
     def insert_template(self, **kwargs):
         """
         Insert into template table
-        :param kwargs: name, data or filename. When using filenmae it expect JSON
+        :param kwargs: name, data or filename. When using filename it expect JSON
         :return: ID of inserted template
         """
 
         name = kwargs.get("name")
         data = kwargs.get("data")
         filename = kwargs.get("filename")
+        laboratory_id = kwargs.get("laboratory_id")
         self.cursor = self.conn.cursor()
         if data is None and filename is not None:
             data = json.dumps(json.load(open(filename)))
 
-        sql = "INSERT INTO template VALUES(DEFAULT, %s, %s);"
-        self.cursor.execute(sql, (name, str(data)))
+        sql = "INSERT INTO template VALUES(DEFAULT, %s, %s, %s);"
+        self.cursor.execute(sql, (name, str(data), laboratory_id))
         return self.cursor.lastrowid
 
     def select_period(self, **kwargs):
