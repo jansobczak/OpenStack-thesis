@@ -1,42 +1,22 @@
 import cherrypy
-import json
-from reservation.stack.OSTools import OSTools
 from reservation.service.Laboratory import Laboratory
 from reservation.service.Period import Periods
 from reservation.service.Template import Template
-from .MenagerTools import MenagerTool
+from reservation.stack.OSKeystone import OSGroup
+from reservation.stack.OSKeystone import OSRole
+from .ManagerTools import ManagerTool
 import reservation.service.MySQL as MySQL
 
 
-class Network:
-    name = None
-    subnet = None
-    router = None
-    attachPriv = None
-    attachPub = None
-
-    def __init__(self, **kwargs):
-        self.name = kwargs.get("name")
-        self.subnet = kwargs.get("subnet")
-        self.router = kwargs.get("router")
-        self.attachPriv = kwargs.get("attachPriv")
-        self.attachPub = kwargs.get("attachPub")
-
-
-class MenagerLab:
-    labName = None
-    networkName = None
-    subnet = None
-    router = None
+class ManagerLab:
     keystoneAuthList = None
-    mysqlConn = None
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def list(self, id=None, name=None):
         try:
-            if not MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
                 data = dict(current="Laboratory manager", user_status="not authorized")
             else:
                 # Parse request if exists
@@ -76,14 +56,24 @@ class MenagerLab:
     @cherrypy.tools.json_out()
     def create(self):
         try:
-            if not MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
                 data = dict(current="Laboratory manager", user_status="not authorized")
             else:
+                session_id = cherrypy.request.cookie["ReservationService"].value
+                osKSAuth = self.keystoneAuthList[session_id]
+                session = osKSAuth.createKeyStoneSession()
                 # Parse request
                 request = cherrypy.request.json
                 lab = Laboratory().parseJSON(data=request)
                 periods = Periods().parseJSON(data=request)
                 template = Template().parseJSON(data=request)
+
+                # Get defaults
+                defaults = MySQL.mysqlConn.select_defaults()
+
+                if not len(defaults) > 0:
+                    raise Exception("No defaults values. OpenStack might be not configured properly")
+
                 # Add data to database
                 template.id = MySQL.mysqlConn.insert_template(name=template.name, data=template.data)
                 lab.id = MySQL.mysqlConn.insert_lab(name=lab.name,
@@ -94,6 +84,14 @@ class MenagerLab:
                     period.id = MySQL.mysqlConn.insert_period(start=period.start,
                                                               stop=period.stop,
                                                               laboratory_id=lab.id)
+
+                # Create Openstack group
+                osGroup = OSGroup(session=session)
+                osRole = OSRole(session=session)
+                group = osGroup.create(name=lab.group)
+                osRole.grantGroup(group_id=group.id,
+                                  project_id=defaults["project_id"],
+                                  role_id=defaults["role_lab_access_id"])
                 # Prepare data for showcase
                 lab = lab.__dict__
                 template = template.__dict__
@@ -117,7 +115,7 @@ class MenagerLab:
     @cherrypy.tools.json_out()
     def delete(self, id=None, name=None):
         try:
-            if not MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
                 data = dict(current="Laboratory manager", user_status="not authorized")
             else:
                 # Parse request

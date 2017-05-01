@@ -10,6 +10,12 @@ curl -s -L -X GET --cookie cookies http://localhost:8080/ | python -m json.tool
 # Deauthenticate
 curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @../configs/config_admin.json  http://localhost:8080/deauth/ | python -m json.tool
 
+###############
+# System test #
+###############
+
+curl -s -H "Content-Type: application/json" -L -X GET --cookie cookies  http://localhost:8080/system/ | python -m json.tool
+
 ###################
 # Laboratory test #
 ###################

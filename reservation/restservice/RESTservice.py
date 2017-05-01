@@ -1,5 +1,5 @@
 import cherrypy
-from reservation.menager.Menager import Menager
+from reservation.manager.Manager import Menager
 
 
 class RESTservice(object):

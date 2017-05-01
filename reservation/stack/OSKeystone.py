@@ -46,10 +46,10 @@ class OSProject(OSKeystone):
         Raises a {Exception}
         Return Poject classs
         """
-        if self.find(name=name) is None:
-            return self.client.projects.create(name, domain)
-        else:
+        if len(self.find(name=name)) > 0 and self.find(name=name)[0] is None:
             raise Exception("Project " + name + " already exists!")
+        else:
+            return self.client.projects.create(name, domain)
 
     def list(self):
         """Return list of projects"""
@@ -63,13 +63,23 @@ class OSProject(OSKeystone):
         """Get object of project by id"""
         return self.client.projects.get(project_id)
 
-    def find(self, name):
+    def find(self, **kwargs):
         """Get object of project search by name"""
+        name = kwargs.get("name")
+        id = kwargs.get("id")
         projects = self.list()
-        for project in projects:
-            if project.name == name:
-                return project
-        return None
+        if id is not None:
+            for i in range(0, len(projects)):
+                if projects[i].id == id:
+                    return projects[i]
+            return None
+
+        if name is not None:
+            returnArray = []
+            for i in range(0, len(projects)):
+                if projects[i].name == name:
+                    returnArray.append(projects[i])
+            return returnArray
 
 
 class OSUser(OSKeystone):
@@ -133,7 +143,7 @@ class OSUser(OSKeystone):
         """
         name = kwargs.get("name")
         project_id = kwargs.get("project_id")
-        user_id = kwargs.get("user_id")
+        user_id = kwargs.get("id")
         users = self.list()
         if user_id is not None:
             for i in range(0, len(users)):
@@ -210,7 +220,7 @@ class OSGroup(OSKeystone):
             Mixed
         """
         name = kwargs.get("name")
-        user_id = kwargs.get("group_id")
+        user_id = kwargs.get("id")
         users = self.list()
         if user_id is not None:
             for i in range(0, len(users)):
@@ -245,7 +255,7 @@ class OSRole(OSKeystone):
             Mixed
         """
         name = kwargs.get("name")
-        role_id = kwargs.get("role_id")
+        role_id = kwargs.get("id")
         roles = self.list()
         if name is not None:
             if role_id is not None:
@@ -273,6 +283,9 @@ class OSRole(OSKeystone):
     def create(self, name):
         return self.client.roles.create(name=name)
 
+    def delete(self, id):
+        return self.client.roles.delete(id)
+
     def grantUser(self, user_id, project_id, role_id):
         return self.client.roles.grant(role_id, user=user_id, project=project_id)
 
@@ -293,7 +306,7 @@ class OSRole(OSKeystone):
             for i in range(0, len(userRoles)):
                 if hasattr(userRoles[i], "role") and userRoles[i].role is not None:
                     role = userRoles[i].role
-                    roles = self.find(role_id=role["id"])
+                    roles = self.find(id=role["id"])
                     if roles is not None:
                         returnArray.append(roles[0].name)
                 else:
@@ -317,7 +330,7 @@ class OSRole(OSKeystone):
             for i in range(0, len(groupRoles)):
                 if hasattr(groupRoles[i], "role") and groupRoles[i].role is not None:
                     role = groupRoles[i].role
-                    roles = self.find(role_id=role["id"])
+                    roles = self.find(id=role["id"])
                     if roles is not None:
                         returnArray.append(roles[0].name)
                 else:

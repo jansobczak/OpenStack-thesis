@@ -2,10 +2,10 @@ import cherrypy
 
 from reservation.stack import OSKeystone
 
-from .MenagerTools import MenagerTool
+from .ManagerTools import ManagerTool
 
 
-class MenagerAuth:
+class ManagerAuth:
     """Menage Authorization
 
     :param keystoneAuthList: Dictionary of session_id - OSAuth objects
@@ -54,7 +54,7 @@ class MenagerAuth:
         :returns: JSON response, logout or not authorized
         :rtype: {string}
         """
-        if MenagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
+        if ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
             session_id = cherrypy.request.cookie["ReservationService"].value
             input_json = cherrypy.request.json
             keystoneAuth = self.parseJson(input_json)

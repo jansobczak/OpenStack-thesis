@@ -221,3 +221,25 @@ class MySQL():
         else:
             data = False
         return data
+
+    def select_defaults(self, **kwargs):
+
+        self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
+        sql = "SELECT * FROM system"
+        self.cursor.execute(sql)
+        data = self.cursor.fetchall()
+        return data
+
+    def insert_defaults(self, **kwargs):
+
+        project_id = kwargs.get("project_id")
+        role_student = kwargs.get("role_student")
+        role_lab = kwargs.get("role_lab")
+        role_moderator = kwargs.get("role_moderator")
+        group_student = kwargs.get("group_student")
+        group_moderator = kwargs.get("group_moderator")
+
+        self.cursor = self.conn.cursor()
+        sql = "INSERT INTO system VALUES(DEFAULT, %s, %s, %s, %s, %s, %s);"
+        self.cursor.execute(sql, (project_id, role_lab, role_student, role_moderator, group_student, group_moderator))
+        return self.cursor.lastrowid

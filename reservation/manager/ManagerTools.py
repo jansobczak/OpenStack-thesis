@@ -1,4 +1,4 @@
-class MenagerTool:
+class ManagerTool:
 
     @staticmethod
     def isAuthorized(cookie, dictionary, require_admin=False, require_lab_admin=False):
