@@ -49,7 +49,7 @@ class MenagerAuth:
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def deauth(self):
-        """Deauthenticate
+        """De-authenticate
 
         :returns: JSON response, logout or not authorized
         :rtype: {string}
