@@ -127,16 +127,20 @@ class ManagerLab:
                 # Parse request
                 status = False
                 if id is not None:
+                    lab = MySQL.mysqlConn.select_lab(id=id)
                     status = MySQL.mysqlConn.delete_lab(id=id)
                 elif name is not None:
+                    lab = MySQL.mysqlConn.select_lab(name=name)
                     status = MySQL.mysqlConn.delete_lab(name=name)
                 elif hasattr(cherrypy.request, "json"):
                     request = cherrypy.request.json
                     lab = Laboratory().parseJSON(data=request)
                     # Search for lab
                     if lab.id is not None and lab.name is None:
+                        lab = MySQL.mysqlConn.select_lab(id=lab.id)
                         status = MySQL.mysqlConn.delete_lab(id=lab.id)
                     elif lab.name is not None and lab.id is None:
+                        lab = MySQL.mysqlConn.select_lab(name=lab.name)
                         status = MySQL.mysqlConn.delete_lab(name=lab.name)
                     elif lab.name is not None and lab.id is not None:
                         raise Exception("Invalid request both id and name. Unknown laboratory")
@@ -145,6 +149,14 @@ class ManagerLab:
                     # Prepare data to showcase
                 else:
                     raise Exception("Invalid request no id or name or compatible JSON")
+
+                session_id = cherrypy.request.cookie["ReservationService"].value
+                osKSAuth = self.keystoneAuthList[session_id]
+                session = osKSAuth.createKeyStoneSession()
+                osGroup = OSGroup(session=session)
+                group = osGroup.find(name=lab[0]["group"])
+                if len(group) > 0:
+                    osGroup.delete(group_id=group[0].id)
 
                 if status:
                     data = dict(current="Laboratory manager", status="deleted")
