@@ -103,9 +103,26 @@ class Menager:
             del vpath[:]
             return self.managerLab.stop
 
+        # /laboratory/edit
+
+        # /period/delete
+        # /period/create
+        # /period/list
+
+        # /template/list
+        # /template/edit
+
         # /reservation/create
         # /reservation/delete
         # /reservation/create
+
+        # /user/create
+        # /user/list
+        # /user/delete
+
+        # /team/create
+        # /team/list
+        # /team/delete
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
