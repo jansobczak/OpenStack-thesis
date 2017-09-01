@@ -102,7 +102,7 @@ class OSUser(OSKeystone):
         """
         return self.client.users.list()
 
-    def create(self, name, password, project_id, domain="default"):
+    def create(self, name, password, project_id, mail=None, domain="default"):
         """Create new user
         Args:
             name: Name of user
@@ -117,7 +117,10 @@ class OSUser(OSKeystone):
         """
         users = self.find(name=name, project_id=project_id)
         if len(users) == 0:
-            return self.client.users.create(name=name, password=password, default_project=project_id, domain=domain)
+            if mail is not None:
+                return self.client.users.create(name=name, password=password, mail=mail, default_project=project_id, domain=domain)
+            else:
+                return self.client.users.create(name=name, password=password, default_project=project_id, domain=domain)
         else:
             raise Exception("User " + name + " already exists!")
 

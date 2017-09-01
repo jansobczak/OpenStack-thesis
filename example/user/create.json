@@ -1,0 +1,7 @@
+{
+    "user": {
+        "name": "test_user",
+        "password": "test_password",
+        "mail": "test@mail.test"
+    }
+}

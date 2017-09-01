@@ -1,0 +1,82 @@
+{
+    "current": "Laboratory manager",
+    "laboratory": {
+        "duration": "03:00:00",
+        "group": "test_lab_group",
+        "id": 9,
+        "name": "test_lab"
+    },
+    "periods": [
+        {
+            "id": 9,
+            "start": "2017-04-20 12:00:00",
+            "stop": "2017-04-25 12:00:00"
+        },
+        {
+            "id": 10,
+            "start": "2017-04-25 15:00:00",
+            "stop": "2017-04-30 12:00:00"
+        }
+    ],
+    "template": {
+        "data": {
+            "description": "Test laboratory template",
+            "heat_template_version": "2015-04-30",
+            "resources": {
+                "lab_instance": {
+                    "properties": {
+                        "flavor": "cirros256",
+                        "image": "cirros-0.3.5-x86_64-disk",
+                        "key_name": "test",
+                        "networks": [
+                            {
+                                "network": {
+                                    "get_resource": "lab_network"
+                                }
+                            }
+                        ]
+                    },
+                    "type": "OS::Nova::Server"
+                },
+                "lab_interface": {
+                    "properties": {
+                        "router_id": {
+                            "get_resource": "lab_router"
+                        },
+                        "subnet": {
+                            "get_resource": "lab_subnet"
+                        }
+                    },
+                    "type": "OS::Neutron::RouterInterface"
+                },
+                "lab_network": {
+                    "type": "OS::Neutron::Net"
+                },
+                "lab_router": {
+                    "properties": {
+                        "external_gateway_info": {
+                            "network": "public"
+                        }
+                    },
+                    "type": "OS::Neutron::Router"
+                },
+                "lab_subnet": {
+                    "properties": {
+                        "cidr": "10.0.1.0/24",
+                        "dns_nameservers": [
+                            "8.8.8.8",
+                            "8.8.4.4"
+                        ],
+                        "ip_version": 4,
+                        "network_id": {
+                            "get_resource": "lab_network"
+                        }
+                    },
+                    "type": "OS::Neutron::Subnet"
+                }
+            }
+        },
+        "id": 6,
+        "name": "test_template"
+    }
+}

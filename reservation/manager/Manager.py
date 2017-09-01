@@ -4,6 +4,7 @@ from .ManagerTools import ManagerTool
 from .ManagerAuth import ManagerAuth
 from .ManagerLab import ManagerLab
 from .ManagerSystem import ManagerSystem
+from .ManagerUser import ManagerUser
 
 import reservation.service.ConfigParser as ConfigParser
 import reservation.service.MySQL as MySQL
@@ -30,6 +31,9 @@ class Menager:
         self.managerAuth.keystoneAuthList = self.keystoneAuthList
         self.managerLab.keystoneAuthList = self.keystoneAuthList
         self.managerSystem.keystoneAuthList = self.keystoneAuthList
+
+        self.managerUser = ManagerUser()
+        self.managerUser.keystoneAuthList = self.keystoneAuthList
 
         con_conf = ConfigParser.configuration["database"]
         MySQL.mysqlConn = MySQL.MySQL(
@@ -116,9 +120,36 @@ class Menager:
         # /reservation/delete
         # /reservation/create
 
-        # /user/create
+        # /user
+        if len(vpath) == 1 and "user" in vpath:
+            vpath.pop(0)
+            return self.managerUser
+
         # /user/list
+        if len(vpath) == 2 and "user" in vpath and "list" in vpath:
+            del vpath[:]
+            return self.managerUser.list
+        if len(vpath) == 4 and "user" in vpath and "list" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.managerUser.list
+        if len(vpath) == 4 and "user" in vpath and "list" in vpath and "name" in vpath:
+            cherrypy.request.params['name'] = vpath[3]
+            del vpath[:]
+            return self.managerUser.list
+
+        # /user/create
+        if len(vpath) == 2 and "user" in vpath and "create" in vpath:
+            del vpath[:]
+            return self.managerUser.create
         # /user/delete
+        if len(vpath) == 2 and "user" in vpath and "delete" in vpath:
+            del vpath[:]
+            return self.managerUser.delete
+        if len(vpath) == 4 and "user" in vpath and "delete" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.managerUser.delete
 
         # /team/create
         # /team/list
