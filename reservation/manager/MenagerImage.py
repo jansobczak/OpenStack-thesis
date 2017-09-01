@@ -11,7 +11,7 @@ class MenagerImage:
     osKSGlance = None
 
     def sessionCheck(self):
-        if ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
+        if ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
             session_id = cherrypy.request.cookie["ReservationService"].value
             osKSAuth = self.keystoneAuthList[session_id]
             session = osKSAuth.createKeyStoneSession()

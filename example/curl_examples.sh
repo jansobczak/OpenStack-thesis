@@ -27,12 +27,11 @@ curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @labo
 
 # List laboratories
 curl -s -L -X GET --cookie cookies http://localhost:8080/laboratory/list | python -m json.tool
-curl -s -H "Content-Type: application/json" -L -X GET --cookie cookies http://localhost:8080/laboratory/list/id/21 | python -m json.tool
+curl -s -H "Content-Type: application/json" -L -X GET --cookie cookies http://localhost:8080/laboratory/list/id/21 | python -m json.tool`
 curl -s -H "Content-Type: application/json" -L -X GET --cookie cookies http://localhost:8080/laboratory/list/name/21 | python -m json.tool
 
 # Delete laboratory
 curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @laboratory/lab_delete_req.json http://localhost:8080/laboratory/delete | python -m json.tool
-
 curl -s -H "Content-Type: application/json" -L -X GET --cookie cookies http://localhost:8080/laboratory/delete/id/23 | python -m json.tool
 
 curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @laboratory/lab_delete_req_alt.json http://localhost:8080/laboratory/delete | python -m json.tool
@@ -65,5 +64,13 @@ curl -s -L -X GET --cookie cookies http://localhost:8080/instances/list | python
 
 # Stop instance 
 
+###############
+# Users tests #
+###############
 
+#
+curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_test.json  http://localhost:8080/auth/ | python -m json.tool
+
+#List all users
+curl -s -L -X GET --cookie cookies http://localhost:8080/user/ | python -m json.tool
 

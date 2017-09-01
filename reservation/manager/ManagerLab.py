@@ -16,22 +16,32 @@ class ManagerLab:
     @cherrypy.tools.json_out()
     def list(self, id=None, name=None):
         try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
-                data = dict(current="Laboratory manager", user_status="not authorized")
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="Laboratory manager", user_status="not authorized", require_moderator=True)
             else:
                 # Parse request if exists
                 labs = None
+                period = None
+                template = None
                 if id is not None:
                     labs = MySQL.mysqlConn.select_lab(id=id)
+                    period = MySQL.mysqlConn.select_period(laboratory_id=id)
+                    template = MySQL.mysqlConn.select_template(laboratory_id=id)
                 elif name is not None:
                     labs = MySQL.mysqlConn.select_lab(name=name)
+                    period = MySQL.mysqlConn.select_period(laboratory_id=labs.id)
+                    template = MySQL.mysqlConn.select_template(laboratory_id=labs.id)
                 elif hasattr(cherrypy.request, "json"):
                     request = cherrypy.request.json
                     reqLab = Laboratory().parseJSON(data=request)
                     if reqLab.id is not None and reqLab.name is None:
                         labs = MySQL.mysqlConn.select_lab(id=reqLab.id)
+                        period = MySQL.mysqlConn.select_period(laboratory_id=reqLab.id)
+                        template = MySQL.mysqlConn.select_template(laboratory_id=reqLab.id)
                     elif reqLab.name is not None and reqLab.id is None:
-                        labs = MySQL.mysqlConn.select_lab(name=reqLab.name)
+                        labs = MySQL.mysqlConn.select_lab(name=reqLab.name)                        
+                        period = MySQL.mysqlConn.select_period(laboratory_id=labs.id)
+                        template = MySQL.mysqlConn.select_template(laboratory_id=labs.id)
                     elif reqLab.name is not None and reqLab.id is not None:
                         raise Exception("Invalid request both id and name. Unknown laboratory")
                     else:
@@ -39,11 +49,22 @@ class ManagerLab:
                 else:
                     labs = MySQL.mysqlConn.select_lab()
 
-                preLabs = []
-                for lab in labs:
-                    preLabs.append(Laboratory().parseDict(lab).__dict__)
+                if len(labs) != 0:
+                    preLabs = []
+                    for lab in labs:
+                        preLabs.append(Laboratory().parseDict(lab))
 
-                data = dict(current="Laboratory manager", response=preLabs)
+                    if period is not None:
+                        print(period)
+                        preLabs.append(Periods().parseArray(period))
+
+                    if template is not None:
+                        print(template)
+                        preLabs.append(Template().parseDict(template))
+                    data = dict(current="Laboratory manager", response=preLabs)
+                else:
+                    data = dict(current="Laboratory manager", reponse="None")
+
         except Exception as e:
             data = dict(current="Laboratory manager", error=e)
         finally:
@@ -56,8 +77,8 @@ class ManagerLab:
     @cherrypy.tools.json_out()
     def create(self):
         try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
-                data = dict(current="Laboratory manager", user_status="not authorized")
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="Laboratory manager", user_status="not authorized", require_moderator=True)
             else:
                 session_id = cherrypy.request.cookie["ReservationService"].value
                 osKSAuth = self.keystoneAuthList[session_id]
@@ -68,13 +89,7 @@ class ManagerLab:
                 periods = Periods().parseJSON(data=request)
                 template = Template().parseJSON(data=request)
 
-                # Get defaults
-                defaults = MySQL.mysqlConn.select_defaults()
-
-                if not len(defaults) > 0:
-                    raise Exception("No defaults values. OpenStack might be not configured properly")
-
-                defaults = defaults[0]
+                defaults = ManagerTool.getDefaults()
 
                 # Add data to database
                 lab.id = MySQL.mysqlConn.insert_lab(name=lab.name,
@@ -92,10 +107,13 @@ class ManagerLab:
                 # Create Openstack group
                 osGroup = OSGroup(session=session)
                 osRole = OSRole(session=session)
-                group = osGroup.create(name=lab.group)
+                group = osGroup.find(name=lab.group)
+                if not group:
+                    group = osGroup.create(name=lab.group)
                 osRole.grantGroup(group_id=group.id,
                                   project_id=defaults["project"],
                                   role_id=defaults["role_lab"])
+
                 # Prepare data for showcase
                 lab = lab.__dict__
                 template = template.__dict__
@@ -121,8 +139,8 @@ class ManagerLab:
     @cherrypy.tools.json_out()
     def delete(self, id=None, name=None):
         try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
-                data = dict(current="Laboratory manager", user_status="not authorized")
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="Laboratory manager", user_status="not authorized", require_moderator=True)
             else:
                 # Parse request
                 status = False

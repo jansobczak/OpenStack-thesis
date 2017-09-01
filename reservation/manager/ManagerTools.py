@@ -1,7 +1,10 @@
+import reservation.service.MySQL as MySQL
+
+
 class ManagerTool:
 
     @staticmethod
-    def isAuthorized(cookie, dictionary, require_admin=False, require_lab_admin=False):
+    def isAuthorized(cookie, dictionary, require_admin=False, require_moderator=False):
         """Check if user is authorized based on cookie
         :param cookie: cherrypy.request.cookie
         :type cookie: object
@@ -20,11 +23,22 @@ class ManagerTool:
                     return True
                 else:
                     return False
-            if require_lab_admin:
-                if dictionary[session_id].userType == "lab_admin" or dictionary[session_id].userType == "admin":
+            if require_moderator:
+                if dictionary[session_id].userType == "moderator" or dictionary[session_id].userType == "admin":
                     return True
                 else:
                     return False
             return True
         else:
             return False
+
+    @staticmethod
+    def getDefaults():
+        # Get defaults
+        defaults = MySQL.mysqlConn.select_defaults()
+        if not len(defaults) > 0:
+            raise Exception("No defaults values. OpenStack might be not configured properly")
+        elif len(defaults) > 1:
+            raise Exception("More than one system defaults")
+        else:
+             return defaults[0]

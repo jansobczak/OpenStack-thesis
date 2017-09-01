@@ -34,8 +34,8 @@ class ManagerAuth:
             osUserRoles = osKSRoles.getUserRole(osKSUser.find(name=input_data.username)[0].id)
             if "admin" in osUserRoles:
                 input_data.userType = "admin"
-            elif "lab_admin" in osUserRoles:
-                input_data.userType = "lab_admin"
+            elif "moderator" in osUserRoles:
+                input_data.userType = "moderator"
             elif "user" in osUserRoles:
                 input_data.userType = "user"
             self.keystoneAuthList[str(cherrypy.session.id)] = input_data

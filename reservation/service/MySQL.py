@@ -115,13 +115,17 @@ class MySQL():
         :return: dict
         """
         template_id = kwargs.get("id")
+        lab_id = kwargs.get("laboratory_id")
         self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
-        if template_id is None:
+        if template_id is None and lab_id is None:
             sql = "SELECT * FROM template;"
             self.cursor.execute(sql)
-        else:
+        elif lab_id is None:
             sql = "SELECT * FROM template WHERE id = %s"
             self.cursor.execute(sql, template_id)
+        else:
+            sql = "SELECT * FROM template WHERE laboratory_id = %s"
+            self.cursor.execute(sql, lab_id)
         data = self.cursor.fetchall()
         return data
 

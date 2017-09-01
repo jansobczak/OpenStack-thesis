@@ -10,7 +10,8 @@ import reservation.service.MySQL as MySQL
 class ManagerSystem():
     keystoneAuthList = None
 
-    """This class make initial configuration to OpenStack
+    """This class make initial configuration to new OpenStack it 
+       should be also made for empty (no data) database
 
     New OpenStack need to be configured before system can operates.
     This class create roles
@@ -20,7 +21,7 @@ class ManagerSystem():
     @cherrypy.tools.json_out()
     def index(self):
         try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_lab_admin=True):
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_admin=True):
                 data = dict(current="System manager", user_status="not authorized")
             else:
                 studRole = None
