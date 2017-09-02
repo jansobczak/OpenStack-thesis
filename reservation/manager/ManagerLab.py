@@ -2,6 +2,8 @@ import cherrypy
 from reservation.service.Laboratory import Laboratory
 from reservation.service.Period import Periods
 from reservation.service.Template import Template
+from reservation.service.User import User
+from reservation.service.Group import Group
 from reservation.stack.OSKeystone import OSGroup
 from reservation.stack.OSKeystone import OSRole
 from .ManagerTools import ManagerTool
@@ -55,11 +57,9 @@ class ManagerLab:
                         preLabs.append(Laboratory().parseDict(lab))
 
                     if period is not None:
-                        print(period)
                         preLabs.append(Periods().parseArray(period))
 
                     if template is not None:
-                        print(template)
                         preLabs.append(Template().parseDict(template))
                     data = dict(current="Laboratory manager", response=preLabs)
                 else:
@@ -71,6 +71,57 @@ class ManagerLab:
             MySQL.mysqlConn.close()
             MySQL.mysqlConn.commit()
             return data
+
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def listAllowed(self, id=None, name=None):
+        try:
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="Laboratory manager", user_status="not authorized", require_moderator=True)
+            else:
+                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                session = osKSAuth.createKeyStoneSession()
+                # Parse request if exists
+                labs = None
+                if id is not None:
+                    labs = MySQL.mysqlConn.select_lab(id=id)
+                elif name is not None:
+                    labs = MySQL.mysqlConn.select_lab(name=name)
+                else:
+                    labs = MySQL.mysqlConn.select_lab()
+
+                if len(labs) != 0:
+                    preLabs = []
+                    for lab in labs:
+                        laboratory = Laboratory().parseDict(lab)
+                        osGroup = OSGroup(session=session)
+                        group = osGroup.find(name=laboratory.group)
+                        if group is not None and len(group) == 1:
+                            group = Group().parseObject(group[0])
+                        else:
+                            raise Exception("Found more than one group with given name. This is not expected")
+
+                        users = osGroup.getUsers(group_id=group.id)
+                        userArray = []
+                        if users is not None and len(users) > 0:
+                            for user in users:
+                                userArray.append(User().parseObject(user).to_dict())
+
+                        response = dict(laboratory=Laboratory().parseDict(lab).to_dict(), allowedUsers=userArray)
+                        preLabs.append(response)
+
+                    data = dict(current="Laboratory manager", response=preLabs)
+                else:
+                    data = dict(current="Laboratory manager", reponse="None")
+
+        except Exception as e:
+            data = dict(current="Laboratory manager", error=e)
+        finally:
+            MySQL.mysqlConn.close()
+            MySQL.mysqlConn.commit()
+            return data
+
 
     @cherrypy.expose
     @cherrypy.tools.json_in()

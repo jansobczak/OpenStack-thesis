@@ -238,6 +238,36 @@ class OSGroup(OSKeystone):
                     returnArray.append(users[i])
             return returnArray
 
+    def addUser(self, group_id, user_id):
+        try:
+            return self.client.users.add_to_group(user=user_id, group=group_id)
+        except Exception:
+            return False
+
+    def removeUser(self, group_id, user_id):
+        try:
+            return self.client.users.remove_from_group(user=user_id, group=group_id)
+        except Exception:
+            return False
+
+    def checkUserIn(self, group_id, user_id):
+        try:
+            return self.client.users.check_in_group(user=user_id, group=group_id)
+        except Exception:
+            return False
+
+    def getUsers(self, group_id):
+        osUser = OSUser(session=self.session)
+        users = osUser.list()
+        returnArray = []
+        for user in users:
+            if self.checkUserIn(group_id=group_id, user_id=user.id):
+                returnArray.append(user)
+
+        if len(returnArray) != 0:
+            return returnArray
+        else:
+            return None
 
 class OSRole(OSKeystone):
 

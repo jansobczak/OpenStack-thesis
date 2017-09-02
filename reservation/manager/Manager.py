@@ -46,15 +46,17 @@ class Menager:
         print(body)
 
     def _cp_dispatch(self, vpath):
+        # /auth
         if len(vpath) == 1 and "auth" in vpath:
             return self.managerAuth.auth
+        # /deauth
         if len(vpath) == 1 and "deauth" in vpath:
             return self.managerAuth.deauth
-
+        # /system
         if len(vpath) == 1 and "system" in vpath:
             del vpath[:]
             return self.managerSystem
-
+        # /laboratory
         if len(vpath) == 1 and "laboratory" in vpath:
             vpath.pop(0)
             return self.managerLab
@@ -70,6 +72,18 @@ class Menager:
             cherrypy.request.params['name'] = vpath[3]
             del vpath[:]
             return self.managerLab.list
+        # /laboratory/list/allowed
+        if len(vpath) == 3 and "laboratory" in vpath and "list" in vpath and "allowed" in vpath:
+            del vpath[:]
+            return self.managerLab.listAllowed
+        if len(vpath) == 5 and "laboratory" in vpath and "list" in vpath and "allowed" in vpath and "id" in vpath:
+            cherrypy.request.params['name'] = vpath[4]
+            del vpath[:]
+            return self.managerLab.listAllowed
+        if len(vpath) == 5 and "laboratory" in vpath and "list" in vpath and "allowed" in vpath and "name" in vpath:
+            cherrypy.request.params['name'] = vpath[4]
+            del vpath[:]
+            return self.managerLab.listAllowed
         # /laboratory/create
         if len(vpath) == 2 and "laboratory" in vpath and "create" in vpath:
             del vpath[:]
@@ -86,45 +100,26 @@ class Menager:
             cherrypy.request.params['name'] = vpath[3]
             del vpath[:]
             return self.managerLab.delete
-        # /laboratory/start
-        if len(vpath) == 2 and "laboratory" in vpath and "start" in vpath:
-            del vpath[:]
-            return self.managerLab.start
-        if len(vpath) == 4 and "laboratory" in vpath and "start" in vpath and "id" in vpath:
-            del vpath[:]
-            return self.managerLab.start
-        if len(vpath) == 4 and "laboratory" in vpath and "start" in vpath and "name" in vpath:
-            del vpath[:]
-            return self.managerLab.start
-        # /laboratory/stop
-        if len(vpath) == 2 and "laboratory" in vpath and "stop" in vpath:
-            del vpath[:]
-            return self.managerLab.stop
-        if len(vpath) == 4 and "laboratory" in vpath and "stop" in vpath and "id" in vpath:
-            del vpath[:]
-            return self.managerLab.stop
-        if len(vpath) == 4 and "laboratory" in vpath and "stop" in vpath and "name" in vpath:
-            del vpath[:]
-            return self.managerLab.stop
-
         # /laboratory/edit
 
-        # /period/delete
-        # /period/create
+
         # /period/list
+        # /period/add
+        # /period/delete
 
         # /template/list
-        # /template/edit
+        # /template/update
 
+        # /reservation/list
         # /reservation/create
         # /reservation/delete
-        # /reservation/create
+        # /reservation/activate
+        # /reservation/deactivate
 
         # /user
         if len(vpath) == 1 and "user" in vpath:
             vpath.pop(0)
             return self.managerUser
-
         # /user/list
         if len(vpath) == 2 and "user" in vpath and "list" in vpath:
             del vpath[:]
@@ -137,7 +132,10 @@ class Menager:
             cherrypy.request.params['name'] = vpath[3]
             del vpath[:]
             return self.managerUser.list
-
+        # /user/list/moderators
+        if len(vpath) == 3 and "user" in vpath and "list" in vpath and "moderators" in vpath:
+            del vpath[:]
+            return self.managerUser.listModerators
         # /user/create
         if len(vpath) == 2 and "user" in vpath and "create" in vpath:
             del vpath[:]
@@ -150,10 +148,43 @@ class Menager:
             cherrypy.request.params['id'] = vpath[3]
             del vpath[:]
             return self.managerUser.delete
-
+        # /user/allow/reservation
+        if len(vpath) == 3 and "user" in vpath and "allow" in vpath and "reservation" in vpath:
+            del vpath[:]
+            return self.managerUser.allowReservation
+        # /user/deny/reservation
+        if len(vpath) == 3 and "user" in vpath and "deny" in vpath and "reservation" in vpath:
+            del vpath[:]
+            return self.managerUser.denyReservation
+        # /user/allow/moderator
+        if len(vpath) == 3 and "user" in vpath and "allow" in vpath and "moderator" in vpath:
+            del vpath[:]
+            return self.managerUser.allowModerator
+        if len(vpath) == 5 and "user" in vpath and "allow" in vpath and "moderator" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[4]
+            del vpath[:]
+            return self.managerUser.allowModerator
+        if len(vpath) == 5 and "user" in vpath and "allow" in vpath and "moderator" in vpath and "name" in vpath:
+            cherrypy.request.params['name'] = vpath[4]
+            del vpath[:]
+            return self.managerUser.allowModerator
+        # /user/deny/moderator
+        if len(vpath) == 3 and "user" in vpath and "deny" in vpath and "moderator" in vpath:
+            del vpath[:]
+            return self.managerUser.denyModerator
+        if len(vpath) == 5 and "user" in vpath and "deny" in vpath and "moderator" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[4]
+            del vpath[:]
+            return self.managerUser.denyModerator
+        if len(vpath) == 5 and "user" in vpath and "deny" in vpath and "moderator" in vpath and "name" in vpath:
+            cherrypy.request.params['name'] = vpath[4]
+            del vpath[:]
+            return self.managerUser.denyModerator
         # /team/create
         # /team/list
         # /team/delete
+        # /team/add/user
+
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
