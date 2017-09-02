@@ -136,6 +136,10 @@ class Menager:
         if len(vpath) == 3 and "user" in vpath and "list" in vpath and "moderators" in vpath:
             del vpath[:]
             return self.managerUser.listModerators
+        # /user/list/students
+        if len(vpath) == 3 and "user" in vpath and "list" in vpath and "students" in vpath:
+            del vpath[:]
+            return self.managerUser.listStudents
         # /user/create
         if len(vpath) == 2 and "user" in vpath and "create" in vpath:
             del vpath[:]

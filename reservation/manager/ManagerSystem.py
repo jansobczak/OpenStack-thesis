@@ -4,6 +4,8 @@ from reservation.stack.OSTools import OSTools
 from reservation.stack.OSKeystone import OSRole
 from reservation.stack.OSKeystone import OSProject
 from reservation.stack.OSKeystone import OSGroup
+from reservation.service.Group import Group
+from reservation.service.Role import Role
 
 import reservation.service.MySQL as MySQL
 
@@ -46,13 +48,17 @@ class ManagerSystem():
                     defProject = osProject.find(id=defaults["project"])
                     groupStud = osGroup.find(id=defaults["group_student"])
                     groupModer = osGroup.find(id=defaults["group_moderator"])
+                    groupAdmin = osGroup.find(id=defaults["group_admin"])
                 else:
-                    studRole = osRole.create(name="student")
-                    labRole = osRole.create(name="lab")
-                    modRole = osRole.create(name="moderator")
+                    studRole = Role().parseObject(osRole.create(name="student"))
+                    labRole = Role().parseObject(osRole.create(name="lab"))
+                    modRole = Role().parseObject(osRole.create(name="moderator"))
                     defProject = osProject.create(name="reservation_system")
-                    groupStud = osGroup.create(name="students")
-                    groupModer = osGroup.create(name="moderators")
+                    groupStud = Group().parseObject(osGroup.create(name="students"))
+                    groupModer = Group().parseObject(osGroup.create(name="moderators"))
+
+                    osRole.grantGroup(group_id=groupStud.id,role_id=studRole.id)
+                    osRole.grantGroup(group_id=modRole.id, role_id=modRole.id)
 
                     MySQL.mysqlConn.insert_defaults(project_id=defProject.id,
                                                     role_student=studRole.id,
@@ -63,11 +69,11 @@ class ManagerSystem():
 
                 data = dict(current="System manager",
                             default_project=OSTools.prepareJSON(defProject),
-                            role_student=OSTools.prepareJSON(studRole),
-                            role_lab=OSTools.prepareJSON(labRole),
-                            role_moderator=OSTools.prepareJSON(modRole),
-                            group_students=OSTools.prepareJSON(studRole),
-                            group_moderator=OSTools.prepareJSON(modRole))
+                            role_student=studRole.to_dict(),
+                            role_lab=labRole.to_dict(),
+                            role_moderator=modRole.to_dict(),
+                            group_students=groupStud.to_dict(),
+                            group_moderator=groupModer.to_dict())
                 MySQL.mysqlConn.commit()
         except Exception as e:
             if not len(defaults) > 0:

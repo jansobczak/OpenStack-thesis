@@ -3,6 +3,7 @@ from .ManagerTools import ManagerTool
 from reservation.stack.OSKeystone import OSUser
 from reservation.stack.OSKeystone import OSGroup
 from reservation.service.User import User
+from reservation.service.Role import Role
 from reservation.service.Group import Group
 from reservation.service.Laboratory import Laboratory
 import reservation.service.MySQL as MySQL
@@ -36,20 +37,23 @@ class ManagerUser:
         finally:
             return data
 
-    @cherrypy.expose()
-    @cherrypy.tools.json_out()
-    def listModerators(self):
+    def _listType(self, type=None, cookie=None):
         try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+            if not ManagerTool.isAuthorized(cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                osKSAuth = self.keystoneAuthList[cookie["ReservationService"].value]
                 session = osKSAuth.createKeyStoneSession()
                 userArray = []
                 defaults = ManagerTool.getDefaults()
                 #Find lab group id
                 osGroup = OSGroup(session=session)
-                group = osGroup.find(id=defaults["group_moderator"])
+                if type == "moderators":
+                    group = osGroup.find(id=defaults["group_moderator"])
+                elif type == "students":
+                    group = osGroup.find(id=defaults["group_student"])
+                else:
+                    raise Exception("Invalid type requested")
                 if group is not None:
                     group = Group().parseObject(group)
                 elif group is not None:
@@ -64,6 +68,16 @@ class ManagerUser:
         finally:
             return data
 
+    @cherrypy.expose()
+    @cherrypy.tools.json_out()
+    def listModerators(self):
+        return self._listType(type="moderators", cookie=cherrypy.request.cookie)
+
+    @cherrypy.expose()
+    @cherrypy.tools.json_out()
+    def listStudents(self):
+        return self._listType(type="students", cookie=cherrypy.request.cookie)
+
 
     @cherrypy.expose()
     @cherrypy.tools.json_in()
@@ -76,6 +90,7 @@ class ManagerUser:
                 osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
                 session = osKSAuth.createKeyStoneSession()
                 osUser = OSUser(session=session)
+                osGroup = OSGroup(session=session)
 
                 # Get defaults
                 defaults = ManagerTool.getDefaults()
@@ -83,11 +98,34 @@ class ManagerUser:
                 #Parse incoming JSON
                 request = cherrypy.request.json
                 user = User().parseJSON(data=request)
+                group = Group().parseJSON(data=request)
+
                 if user is not None:
-                    result = osUser.create(name=user.name, password=user.password, project_id=defaults["project"], mail=user.mail)
-                    result = User().parseObject(result).to_dict()
+                    user = osUser.create(name=user.name, password=user.password, project_id=defaults["project"], mail=user.mail)
+                    user = User().parseObject(user)
+
+                    # Find lab group id
+                    if group.id is not None:
+                        group = Group.parseObject(osGroup.find(id=group.id))
+                    elif group.name is not None:
+                        findGroup = osGroup.find(name=group.name)
+                        if findGroup is not None and len(findGroup) == 1:
+                            group = Group().parseObject(findGroup[0])
+                        elif len(findGroup) > 0:
+                            osUser.delete(user_id=user.id)
+                            raise Exception("Found more than one group with given name. This is not expected")
+                        else:
+                            osUser.delete(user_id=user.id)
+                            raise Exception("Group doesn't exists. This is not expected")
+
+                    if group.id != defaults["group_moderator"] and group.id != defaults["group_student"]:
+                        osUser.delete(user_id=user.id)
+                        raise Exception("Group doesn't match any of system defaults")
+                    else:
+                        osGroup.addUser(group_id=group.id, user_id=user.id)
+                        result = user.to_dict()
                 else:
-                    result = "Invalid request"
+                    raise Exception("Invalid request")
                 data = dict(current="User manager", response=result)
         except Exception as e:
                 data = dict(current="User manager", error=str(e))

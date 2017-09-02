@@ -319,11 +319,11 @@ class OSRole(OSKeystone):
     def delete(self, id):
         return self.client.roles.delete(id)
 
-    def grantUser(self, user_id, project_id, role_id):
-        return self.client.roles.grant(role_id, user=user_id, project=project_id)
+    def grantUser(self, user_id, role_id):
+        return self.client.roles.grant(role_id, user=user_id, domain="default")
 
-    def grantGroup(self, group_id, project_id, role_id):
-        return self.client.roles.grant(role_id, group=group_id, project=project_id)
+    def grantGroup(self, group_id, role_id):
+        return self.client.roles.grant(role_id, group=group_id, domain="default")
 
     def getUserRole(self, user_id):
         """Get name of roles connected with users

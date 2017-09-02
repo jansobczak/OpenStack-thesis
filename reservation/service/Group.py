@@ -19,13 +19,13 @@ class Group:
             return None
 
     def parseJSON(self, data):
-        if "user" in data:
-            if "id" in data["user"]:
-                self.id = data["user"]["id"]
-            if "name" in data["user"]:
-                self.name = data["user"]["name"]
-            if "description" in data["user"]:
-                self.description = data["user"]["description"]
+        if "group" in data:
+            if "id" in data["group"]:
+                self.id = data["group"]["id"]
+            if "name" in data["group"]:
+                self.name = data["group"]["name"]
+            if "description" in data["group"]:
+                self.description = data["group"]["description"]
             return self
         else:
             return None
