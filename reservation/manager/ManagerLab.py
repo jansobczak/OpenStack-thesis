@@ -27,35 +27,15 @@ class ManagerLab:
                 template = None
                 if id is not None:
                     labs = MySQL.mysqlConn.select_lab(id=id)
-                    if labs is not None and len(labs) > 0:
-                        period = MySQL.mysqlConn.select_period(laboratory_id=id)
-                        template = MySQL.mysqlConn.select_template(laboratory_id=id)
-                    else:
-                        raise Exception("Laboratory not found!")
                 elif name is not None:
                     labs = MySQL.mysqlConn.select_lab(name=name)
-                    if labs is not None and len(labs) > 0:
-                        period = MySQL.mysqlConn.select_period(laboratory_id=labs.id)
-                        template = MySQL.mysqlConn.select_template(laboratory_id=labs.id)
-                    else:
-                        raise Exception("Laboratory not found!")
                 elif hasattr(cherrypy.request, "json"):
                     request = cherrypy.request.json
                     reqLab = Laboratory().parseJSON(data=request)
                     if reqLab.id is not None and reqLab.name is None:
                         labs = MySQL.mysqlConn.select_lab(id=reqLab.id)
-                        if labs is not None and len(labs) > 0:
-                            period = MySQL.mysqlConn.select_period(laboratory_id=reqLab.id)
-                            template = MySQL.mysqlConn.select_template(laboratory_id=reqLab.id)
-                        else:
-                            raise Exception("Laboratory not found!")
                     elif reqLab.name is not None and reqLab.id is None:
                         labs = MySQL.mysqlConn.select_lab(name=reqLab.name)
-                        if labs is not None and len(labs) > 0:
-                            period = MySQL.mysqlConn.select_period(laboratory_id=labs.id)
-                            template = MySQL.mysqlConn.select_template(laboratory_id=labs.id)
-                        else:
-                            raise Exception("Laboratory not found!")
                     elif reqLab.name is not None and reqLab.id is not None:
                         raise Exception("Invalid request both id and name. Unknown laboratory")
                     else:
@@ -66,13 +46,13 @@ class ManagerLab:
                 if len(labs) != 0:
                     preLabs = []
                     for lab in labs:
-                        preLabs.append(Laboratory().parseDict(lab).to_dict())
+                        labChunk = Laboratory().parseDict(lab)
+                        period = MySQL.mysqlConn.select_period(laboratory_id=labChunk.id)
+                        periodChunk = Periods().parseArray(period)
+                        template = MySQL.mysqlConn.select_template(laboratory_id=labChunk.id)
+                        templateChunk = Template().parseDict(template)
+                        preLabs.append(dict(info=labChunk.to_dict(), periods=periodChunk.to_dict(), template=templateChunk.to_dict()))
 
-                    if period is not None:
-                        preLabs.append(Periods().parseArray(period))
-
-                    if template is not None:
-                        preLabs.append(Template().parseDict(template).to_dict())
                     data = dict(current="Laboratory manager", response=preLabs)
                 else:
                     data = dict(current="Laboratory manager", reponse="None")

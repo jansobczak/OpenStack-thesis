@@ -23,7 +23,7 @@ class Period:
         return self
 
     def to_dict(self):
-        return dict(id=self.id, start=self.start, stop=self.stop, laboratory_id=self.laboratory_id)
+        return dict(id=self.id, start=str(self.start), stop=str(self.stop), laboratory_id=self.laboratory_id)
 
 
 class Periods:
@@ -40,7 +40,7 @@ class Periods:
                     self.period.append(Period(start=period["start"], stop=period["stop"]))
                 else:
                     continue
-            return self.period
+            return self
         else:
             return None
 
@@ -48,4 +48,11 @@ class Periods:
         for period in array:
             self.period.append(Period(id=period["id"], start=period["start"], stop=period["stop"], laboratory_id=period["laboratory_id"], ))
 
-        return self.period
+        return self
+
+    def to_dict(self):
+        newPeriod = []
+        for period in self.period:
+            newPeriod.append(period.to_dict())
+
+        return newPeriod
