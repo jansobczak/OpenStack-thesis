@@ -128,7 +128,7 @@ class ManagerLab:
                 # Parse request
                 request = cherrypy.request.json
                 lab = Laboratory().parseJSON(data=request)
-                periods = Periods().parseJSON(data=request)
+                periods = Periods().parseJSON(data=request).period
                 template = Template().parseJSON(data=request)
 
                 defaults = ManagerTool.getDefaults()
