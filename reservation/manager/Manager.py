@@ -5,6 +5,7 @@ from .ManagerAuth import ManagerAuth
 from .ManagerLab import ManagerLab
 from .ManagerSystem import ManagerSystem
 from .ManagerUser import ManagerUser
+from .ManagerTeam import ManagerTeam
 
 import reservation.service.ConfigParser as ConfigParser
 import reservation.service.MySQL as MySQL
@@ -34,6 +35,9 @@ class Menager:
 
         self.managerUser = ManagerUser()
         self.managerUser.keystoneAuthList = self.keystoneAuthList
+
+        self.managerTeam = ManagerTeam()
+        self.managerTeam.keystoneAuthList = self.keystoneAuthList
 
         con_conf = ConfigParser.configuration["database"]
         MySQL.mysqlConn = MySQL.MySQL(
@@ -102,7 +106,6 @@ class Menager:
             return self.managerLab.delete
         # /laboratory/edit
 
-
         # /period/list
         # /period/add
         # /period/delete
@@ -111,6 +114,9 @@ class Menager:
         # /template/update
 
         # /reservation/list
+        # /reservation/list/user/
+        # /reservation/list/team/
+        # /reservation/list/laboratory/
         # /reservation/create
         # /reservation/delete
         # /reservation/activate
@@ -184,10 +190,39 @@ class Menager:
             cherrypy.request.params['name'] = vpath[4]
             del vpath[:]
             return self.managerUser.denyModerator
-        # /team/create
         # /team/list
+        if len(vpath) == 2 and "team" in vpath and "list" in vpath:
+            del vpath[:]
+            return self.managerTeam.list
+        if len(vpath) == 4 and "team" in vpath and "list" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.managerTeam.list
+        if len(vpath) == 4 and "team" in vpath and "list" in vpath and "owner_id" in vpath:
+            cherrypy.request.params['owner_id'] = vpath[3]
+            del vpath[:]
+            return self.managerTeam.list
+        if len(vpath) == 4 and "team" in vpath and "list" in vpath and "team_id" in vpath:
+            cherrypy.request.params['team_id'] = vpath[3]
+            del vpath[:]
+            return self.managerTeam.list
+        # /team/create
+        if len(vpath) == 2 and "team" in vpath and "create" in vpath:
+            del vpath[:]
+            return self.managerTeam.create
         # /team/delete
+        if len(vpath) == 4 and "team" in vpath and "delete" in vpath and "id" in vpath:
+            cherrypy.request.params["id"] = vpath[3]
+            del vpath[:]
+            return self.managerTeam.delete
+        if len(vpath) == 4 and "team" in vpath and "delete" in vpath and "team_id" in vpath:
+            cherrypy.request.params["team_id"] = vpath[3]
+            del vpath[:]
+            return self.managerTeam.delete
         # /team/add/user
+        if len(vpath) == 5 and "team" in vpath and "add" in vpath and "user" in vpath:
+            del vpath[:]
+            return self.managerTeam.addUser
 
 
     @cherrypy.expose

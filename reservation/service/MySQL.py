@@ -247,3 +247,71 @@ class MySQL():
         sql = "INSERT INTO system VALUES(DEFAULT, %s, %s, %s, %s, %s, %s);"
         self.cursor.execute(sql, (project_id, role_lab, role_student, role_moderator, group_student, group_moderator))
         return self.cursor.lastrowid
+
+    def select_team(self, **kwargs):
+        team_id = kwargs.get("id")
+        team_keystone_id = kwargs.get("team_id")
+        team_owner_id = kwargs.get("owner_id")
+
+        self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
+        if team_id is None and team_keystone_id is None and team_owner_id is None:
+            sql = "SELECT * FROM team;"
+            self.cursor.execute(sql)
+        elif team_id is not None:
+            sql = "SELECT * FROM team WHERE id = %s;"
+            self.cursor.execute(sql, team_id)
+        elif team_keystone_id is not None:
+            sql = "SELECT * FROM team WHERE team_id = %s"
+            self.cursor.execute(sql, team_keystone_id)
+        elif team_owner_id is not None:
+            sql = "SELECT * FROM team WHERE owner_id = %s"
+            self.cursor.execute(sql, team_owner_id)
+        data = self.cursor.fetchall()
+        return data
+
+    def insert_team(self, **kwargs):
+        """
+        Insert into periods table
+        :param kwargs: start, stop, laboratory_id
+        :return: ID of inserted period
+        """
+        team_keystone_id = kwargs.get("team_id")
+        team_owner_id = kwargs.get("owner_id")
+        self.cursor = self.conn.cursor()
+        sql = "INSERT INTO team VALUES(DEFAULT, %s, %s);"
+        self.cursor.execute(sql, (team_keystone_id, team_owner_id))
+        return self.cursor.lastrowid
+
+    def update_team(self, **kwargs):
+        team_id = kwargs.get("id")
+        team_keystone_id = kwargs.get("team_id")
+        team_owner_id = kwargs.get("owner_id")
+        self.cursor = self.conn.cursor()
+        if team_id is not None:
+            if team_keystone_id is not None:
+                sql = "UPDATE team SET team_id = %s WHERE id = %s"
+                self.cursor.execute(sql, (team_id, team_keystone_id))
+            elif team_owner_id is not None:
+                sql = "UPDATE team SET owner_id = %s WHERE id = %s"
+                self.cursor.execute(sql, (team_id, team_owner_id))
+
+    def delete_team(self, **kwargs):
+        """
+        Delete selected item from period
+        :param kwargs: id or laboratory_id
+        :return: True
+        """
+        team_id = kwargs.get("id")
+        team_keystone_id = kwargs.get("team_id")
+        self.cursor = self.conn.cursor()
+        if team_id is not None:
+            sql = "DELETE FROM team WHERE id = %s"
+            self.cursor.execute(sql, team_id)
+        elif team_keystone_id is not None:
+            sql = "DELETE FROM team WHERE team_id = %s"
+            self.cursor.execute(sql, team_keystone_id)
+        if self.cursor.rowcount > 0:
+            data = True
+        else:
+            data = False
+        return data

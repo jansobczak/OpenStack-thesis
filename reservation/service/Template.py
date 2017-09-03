@@ -31,7 +31,7 @@ class Template:
         if "data" in dict:
             self.data = dict["data"]
         if "name" in dict:
-            self.name = dict["stop"]
+            self.name = dict["name"]
         if "laboratory_id" in dict:
             self.laboratory_id = dict["laboratory_id"]
         return self

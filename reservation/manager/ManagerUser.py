@@ -3,7 +3,6 @@ from .ManagerTools import ManagerTool
 from reservation.stack.OSKeystone import OSUser
 from reservation.stack.OSKeystone import OSGroup
 from reservation.service.User import User
-from reservation.service.Role import Role
 from reservation.service.Group import Group
 from reservation.service.Laboratory import Laboratory
 import reservation.service.MySQL as MySQL
