@@ -334,14 +334,14 @@ class OSRole(OSKeystone):
             One or many names of roles
             Array
         """
-        userRoles = self.client.role_assignments.list(user=user_id)
+        userRoles = self.client.role_assignments.list(user=user_id, effective=True)
         if userRoles is not None:
             returnArray = []
             for i in range(0, len(userRoles)):
                 if hasattr(userRoles[i], "role") and userRoles[i].role is not None:
                     role = userRoles[i].role
                     roles = self.find(id=role["id"])
-                    if roles is not None:
+                    if roles is not None and roles[0].name not in returnArray:
                         returnArray.append(roles[0].name)
                 else:
                     continue

@@ -48,17 +48,45 @@ class ManagerSystem():
                     defProject = osProject.find(id=defaults["project"])
                     groupStud = osGroup.find(id=defaults["group_student"])
                     groupModer = osGroup.find(id=defaults["group_moderator"])
-                    groupAdmin = osGroup.find(id=defaults["group_admin"])
                 else:
-                    studRole = Role().parseObject(osRole.create(name="student"))
-                    labRole = Role().parseObject(osRole.create(name="lab"))
-                    modRole = Role().parseObject(osRole.create(name="moderator"))
-                    defProject = osProject.create(name="reservation_system")
-                    groupStud = Group().parseObject(osGroup.create(name="students"))
-                    groupModer = Group().parseObject(osGroup.create(name="moderators"))
+                    roleFind = osRole.find(name="student")
+                    if len(roleFind) > 0:
+                        studRole = Role().parseObject(roleFind[0])
+                    else:
+                        studRole = Role().parseObject(osRole.create(name="student"))
+
+                    roleFind = osRole.find(name="moderator")
+                    if len(roleFind) > 0:
+                        modRole = Role().parseObject(roleFind[0])
+                    else:
+                        modRole = Role().parseObject(osRole.create(name="moderator"))
+
+                    roleFind = osRole.find(name="lab")
+                    if len(roleFind) > 0:
+                        labRole = Role().parseObject(roleFind[0])
+                    else:
+                        labRole = Role().parseObject(osRole.create(name="lab"))
+
+                    projFind = osProject.find(name="reservation_system")
+                    if len(projFind) > 0:
+                        defProject = projFind[0]
+                    else:
+                        defProject = osProject.create(name="reservation_system")
+
+                    groupFind = osGroup.find(name="students")
+                    if len(groupFind) > 0:
+                        groupStud = Group().parseObject(groupFind[0])
+                    else:
+                        groupStud = Group().parseObject(osGroup.create(name="students"))
+
+                    groupFind = osGroup.find(name="moderators")
+                    if len(groupFind) > 0:
+                        groupModer = Group().parseObject(groupFind[0])
+                    else:
+                        groupModer = Group().parseObject(osGroup.create(name="moderators"))
 
                     osRole.grantGroup(group_id=groupStud.id,role_id=studRole.id)
-                    osRole.grantGroup(group_id=modRole.id, role_id=modRole.id)
+                    osRole.grantGroup(group_id=groupModer.id, role_id=modRole.id)
 
                     MySQL.mysqlConn.insert_defaults(project_id=defProject.id,
                                                     role_student=studRole.id,

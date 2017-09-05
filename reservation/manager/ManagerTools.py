@@ -19,12 +19,12 @@ class ManagerTool:
             return False
         if session_id in dictionary.keys():
             if require_admin:
-                if dictionary[session_id].userType == "admin":
+                if dictionary[session_id].role == "admin":
                     return True
                 else:
                     return False
             if require_moderator:
-                if dictionary[session_id].userType == "moderator" or dictionary[session_id].userType == "admin":
+                if dictionary[session_id].role == "moderator" or dictionary[session_id].role == "admin":
                     return True
                 else:
                     return False

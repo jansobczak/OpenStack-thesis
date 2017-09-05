@@ -12,6 +12,15 @@ import reservation.service.MySQL as MySQL
 class ManagerTeam:
     keystoneAuthList = None
 
+
+    def _isOwner(self, session, id):
+        team = MySQL.mysqlConn.select_team(id=id)
+        if team is not None and len(team) == 1:
+            team = Team().parseDict(team[0])
+        else:
+            raise Exception("More than one team found with given id. This was not expected!")
+        user = OS
+
     def _getTeam(self, session, id=None, owner_id=None, team_id=None):
         if id is not None:
             teams = MySQL.mysqlConn.select_team(id=id)

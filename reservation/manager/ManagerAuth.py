@@ -1,6 +1,8 @@
 import cherrypy
 
 from reservation.stack import OSKeystone
+from reservation.service.Auth import Auth
+from reservation.service.User import User
 
 from .ManagerTools import ManagerTool
 
@@ -23,23 +25,48 @@ class ManagerAuth:
         :rtype: {string}
         """
         try:
-            input_data = self.parseJson(cherrypy.request.json)
-            # Check if users exists!
-            osKSAuth = input_data
-            osKSAuth.createKeyStoneSession().get_token()
+            if hasattr(cherrypy.request, "json"):
+                request = cherrypy.request.json
+                auth = Auth().parseJSON(data=request)
+            else:
+                raise Exception("No data in POST")
+
             # Bind admin and check group
             osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
             osKSUser = OSKeystone.OSUser(session=osKSAuth.createKeyStoneSession())
             osKSRoles = OSKeystone.OSRole(session=osKSAuth.createKeyStoneSession())
-            osUserRoles = osKSRoles.getUserRole(osKSUser.find(name=input_data.username)[0].id)
+
+            userFind = osKSUser.find(name=auth.username)
+            if userFind is not None and len(userFind) == 1:
+                user = User().parseObject(userFind[0])
+
+            elif userFind is not None and len(userFind) > 1:
+                raise Exception("Duplicate username found")
+            else:
+                raise Exception("User does not exist")
+
+            osUserRoles = osKSRoles.getUserRole(user_id=user.id)
             if "admin" in osUserRoles:
-                input_data.userType = "admin"
+                auth.role = "admin"
             elif "moderator" in osUserRoles:
-                input_data.userType = "moderator"
+                auth.role = "moderator"
+            elif "student" in osUserRoles:
+                auth.role = "student"
             elif "user" in osUserRoles:
-                input_data.userType = "user"
-            self.keystoneAuthList[str(cherrypy.session.id)] = input_data
-            data = dict(current="Authorization manager", user_status="authorized", username=self.keystoneAuthList[str(cherrypy.session.id)].username, type=input_data.userType)
+                auth.role = "user"
+
+            #Check pass
+
+            osKSAuth.username = auth.username
+            osKSAuth.password = auth.password
+            auth.token = osKSAuth.createKeyStoneSession().get_token()
+
+            osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
+            osKSAuth.role = auth.role
+
+            self.keystoneAuthList[str(cherrypy.session.id)] = osKSAuth
+
+            data = dict(current="Authorization manager", user_status="authorized", username=self.keystoneAuthList[str(cherrypy.session.id)].username, type=auth.role)
             return data
         except Exception as e:
             data = dict(current="Authorization manager", user_status="not authorized", error=str(e))
