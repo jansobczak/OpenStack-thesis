@@ -31,12 +31,12 @@ class Team:
                 self.id = data["team"]["id"]
             if "name" in data["team"]:
                 self.name = data["team"]["name"]
-            if "name" in data["team"]:
+            if "team_id" in data["team"]:
                 self.team_id = data["team"]["team_id"]
-            if "name" in data["team"]:
+            if "owner_id" in data["team"]:
                 self.owner_id = data["team"]["owner_id"]
             if "users" in data["team"]:
-                for id in data["teams"]["users"]:
+                for id in data["team"]["users"]:
                     self.users.append(id)
             return self
         else:

@@ -220,7 +220,7 @@ class Menager:
             del vpath[:]
             return self.managerTeam.delete
         # /team/add/user
-        if len(vpath) == 5 and "team" in vpath and "add" in vpath and "user" in vpath:
+        if len(vpath) == 3 and "team" in vpath and "add" in vpath and "user" in vpath:
             del vpath[:]
             return self.managerTeam.addUser
 

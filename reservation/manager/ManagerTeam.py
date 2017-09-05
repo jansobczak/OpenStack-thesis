@@ -12,8 +12,7 @@ import reservation.service.MySQL as MySQL
 class ManagerTeam:
     keystoneAuthList = None
 
-
-    def _getTeam(self, id=None, owner_id=None, team_id=None):
+    def _getTeam(self, session, id=None, owner_id=None, team_id=None):
         if id is not None:
             teams = MySQL.mysqlConn.select_team(id=id)
         elif owner_id is not None:
@@ -50,18 +49,19 @@ class ManagerTeam:
                 osUser = OSUser(session=session)
 
                 if id is None and owner_id is None:
-                    teamDict =  self._getTeam()
+                    teamDict =  self._getTeam(session=session)
                 elif id is not None:
-                    teamDict = self._getTeam(id=id)
+                    teamDict = self._getTeam(session=session, id=id)
                 elif owner_id is not None:
-                    teamDict = self._getTeam(owner_id=owner_id)
+                    teamDict = self._getTeam(session=session, owner_id=owner_id)
                 elif team_id is not None:
-                    teamDict = self._getTeam(team_id=team_id)
+                    teamDict = self._getTeam(session=session, team_id=team_id)
 
                 data = dict(current="Team manager", response=teamDict)
         except Exception as e:
                 data = dict(current="Team manager", error=str(e))
         finally:
+            MySQL.mysqlConn.close()
             return data
 
     @cherrypy.expose()
@@ -89,7 +89,7 @@ class ManagerTeam:
                     team.id = MySQL.mysqlConn.insert_team(owner_id=team.owner_id)
                     group = osGroup.create(name="team_" + str(team.owner_id) + "_" + str(team.id))
                     group = Group().parseObject(group)
-                    MySQL.mysqlConn.update_team(team_id=group.id)
+                    MySQL.mysqlConn.update_team(id=team.id, team_id=group.id)
 
                     userArray = []
                     for userID in team.users:
@@ -102,10 +102,11 @@ class ManagerTeam:
 
                 data = dict(current="Team manager", response=data)
         except Exception as e:
-                data = dict(current="Team manager", error=str(e))
+            data = dict(current="Team manager", error=str(e))
         finally:
+            MySQL.mysqlConn.close()
+            MySQL.mysqlConn.commit()
             return data
-
     @cherrypy.expose()
     @cherrypy.tools.json_out()
     def delete(self, id=None, team_id=None):
@@ -134,13 +135,15 @@ class ManagerTeam:
 
                 #TODO
                 #Check what is the output of delete
-                result = osGroup.delete(group_id=team.team_id)
-                result = MySQL.mysqlConn.delete_team(id=team.id)
+                osGroup.delete(group_id=team.team_id)
+                MySQL.mysqlConn.delete_team(id=team.id)
 
-            data = dict(current="Team manager", response=result)
+            data = dict(current="Team manager", response="OK")
         except Exception as e:
                 data = dict(current="Team manager", error=str(e))
         finally:
+            MySQL.mysqlConn.close()
+            MySQL.mysqlConn.commit()
             return data
 
 
@@ -155,16 +158,22 @@ class ManagerTeam:
                 osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
                 session = osKSAuth.createKeyStoneSession()
                 osGroup = OSGroup(session=session)
-                osUser = OSUser(session=session)
 
                 if hasattr(cherrypy.request, "json"):
                     request = cherrypy.request.json
                     team = Team().parseJSON(data=request)
 
+                    if team.team_id is None and team.id is not None:
+                        teamFind = MySQL.mysqlConn.select_team(id=team.id)
+                        if len(teamFind) == 1:
+                            team.team_id = Team().parseDict(teamFind[0]).team_id
+                        else:
+                            raise Exception("More than one team found with given id. This was not expected!")
+
                     for userID in team.users:
                         osGroup.addUser(group_id=team.team_id,user_id=userID)
 
-                    data = self._getTeam(team_id=team.team_id)
+                    data = self._getTeam(session=session, team_id=team.team_id)
                 else:
                     raise Exception("No data in POST")
         except Exception as e:

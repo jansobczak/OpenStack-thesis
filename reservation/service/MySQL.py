@@ -290,10 +290,10 @@ class MySQL():
         if team_id is not None:
             if team_keystone_id is not None:
                 sql = "UPDATE team SET team_id = %s WHERE id = %s"
-                self.cursor.execute(sql, (team_id, team_keystone_id))
+                self.cursor.execute(sql, (team_keystone_id, team_id))
             elif team_owner_id is not None:
                 sql = "UPDATE team SET owner_id = %s WHERE id = %s"
-                self.cursor.execute(sql, (team_id, team_owner_id))
+                self.cursor.execute(sql, (team_owner_id, team_id))
 
     def delete_team(self, **kwargs):
         """

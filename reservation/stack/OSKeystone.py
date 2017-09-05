@@ -241,7 +241,8 @@ class OSGroup(OSKeystone):
     def addUser(self, group_id, user_id):
         try:
             return self.client.users.add_to_group(user=user_id, group=group_id)
-        except Exception:
+        except Exception as e:
+            print(str(e))
             return False
 
     def removeUser(self, group_id, user_id):
