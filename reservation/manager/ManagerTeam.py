@@ -13,15 +13,28 @@ class ManagerTeam:
     keystoneAuthList = None
 
 
-    def _isOwner(self, session, id):
+    def _isOwner(self, session, username, id=None):
         team = MySQL.mysqlConn.select_team(id=id)
         if team is not None and len(team) == 1:
             team = Team().parseDict(team[0])
         else:
             raise Exception("More than one team found with given id. This was not expected!")
-        user = OS
 
-    def _getTeam(self, session, id=None, owner_id=None, team_id=None):
+        osUser = OSUser(session=session)
+        userFind = osUser.find(name=username)
+        if userFind is not None and len(userFind) == 1:
+            user = User().parseObject(userFind[0])
+        else:
+            raise Exception("More than one user found with given username. This was not expected!")
+
+        if team.owner_id == user.id:
+            return True
+        else:
+            return False
+
+
+    def _getTeam(self, session, username, id=None, owner_id=None, team_id=None):
+        getAll = False
         if id is not None:
             teams = MySQL.mysqlConn.select_team(id=id)
         elif owner_id is not None:
@@ -29,21 +42,33 @@ class ManagerTeam:
         elif team_id is not None:
             teams = MySQL.mysqlConn.select_team(team_id=team_id)
         else:
+            getAll = True
             teams = MySQL.mysqlConn.select_team()
 
         teamDict = []
         for team in teams:
             team = Team().parseDict(team)
-
-            osGroup = OSGroup(session=session)
-            group = Group().parseObject(osGroup.find(id=team.team_id))
-            users = osGroup.getUsers(group_id=group.id)
-            userArray = []
-            if users is not None and len(users) > 0:
-                for user in users:
-                    userArray.append(User().parseObject(user).to_dict())
-
-            teamDict.append(dict(team=team.to_dict(), users=userArray))
+            if not getAll:
+                if not self._isOwner(session=session, username=username, id=team.id):
+                    teamDict.append(dict(status="Not authorized"))
+                else:
+                    osGroup = OSGroup(session=session)
+                    group = Group().parseObject(osGroup.find(id=team.team_id))
+                    users = osGroup.getUsers(group_id=group.id)
+                    userArray = []
+                    if users is not None and len(users) > 0:
+                        for user in users:
+                            userArray.append(User().parseObject(user).to_dict())
+                    teamDict.append(dict(team=team.to_dict(), users=userArray))
+            else:
+                osGroup = OSGroup(session=session)
+                group = Group().parseObject(osGroup.find(id=team.team_id))
+                users = osGroup.getUsers(group_id=group.id)
+                userArray = []
+                if users is not None and len(users) > 0:
+                    for user in users:
+                        userArray.append(User().parseObject(user).to_dict())
+                teamDict.append(dict(team=team.to_dict(), users=userArray))
         return teamDict
 
     @cherrypy.expose()
@@ -55,18 +80,22 @@ class ManagerTeam:
             else:
                 osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
                 session = osKSAuth.createKeyStoneSession()
-                osUser = OSUser(session=session)
 
                 if id is None and owner_id is None:
-                    teamDict =  self._getTeam(session=session)
+                    if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
+                        teamDict =  self._getTeam(session=session, username=osKSAuth.authUsername)
+                        data = dict(current="Team manager", response=teamDict)
+                    else:
+                        data = dict(current="Team manager", response="Not authorized")
                 elif id is not None:
-                    teamDict = self._getTeam(session=session, id=id)
+                    teamDict = self._getTeam(session=session, username=osKSAuth.authUsername, id=id)
+                    data = dict(current="Team manager", response=teamDict)
                 elif owner_id is not None:
-                    teamDict = self._getTeam(session=session, owner_id=owner_id)
+                    teamDict = self._getTeam(session=session, username=osKSAuth.authUsername, owner_id=owner_id)
+                    data = dict(current="Team manager", response=teamDict)
                 elif team_id is not None:
-                    teamDict = self._getTeam(session=session, team_id=team_id)
-
-                data = dict(current="Team manager", response=teamDict)
+                    teamDict = self._getTeam(session=session, username=osKSAuth.authUsername, team_id=team_id)
+                    data = dict(current="Team manager", response=teamDict)
         except Exception as e:
                 data = dict(current="Team manager", error=str(e))
         finally:
@@ -142,12 +171,13 @@ class ManagerTeam:
                 else:
                     raise Exception("No ID or team_id given. Not expected")
 
-                #TODO
-                #Check what is the output of delete
-                osGroup.delete(group_id=team.team_id)
-                MySQL.mysqlConn.delete_team(id=team.id)
+                if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList) or self._isOwner(session=session, username=osKSAuth.authUsername, id=team.id):
+                    osGroup.delete(group_id=team.team_id)
+                    MySQL.mysqlConn.delete_team(id=team.id)
+                    data = dict(current="Team manager", response="OK")
+                else:
+                    data = dict(current="Team manager", response="Not owned by this user")
 
-            data = dict(current="Team manager", response="OK")
         except Exception as e:
                 data = dict(current="Team manager", error=str(e))
         finally:
@@ -179,10 +209,13 @@ class ManagerTeam:
                         else:
                             raise Exception("More than one team found with given id. This was not expected!")
 
-                    for userID in team.users:
-                        osGroup.addUser(group_id=team.team_id,user_id=userID)
-
-                    data = self._getTeam(session=session, team_id=team.team_id)
+                    if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList) or self._isOwner(
+                            session=session, username=osKSAuth.authUsername, id=team.id):
+                        for userID in team.users:
+                            osGroup.addUser(group_id=team.team_id,user_id=userID)
+                        data = self._getTeam(session=session, team_id=team.team_id)
+                    else:
+                        data = dict(current="Team manager", response="Not owned by this user")
                 else:
                     raise Exception("No data in POST")
         except Exception as e:

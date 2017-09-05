@@ -63,6 +63,7 @@ class ManagerAuth:
 
             osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
             osKSAuth.role = auth.role
+            osKSAuth.authUsername = auth.username
 
             self.keystoneAuthList[str(cherrypy.session.id)] = osKSAuth
 

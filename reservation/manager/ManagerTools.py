@@ -33,6 +33,21 @@ class ManagerTool:
             return False
 
     @staticmethod
+    def isAdminOrMod(cookie, dictionary):
+        if "ReservationService" in cookie:
+            session_id = cookie["ReservationService"].value
+        else:
+            return False
+        if session_id in dictionary.keys():
+            if dictionary[session_id].role == "moderator" or dictionary[session_id].role == "admin":
+                return True
+            else:
+                return False
+        else:
+            return False
+
+
+    @staticmethod
     def getDefaults():
         # Get defaults
         defaults = MySQL.mysqlConn.select_defaults()
