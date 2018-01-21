@@ -6,6 +6,7 @@ from .ManagerLab import ManagerLab
 from .ManagerSystem import ManagerSystem
 from .ManagerUser import ManagerUser
 from .ManagerTeam import ManagerTeam
+from .ManagerImage import ManagerImage
 
 import reservation.service.ConfigParser as ConfigParser
 import reservation.service.MySQL as MySQL
@@ -24,7 +25,6 @@ class Menager:
     """
     keystoneAuthList = {}
 
-
     def __init__(self):
         self.managerAuth = ManagerAuth()
         self.managerLab = ManagerLab()
@@ -38,6 +38,9 @@ class Menager:
 
         self.managerTeam = ManagerTeam()
         self.managerTeam.keystoneAuthList = self.keystoneAuthList
+
+        self.managerImage = ManagerImage()
+        self.managerImage.keystoneAuthList = self.keystoneAuthList
 
         con_conf = ConfigParser.configuration["database"]
         MySQL.mysqlConn = MySQL.MySQL(
@@ -122,6 +125,17 @@ class Menager:
         # /reservation/activate
         # /reservation/deactivate
 
+        # /image
+        if len(vpath) == 1 and "image" in vpath:
+            vpath.pop(0)
+            return self.managerImage
+        # /image/list
+        if len(vpath) == 2 and "image" in vpath and "list" in vpath:
+            del vpath[:]
+            return self.managerImage.list
+        # /image/delete
+
+        # /user/edit
         # /user
         if len(vpath) == 1 and "user" in vpath:
             vpath.pop(0)
@@ -223,7 +237,6 @@ class Menager:
         if len(vpath) == 3 and "team" in vpath and "add" in vpath and "user" in vpath:
             del vpath[:]
             return self.managerTeam.addUser
-
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

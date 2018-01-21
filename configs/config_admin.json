@@ -2,9 +2,8 @@
 	"user_domain": "Default",
 	"username": "admin",
 	"password": "OsPass.123",
-	"auth_url": "http://217.182.71.53/identity/v3",
+	"auth_url": "http://soit.com.pl/identity/v3",
 	"project_domain_name": "Default",
 	"project_name": "admin",
-	"project_id": "6e88a373258b43ea837351c6b0ab16c4",
-    	"glance_endpoint": "http://217.182.71.53:9292"
+	"project_id": "e7a5ed38c0434fd8b72df077dca08797"
 }

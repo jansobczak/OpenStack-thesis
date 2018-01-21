@@ -6,8 +6,8 @@ import time
 class OSGlance:
     client = None
 
-    def __init__(self, endpoint, token):
-        self.client = Client('1', endpoint=endpoint, token=token)
+    def __init__(self, session):
+        self.client = Client('2', session=session)
 
     def list(self):
         """List avaible images
@@ -15,8 +15,10 @@ class OSGlance:
             List of images object
             list
         """
-        generator = self.client.images.list()
-        return list(generator)
+        imageArray = []
+        for image in self.client.images.list():
+            imageArray.append(image)
+        return imageArray
 
     def create(self, name, containerFormat, diskFormat, isPublic, pathFile):
         """Create and upload image
