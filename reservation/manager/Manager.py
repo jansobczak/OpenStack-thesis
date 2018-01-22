@@ -133,6 +133,10 @@ class Menager:
         if len(vpath) == 2 and "image" in vpath and "list" in vpath:
             del vpath[:]
             return self.managerImage.list
+        # /image/create
+        if len(vpath) == 2 and "image" in vpath and "create" in vpath:
+            del vpath[:]
+            return self.managerImage.create
         # /image/delete
 
         # /user/edit
