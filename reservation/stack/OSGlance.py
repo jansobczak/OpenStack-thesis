@@ -40,12 +40,12 @@ class OSGlance:
             isPublic = "private"
 
         image = self.client.images.create(name=name, container_format=containerFormat, disk_format=diskFormat, is_public=isPublic)
-        imageId = image.id
-        image.update(data=open(pathFile, 'rb'))
+        # Thread ?
+        self.client.images.upload(image.id, open(pathFile, 'rb'))
         while image.status == "queued":
-            image = self.find(image_id=imageId)
+            image = self.find(image_id=image.id)
             time.sleep(1)
-        return self.find(image_id=imageId)
+        return self.find(image_id=image.id)
 
     def delete(self, image):
         """Delete image
@@ -59,9 +59,9 @@ class OSGlance:
             findRes = self.find(name=image)
             if findRes and len(findRes) > 0:
                 image = findRes[0]
-        imageObj = self.find(image_id=image.id)
+        imageObj = self.find(image_id=image)
         if imageObj:
-            imageObj.delete()
+            self.client.images.delete(imageObj.id)
             return True
         else:
             return False

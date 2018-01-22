@@ -1,7 +1,7 @@
 {
-    "name": "test_image",
-    "container_format": "bare",
-    "disk_format": "iso",
-    "is_public": "private",
-    "file_path": "/home/reserv/images/debian.iso"
+    "name": "cirros_image",
+    "container_format": "bare   ",
+    "disk_format": "raw",
+    "is_public": "True",
+    "file_path": "/Users/jansobczak/Downloads/cirros.raw"
 }

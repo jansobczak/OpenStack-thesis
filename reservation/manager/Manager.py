@@ -138,6 +138,13 @@ class Menager:
             del vpath[:]
             return self.managerImage.create
         # /image/delete
+        if len(vpath) == 2 and "image" in vpath and "delete" in vpath:
+            del vpath[:]
+            return self.managerImage.delete
+        if len(vpath) == 4 and "image" in vpath and "delete" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.managerImage.delete
 
         # /user/edit
         # /user

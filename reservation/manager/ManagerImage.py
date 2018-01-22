@@ -22,7 +22,6 @@ class ManagerImage:
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def list(self):
-        print("test")
         if self.sessionCheck():
             return dict(current="Image manager", response=self.osKSGlance.list())
         else:
@@ -57,24 +56,13 @@ class ManagerImage:
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def delete(self):
+    def delete(self, id=None):
         try:
             # Check session
             if not self.sessionCheck():
                 return dict(current="Image manager", user_status="not authorized")
-            # Parse incoming JSON
-            data = cherrypy.request.json
-            imageName = None
-            imageId = None
-            if "name" in data:
-                imageName = data["name"]
-            if "id" in data:
-                imageId = data["id"]
-            if imageId is not None:
-                self.osKSGlance.delete(imageId)
-            elif imageName is not None:
-                self.osKSGlance.delete(imageName)
+            if id is not None:
+                self.osKSGlance.delete(id)
             else:
                 raise Exception("Failed to parse JSON!")
             return dict(current="Image manager", stats="OK")
