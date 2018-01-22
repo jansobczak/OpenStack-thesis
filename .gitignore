@@ -107,4 +107,4 @@ ENV/
 /example/tests/user/cookies
 /example/tests/laboratory/cookies
 /example/cookies
-.cookies
+cookies
