@@ -102,6 +102,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Cookies in project
 /example/tests/user/cookies
 /example/tests/laboratory/cookies
 /example/cookies
+.cookies
