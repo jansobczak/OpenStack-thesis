@@ -88,6 +88,10 @@ class ManagerSystem():
                     osRole.grantGroup(group_id=groupStud.id,role_id=studRole.id)
                     osRole.grantGroup(group_id=groupModer.id, role_id=modRole.id)
 
+                    osProject = OSProject(session=session, id=defProject.id)
+                    osProject.allowGroup(group_id=groupStud.id)
+                    osProject.allowGroup(group_id=groupModer.id)
+
                     MySQL.mysqlConn.insert_defaults(project_id=defProject.id,
                                                     role_student=studRole.id,
                                                     role_lab=labRole.id,

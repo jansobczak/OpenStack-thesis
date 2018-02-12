@@ -4,6 +4,7 @@ from keystoneclient.v3 import client as KSClient
 from keystoneauth1.identity import v3 as KSIdentity
 from keystoneauth1 import loading as KSloading
 from keystoneauth1 import session as KSSession
+from ..service.Role import Role
 
 
 class OSKeystone:
@@ -14,7 +15,6 @@ class OSKeystone:
     def __init__(self, **kwargs):
         self.session = kwargs.get("session")
         self.client = KSClient.Client(session=self.session)
-        self.projectManager = KSProjectManager(self.client)
 
 
 class OSProject(OSKeystone):
@@ -81,6 +81,17 @@ class OSProject(OSKeystone):
                     returnArray.append(projects[i])
             return returnArray
 
+    def allowGroup(self, group_id):
+        """
+        Allow group access to project
+        :param group_id:
+        :return:
+        """
+        osRole = OSRole(session=self.session)
+        memberRole = Role().parseObject(osRole.find(name="Member")[0])
+        return self.client.roles.grant(role=memberRole.id, group=group_id, project=self.id, system="Project")
+    def allowUser(self, **kwargs):
+        """Allow user access to project"""
 
 class OSUser(OSKeystone):
     username = None
@@ -320,11 +331,11 @@ class OSRole(OSKeystone):
     def delete(self, id):
         return self.client.roles.delete(id)
 
-    def grantUser(self, user_id, role_id):
-        return self.client.roles.grant(role_id, user=user_id, domain="default")
+    def grantUser(self, user_id, role_id, system=None):
+        return self.client.roles.grant(role_id, user=user_id, domain="default", system=system)
 
-    def grantGroup(self, group_id, role_id):
-        return self.client.roles.grant(role_id, group=group_id, domain="default")
+    def grantGroup(self, group_id, role_id, system=None):
+        return self.client.roles.grant(role_id, group=group_id, domain="default", system=system)
 
     def getUserRole(self, user_id):
         """Get name of roles connected with users
