@@ -14,6 +14,10 @@ class ManagerAuth:
     :type keystoneAuthList: dictionary
     """
     keystoneAuthList = None
+    adminKSAuth = None
+
+    def __init__(self):
+        self.adminKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json").createKeyStoneSession()
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -56,7 +60,6 @@ class ManagerAuth:
                 auth.role = "user"
 
             #Check pass
-
             osKSAuth.username = auth.username
             osKSAuth.password = auth.password
             auth.token = osKSAuth.createKeyStoneSession().get_token()
@@ -64,10 +67,12 @@ class ManagerAuth:
             osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
             osKSAuth.role = auth.role
             osKSAuth.authUsername = auth.username
+            osKSAuth.authId = user.id
 
             self.keystoneAuthList[str(cherrypy.session.id)] = osKSAuth
 
-            data = dict(current="Authorization manager", user_status="authorized", username=self.keystoneAuthList[str(cherrypy.session.id)].username, type=auth.role)
+            data = dict(current="Authorization manager", user_status="authorized", username=self.keystoneAuthList[
+                str(cherrypy.session.id)].authUsername, type=auth.role)
             return data
         except Exception as e:
             data = dict(current="Authorization manager", user_status="not authorized", error=str(e))

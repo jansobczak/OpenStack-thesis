@@ -2,7 +2,8 @@
     "laboratory": {
         "name": "test_lab",
         "duration": "03:00:00",
-        "group": "test_lab_group"
+        "group": "test_lab_group",
+        "moderator": "1826f4174b4e4f839407f955455007f4"
     },
     "periods": [
         {

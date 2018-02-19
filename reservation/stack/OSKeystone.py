@@ -281,6 +281,7 @@ class OSGroup(OSKeystone):
         else:
             return None
 
+
 class OSRole(OSKeystone):
 
     def list(self):

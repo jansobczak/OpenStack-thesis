@@ -7,6 +7,7 @@ from .ManagerSystem import ManagerSystem
 from .ManagerUser import ManagerUser
 from .ManagerTeam import ManagerTeam
 from .ManagerImage import ManagerImage
+from .ManagerReservation import ManagerReservation
 
 import reservation.service.ConfigParser as ConfigParser
 import reservation.service.MySQL as MySQL
@@ -24,23 +25,26 @@ class Menager:
     :type managerLab: ManagerLab
     """
     keystoneAuthList = {}
+    adminKSAuth = None
 
     def __init__(self):
         self.managerAuth = ManagerAuth()
         self.managerLab = ManagerLab()
         self.managerSystem = ManagerSystem()
         self.managerAuth.keystoneAuthList = self.keystoneAuthList
+        self.adminKSAuth = self.managerAuth.adminKSAuth
         self.managerLab.keystoneAuthList = self.keystoneAuthList
         self.managerSystem.keystoneAuthList = self.keystoneAuthList
 
         self.managerUser = ManagerUser()
         self.managerUser.keystoneAuthList = self.keystoneAuthList
 
-        self.managerTeam = ManagerTeam()
-        self.managerTeam.keystoneAuthList = self.keystoneAuthList
+        self.managerTeam = ManagerTeam(self.keystoneAuthList, self.adminKSAuth)
 
         self.managerImage = ManagerImage()
         self.managerImage.keystoneAuthList = self.keystoneAuthList
+
+        self.managerReservation = ManagerReservation(self.keystoneAuthList, self.adminKSAuth)
 
         con_conf = ConfigParser.configuration["database"]
         MySQL.mysqlConn = MySQL.MySQL(
@@ -117,9 +121,29 @@ class Menager:
         # /template/update
 
         # /reservation/list
-        # /reservation/list/user/
-        # /reservation/list/team/
-        # /reservation/list/laboratory/
+        if len(vpath) == 2 and "reservation" in vpath and "list" in vpath:
+            del vpath[:]
+            return self.managerReservation.list
+        # /reservation/list/id
+        if len(vpath) == 4 and "reservation" in vpath and "list" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.managerReservation.list
+        # /reservation/list/lab
+        if len(vpath) == 4 and "reservation" in vpath and "list" in vpath and "lab" in vpath:
+            cherrypy.request.params['lab'] = vpath[3]
+            del vpath[:]
+            return self.managerReservation.list
+        # /reservation/list/user
+        if len(vpath) == 4 and "reservation" in vpath and "list" in vpath and "user" in vpath:
+            cherrypy.request.params['user'] = vpath[3]
+            del vpath[:]
+            return self.managerReservation.list
+        # /reservation/list/team
+        if len(vpath) == 4 and "reservation" in vpath and "list" in vpath and "team" in vpath:
+            cherrypy.request.params['team'] = vpath[3]
+            del vpath[:]
+            return self.managerReservation.list
         # /reservation/create
         # /reservation/delete
         # /reservation/activate

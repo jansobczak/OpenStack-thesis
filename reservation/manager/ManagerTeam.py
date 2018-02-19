@@ -11,6 +11,11 @@ import reservation.service.MySQL as MySQL
 
 class ManagerTeam:
     keystoneAuthList = None
+    adminKSAuth = None
+
+    def __init__(self, keystoneAuthList=None, adminAuth=None):
+        self.keystoneAuthList = keystoneAuthList
+        self.adminKSAuth = adminAuth
 
 
     def _isOwner(self, session, username, id=None):
@@ -33,7 +38,7 @@ class ManagerTeam:
             return False
 
 
-    def _getTeam(self, session, username, id=None, owner_id=None, team_id=None):
+    def getTeam(self, session, username, id=None, owner_id=None, team_id=None):
         getAll = False
         if id is not None:
             teams = MySQL.mysqlConn.select_team(id=id)
@@ -45,12 +50,12 @@ class ManagerTeam:
             getAll = True
             teams = MySQL.mysqlConn.select_team()
 
-        teamDict = []
+        teamList = []
         for team in teams:
             team = Team().parseDict(team)
             if not getAll:
                 if not self._isOwner(session=session, username=username, id=team.id):
-                    teamDict.append(dict(status="Not authorized"))
+                    teamList.append(dict(status="Not authorized"))
                 else:
                     osGroup = OSGroup(session=session)
                     group = Group().parseObject(osGroup.find(id=team.team_id))
@@ -59,7 +64,7 @@ class ManagerTeam:
                     if users is not None and len(users) > 0:
                         for user in users:
                             userArray.append(User().parseObject(user).to_dict())
-                    teamDict.append(dict(team=team.to_dict(), users=userArray))
+                    teamList.append(dict(team=team.to_dict(), users=userArray))
             else:
                 osGroup = OSGroup(session=session)
                 group = Group().parseObject(osGroup.find(id=team.team_id))
@@ -68,8 +73,8 @@ class ManagerTeam:
                 if users is not None and len(users) > 0:
                     for user in users:
                         userArray.append(User().parseObject(user).to_dict())
-                teamDict.append(dict(team=team.to_dict(), users=userArray))
-        return teamDict
+                teamList.append(dict(team=team.to_dict(), users=userArray))
+        return teamList
 
     @cherrypy.expose()
     @cherrypy.tools.json_out()
@@ -83,18 +88,18 @@ class ManagerTeam:
 
                 if id is None and owner_id is None:
                     if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
-                        teamDict =  self._getTeam(session=session, username=osKSAuth.authUsername)
+                        teamDict =  self.getTeam(session=session, username=osKSAuth.authUsername)
                         data = dict(current="Team manager", response=teamDict)
                     else:
                         data = dict(current="Team manager", response="Not authorized")
                 elif id is not None:
-                    teamDict = self._getTeam(session=session, username=osKSAuth.authUsername, id=id)
+                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, id=id)
                     data = dict(current="Team manager", response=teamDict)
                 elif owner_id is not None:
-                    teamDict = self._getTeam(session=session, username=osKSAuth.authUsername, owner_id=owner_id)
+                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, owner_id=owner_id)
                     data = dict(current="Team manager", response=teamDict)
                 elif team_id is not None:
-                    teamDict = self._getTeam(session=session, username=osKSAuth.authUsername, team_id=team_id)
+                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, team_id=team_id)
                     data = dict(current="Team manager", response=teamDict)
         except Exception as e:
                 data = dict(current="Team manager", error=str(e))
@@ -130,6 +135,8 @@ class ManagerTeam:
                     MySQL.mysqlConn.update_team(id=team.id, team_id=group.id)
 
                     userArray = []
+                    osGroup.addUser(group_id=group.id, user_id=team.owner_id)
+                    userArray.append(User().parseObject(osUser.find(id=team.owner_id)).to_dict())
                     for userID in team.users:
                         osGroup.addUser(group_id=group.id, user_id=userID)
                         userArray.append(User().parseObject(osUser.find(id=userID)).to_dict())
@@ -213,7 +220,7 @@ class ManagerTeam:
                             session=session, username=osKSAuth.authUsername, id=team.id):
                         for userID in team.users:
                             osGroup.addUser(group_id=team.team_id,user_id=userID)
-                        data = self._getTeam(session=session, team_id=team.team_id)
+                        data = self.getTeam(session=session, team_id=team.team_id, username=osKSAuth.authUsername)
                     else:
                         data = dict(current="Team manager", response="Not owned by this user")
                 else:

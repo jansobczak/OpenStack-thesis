@@ -12,6 +12,11 @@ import reservation.service.MySQL as MySQL
 
 class ManagerLab:
     keystoneAuthList = None
+    adminKSAuth = None
+
+    def __init__(self, keystoneAuthList=None, adminAuth=None):
+        self.keystoneAuthList = keystoneAuthList
+        self.adminKSAuth = adminAuth
 
     @cherrypy.expose
     @cherrypy.tools.json_in()
@@ -63,6 +68,30 @@ class ManagerLab:
             MySQL.mysqlConn.commit()
             return data
 
+    def checkAllowance(self, session, labs):
+        data = []
+        if len(labs) != 0:
+            for lab in labs:
+                laboratory = Laboratory().parseDict(lab)
+                osGroup = OSGroup(session=session)
+                group = osGroup.find(name=laboratory.group)
+                if group is not None and len(group) == 1:
+                    group = Group().parseObject(group[0])
+                else:
+                    raise Exception("Found more than one group with given name. This is not expected")
+
+                users = osGroup.getUsers(group_id=group.id)
+                userArray = []
+                if users is not None and len(users) > 0:
+                    for user in users:
+                        userArray.append(User().parseObject(user).to_dict())
+
+                response = dict(laboratory=Laboratory().parseDict(lab).to_dict(), allowedUsers=userArray)
+                data.append(response)
+
+        return data
+
+
     @cherrypy.expose
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
@@ -82,27 +111,9 @@ class ManagerLab:
                 else:
                     labs = MySQL.mysqlConn.select_lab()
 
-                if len(labs) != 0:
-                    preLabs = []
-                    for lab in labs:
-                        laboratory = Laboratory().parseDict(lab)
-                        osGroup = OSGroup(session=session)
-                        group = osGroup.find(name=laboratory.group)
-                        if group is not None and len(group) == 1:
-                            group = Group().parseObject(group[0])
-                        else:
-                            raise Exception("Found more than one group with given name. This is not expected")
-
-                        users = osGroup.getUsers(group_id=group.id)
-                        userArray = []
-                        if users is not None and len(users) > 0:
-                            for user in users:
-                                userArray.append(User().parseObject(user).to_dict())
-
-                        response = dict(laboratory=Laboratory().parseDict(lab).to_dict(), allowedUsers=userArray)
-                        preLabs.append(response)
-
-                    data = dict(current="Laboratory manager", response=preLabs)
+                allowance = self.checkAllowance(session=session, labs=labs)
+                if len is not None and len(data) > 0:
+                    data = dict(current="Laboratory manager", response=allowance)
                 else:
                     data = dict(current="Laboratory manager", reponse="None")
 
@@ -137,7 +148,8 @@ class ManagerLab:
                 lab.id = MySQL.mysqlConn.insert_lab(name=lab.name,
                                                     duration=lab.duration,
                                                     group=lab.group,
-                                                    template_id=template.id)
+                                                    template_id=template.id,
+                                                    moderator=lab.moderator)
                 template.id = MySQL.mysqlConn.insert_template(name=template.name,
                                                               data=template.data,
                                                               laboratory_id=lab.id)

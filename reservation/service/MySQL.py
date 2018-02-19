@@ -96,16 +96,17 @@ class MySQL():
     def insert_lab(self, **kwargs):
         """
         Insert into laboratory table
-        :param kwargs: name, duration, group, template_id
+        :param kwargs: name, duration, group, template_id, moderator
         :return: ID of inserted lab
         """
         name = kwargs.get("name")
         duration = kwargs.get("duration")
         group = kwargs.get("group")
+        moderator = kwargs.get("moderator")
 
         self.cursor = self.conn.cursor()
-        sql = "INSERT INTO laboratory VALUES(DEFAULT, %s, %s, %s);"
-        self.cursor.execute(sql, (name, duration, group))
+        sql = "INSERT INTO laboratory VALUES(DEFAULT, %s, %s, %s, %s);"
+        self.cursor.execute(sql, (name, duration, group, moderator))
         return self.cursor.lastrowid
 
     def select_template(self, **kwargs):
@@ -314,4 +315,33 @@ class MySQL():
             data = True
         else:
             data = False
+        return data
+
+    def select_reservation(self, **kwargs):
+        """
+        Select reservations
+        :param kwargs: id, team, user, lab
+        :return: list of reservation
+        """
+        reserv_id = kwargs.get("id")
+        reserv_team = kwargs.get("team")
+        reserv_user = kwargs.get("user")
+        reserv_lab = kwargs.get("lab")
+        self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
+        if reserv_id is None and reserv_lab is None and reserv_user is None and reserv_team is None:
+            sql = "SELECT * FROM reservation;"
+            self.cursor.execute(sql)
+        elif reserv_id is not None:
+            sql = "SELECT * FROM reservation WHERE id = %s;"
+            self.cursor.execute(sql, reserv_id)
+        elif reserv_user is not None:
+            sql = "SELECT * FROM reservation WHERE user = %s"
+            self.cursor.execute(sql, reserv_user)
+        elif reserv_team is not None:
+            sql = "SELECT * FROM reservation WHERE team_id = %s"
+            self.cursor.execute(sql, reserv_team)
+        elif reserv_lab is not None:
+            sql = "SELECT * FROM reservation WHERE laboratory_id = %s"
+            self.cursor.execute(sql, reserv_lab)
+        data = self.cursor.fetchall()
         return data

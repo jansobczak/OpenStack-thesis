@@ -1,0 +1,10 @@
+{
+    "user": {
+        "name": "sobczakj",
+        "password": "OsPass.123",
+        "mail": "test@mail.test"
+    },
+    "group": {
+        "name": "students"
+    }
+}
