@@ -23,7 +23,7 @@ class ManagerReservation:
     def list(self, id=None, user=None, team=None, lab=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
-                data = dict(current="User manager", user_status="not authorized", require_moderator=False)
+                data = dict(current="Reservation manager", user_status="not authorized", require_moderator=False)
             else:
                 reservArray = []
 
@@ -128,7 +128,7 @@ class ManagerReservation:
     @cherrypy.tools.json_out()
     def create(self):
         if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
-            data = dict(current="User manager", user_status="not authorized", require_moderator=False)
+            data = dict(current="Reservation manager", user_status="not authorized", require_moderator=False)
         else:
             if hasattr(cherrypy.request, "json"):
                 request = cherrypy.request.json
@@ -184,7 +184,6 @@ class ManagerReservation:
                                                id=reservation.team_id)
                     for allow in allowance:
                         if allow["laboratory"]["id"] == int(reservation.laboratory_id):
-
                             allowedID = []
                             for user in allow["allowedUsers"]:
                                 allowedID.append(user["id"])
@@ -242,7 +241,67 @@ class ManagerReservation:
     @cherrypy.expose()
     @cherrypy.tools.json_out()
     def delete(self, id=None):
-        return 0
+        if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
+            data = dict(current="Reservation manager", user_status="not authorized", require_moderator=False)
+        else:
+            # Find reservation
+            reservations = MySQL.mysqlConn.select_reservation(id=id)
+            for reservation in reservations:
+                reservation = Reservation().parseDict(reservation)
+                if reservation.status == "active" or reservation.status == "building":
+                    data = dict(current="Reservation manager", status="Reservation is building or active, unable to delete")
+                    return data
+                else:
+                    # Check if user is allowed to delete
+                    if reservation.team_id is not None:
+                        managerTeam = ManagerTeam(self.keystoneAuthList, self.adminKSAuth)
+                        team = managerTeam.getTeam(self.adminKSAuth, username=self.keystoneAuthList[
+                            str(cherrypy.request.cookie["ReservationService"].value)].authUsername,
+                                                   id=reservation.team_id)
+                        osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                        session = osKSAuth.createKeyStoneSession()
+                        osUser = OSUser(session=session)
+                        userList = []
+                        for user in osUser.find(name=self.keystoneAuthList[str(cherrypy.request.cookie["ReservationService"].value)].authUsername):
+                            userList.append(User().parseObject(user).to_dict())
+                        if len(userList) == 1:
+                            teamUserId = []
+                            for user in team[0]["users"]:
+                                teamUserId.append(user["id"])
+                            if userList[0]["id"] in teamUserId:
+                                MySQL.mysqlConn.delete_reservation(id=id)
+                                MySQL.mysqlConn.commit()
+                                data = dict(current="Reservation manager", status="Reservation is deleted")
+                                return data
+                            else:
+                                data = dict(current="Reservation manager", status="Not authorized to delete")
+                                return data
+                        else:
+                            data = dict(current="Reservation manager", status="Multiple user. Not expected!")
+                            return data
+                    elif reservation.user is not None:
+                        osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                        session = osKSAuth.createKeyStoneSession()
+                        osUser = OSUser(session=session)
+                        userList = []
+                        for user in osUser.find(name=self.keystoneAuthList[str(cherrypy.request.cookie["ReservationService"].value)].authUsername):
+                            userList.append(User().parseObject(user).to_dict())
+                        if len(userList) == 1:
+                            if userList[0]["id"] == reservation.user:
+                                MySQL.mysqlConn.delete_reservation(id=id)
+                                MySQL.mysqlConn.commit()
+                                data = dict(current="Reservation manager", status="Reservation is deleted")
+                                return data
+                            else:
+                                data = dict(current="Reservation manager", status="Not authorized to delete")
+                                return data
+                        else:
+                            data = dict(current="Reservation manager", status="Multiple user. Not expected!")
+                            return data
+                    else:
+                        data = dict(current="Reservation manager", status="No user or team_id in reservation. Not expected!")
+                        return data
+        return data
 
     @cherrypy.expose()
     @cherrypy.tools.json_out()

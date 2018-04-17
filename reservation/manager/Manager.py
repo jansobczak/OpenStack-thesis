@@ -149,6 +149,10 @@ class Menager:
             del vpath[:]
             return self.managerReservation.create
         # /reservation/delete
+        if len(vpath) == 4 and "reservation" in vpath and "delete" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.managerReservation.delete
         # /reservation/activate
         # /reservation/deactivate
 

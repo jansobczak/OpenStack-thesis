@@ -364,3 +364,22 @@ class MySQL():
             sql = "INSERT INTO reservation VALUES(DEFAULT, %s, DEFAULT, DEFAULT, DEFAULT, %s, %s);"
             self.cursor.execute(sql, (start, team_id, laboratory_id))
         return self.cursor.lastrowid
+
+    def delete_reservation(self, **kwargs):
+        """
+        Delete reservation
+        :param kwargs:  id
+        :return: True
+        """
+        id = kwargs.get("id")
+        self.cursor = self.conn.cursor()
+        if id is not None:
+            sql = "DELETE FROM reservation WHERE id = %s"
+            self.cursor.execute(sql, id)
+            if self.cursor.rowcount > 0:
+                data = True
+            else:
+                data = False
+            return data
+        else:
+            return False
