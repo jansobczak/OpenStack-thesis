@@ -145,6 +145,9 @@ class Menager:
             del vpath[:]
             return self.managerReservation.list
         # /reservation/create
+        if len(vpath) == 2 and "reservation" in vpath and "create" in vpath:
+            del vpath[:]
+            return self.managerReservation.create
         # /reservation/delete
         # /reservation/activate
         # /reservation/deactivate

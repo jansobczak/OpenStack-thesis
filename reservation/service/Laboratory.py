@@ -1,3 +1,5 @@
+import datetime
+
 class Laboratory:
 
     id = None
@@ -10,6 +12,8 @@ class Laboratory:
         self.id = kwargs.get("name")
         self.name = kwargs.get("name")
         self.duration = kwargs.get("duration")
+        if self.duration is not None:
+            self.duration = datetime.timedelta(seconds=int(self.duration))
         self.group = kwargs.get("group")
         self.moderator = kwargs.get("moderator")
 
@@ -18,7 +22,10 @@ class Laboratory:
             if "name" in data["laboratory"]:
                 self.name = data["laboratory"]["name"]
             if "duration" in data["laboratory"]:
-                self.duration = str(data["laboratory"]["duration"])
+                if isinstance(data["laboratory"]["duration"], datetime.timedelta):
+                    self.duration = data["laboratory"]["duration"]
+                else:
+                    self.duration = datetime.timedelta(seconds=int(data["laboratory"]["duration"]))
             if "group" in data["laboratory"]:
                 self.group = data["laboratory"]["group"]
             if "id" in data["laboratory"]:
@@ -35,7 +42,10 @@ class Laboratory:
         if "name" in dict:
             self.name = dict["name"]
         if "duration" in dict:
-            self.duration = str(dict["duration"])
+            if isinstance(dict["duration"], datetime.timedelta):
+                self.duration = dict["duration"]
+            else:
+                self.duration = datetime.timedelta(seconds=int(dict["duration"]))
         if "group" in dict:
             self.group = dict["group"]
         if "template_id" in dict:

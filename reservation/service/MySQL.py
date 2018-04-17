@@ -345,3 +345,22 @@ class MySQL():
             self.cursor.execute(sql, reserv_lab)
         data = self.cursor.fetchall()
         return data
+
+    def insert_reservation(self, **kwargs):
+        """
+        Insert reservation
+        :param kwargs: name, start, user or team_id, laboratory_id
+        :return:ID of inserted reservation
+        """
+        start = kwargs.get("start")
+        user = kwargs.get("user")
+        team_id = kwargs.get("team_id")
+        laboratory_id = kwargs.get("laboratory_id")
+        self.cursor = self.conn.cursor()
+        if team_id is None and user is not None:
+            sql = "INSERT INTO reservation VALUES(DEFAULT, %s, DEFAULT, DEFAULT, %s, DEFAULT, %s);"
+            self.cursor.execute(sql, (start, user, laboratory_id))
+        elif team_id is not None and user is None:
+            sql = "INSERT INTO reservation VALUES(DEFAULT, %s, DEFAULT, DEFAULT, DEFAULT, %s, %s);"
+            self.cursor.execute(sql, (start, team_id, laboratory_id))
+        return self.cursor.lastrowid

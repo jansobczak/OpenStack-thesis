@@ -1,3 +1,6 @@
+import datetime
+from dateutil import parser
+
 class Period:
 
     id = None
@@ -7,17 +10,27 @@ class Period:
 
     def __init__(self, **kwargs):
         self.id = kwargs.get("id")
-        self.start = kwargs.get("start")
         self.stop = kwargs.get("stop")
+        if self.stop is not None:
+            self.stop = parser.parse(str(self.stop))
+        self.start = kwargs.get("start")
+        if self.start is not None:
+            self.start = parser.parse(str(self.start))
         self.laboratory_id = kwargs.get("laboratory_id")
 
     def parseDict(self, dict):
         if "id" in dict:
             self.id = dict["id"]
         if "start" in dict:
-            self.start = dict["start"]
+            if isinstance(dict["start"], datetime.date):
+                self.start = dict["start"]
+            else:
+                self.start = parser.parse(str(dict["start"]))
         if "stop" in dict:
-            self.stop = dict["stop"]
+            if isinstance(dict["stop"], datetime.date):
+                self.stop = dict["stop"]
+            else:
+                self.stop = parser.parse(str(dict["stop"]))
         if "laboratory_id" in dict:
             self.laboratory_id = dict["laboratory_id"]
         return self

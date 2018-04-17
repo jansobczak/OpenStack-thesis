@@ -1,3 +1,5 @@
+import datetime
+from dateutil import parser
 
 class Reservation:
 
@@ -12,8 +14,9 @@ class Reservation:
 
     def __init__(self, **kwargs):
         self.id = kwargs.get("id")
-        self.name = kwargs.get("name")
         self.start = kwargs.get("start")
+        if self.start is not None:
+            self.start = parser.parse(self.start)
         self.tenat_id = kwargs.get("tenat_id")
         self.user = kwargs.get("user")
         self.team_id = kwargs.get("team_id")
@@ -22,9 +25,10 @@ class Reservation:
     def parseObject(self, data):
         if data is not None:
             self.id = data.id
-            if "name" in data:
-                self.name = data.name
-            self.start = data.start
+            if isinstance(data.start, datetime.date):
+                self.start = data.start
+            else:
+                self.start = parser.parse(data.start)
             if "tenat_id" in data:
                 self.tenat_id = data.tenat_id
             if "status" in data:
@@ -42,10 +46,11 @@ class Reservation:
         if "reservation" in data:
             if "id" in data["reservation"]:
                 self.id = data["reservation"]["id"]
-            if "name" in data["reservation"]:
-                self.name = data["reservation"]["name"]
             if "start" in data["reservation"]:
-                self.start = data["reservation"]["start"]
+                if isinstance(data["reservation"]["start"], datetime.date):
+                    self.start = data["reservation"]["start"]
+                else:
+                    self.start = parser.parse(str(data["reservation"]["start"]))
             if "tenat_id" in data["reservation"]:
                 self.tenat_id = data["reservation"]["tenat_id"]
             if "status" in data["reservation"]:
@@ -62,9 +67,10 @@ class Reservation:
 
     def parseDict(self, dict):
         self.id = dict["id"]
-        if "name" in dict:
-            self.name = dict["name"]
-        self.start = dict["start"]
+        if isinstance(dict["start"], datetime.date):
+            self.start = dict["start"]
+        else:
+            self.start = parser.parse(str(dict["start"]))
         if "tenat_id" in dict:
             self.tenat_id = dict["tenat_id"]
         if "status" in dict:
@@ -77,4 +83,4 @@ class Reservation:
         return self
 
     def to_dict(self):
-        return dict(id=self.id, name=self.name, start=str(self.start), tenat_id=self.tenat_id, status=self.status, user=self.user, team_id=self.tenat_id, laboratory_id=self.laboratory_id )
+        return dict(id=self.id, start=str(self.start), tenat_id=self.tenat_id, status=self.status, user=self.user, team_id=self.team_id, laboratory_id=self.laboratory_id )
