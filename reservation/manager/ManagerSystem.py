@@ -26,6 +26,7 @@ class ManagerSystem():
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_admin=True):
                 data = dict(current="System manager", user_status="not authorized")
             else:
+                MySQL.mysqlConn.commit()
                 studRole = None
                 labRole = None
                 modRole = None
@@ -43,8 +44,14 @@ class ManagerSystem():
                 if len(defaults) > 0:
                     defaults = defaults[0]
                     studRole = osRole.find(id=defaults["role_student"])
+                    if len(studRole) == 1:
+                        studRole = studRole[0]
                     labRole = osRole.find(id=defaults["role_lab"])
+                    if len(labRole) == 1:
+                        labRole = labRole[0]
                     modRole = osRole.find(id=defaults["role_moderator"])
+                    if len(modRole) == 1:
+                        modRole = modRole[0]
                     defProject = osProject.find(id=defaults["project"])
                     groupStud = osGroup.find(id=defaults["group_student"])
                     groupModer = osGroup.find(id=defaults["group_moderator"])
