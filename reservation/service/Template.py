@@ -37,4 +37,4 @@ class Template:
         return self
 
     def to_dict(self):
-        return dict(id=self.id, name=self.name, data=self.data)
+        return dict(id=self.id, name=self.name, data=str(self.data))

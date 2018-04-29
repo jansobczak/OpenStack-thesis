@@ -25,7 +25,7 @@ class Laboratory:
                 if isinstance(data["laboratory"]["duration"], datetime.timedelta):
                     self.duration = data["laboratory"]["duration"]
                 else:
-                    self.duration = datetime.timedelta(seconds=int(data["laboratory"]["duration"]))
+                    self.duration = datetime.datetime.strptime(data["laboratory"]["duration"], "%H:%M:%S").time()
             if "group" in data["laboratory"]:
                 self.group = data["laboratory"]["group"]
             if "id" in data["laboratory"]:
@@ -45,7 +45,7 @@ class Laboratory:
             if isinstance(dict["duration"], datetime.timedelta):
                 self.duration = dict["duration"]
             else:
-                self.duration = datetime.timedelta(seconds=int(dict["duration"]))
+                self.duration = datetime.datetime.strptime(dict["duration"], "%H:%M:%S").time()
         if "group" in dict:
             self.group = dict["group"]
         if "template_id" in dict:
@@ -55,4 +55,4 @@ class Laboratory:
         return self
 
     def to_dict(self):
-        return dict(id=self.id, name=self.name, duration=self.duration, group=self.group, moderator=self.moderator)
+        return dict(id=self.id, name=self.name, duration=str(self.duration), group=self.group, moderator=self.moderator)

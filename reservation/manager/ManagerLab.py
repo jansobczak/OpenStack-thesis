@@ -164,15 +164,17 @@ class ManagerLab:
                 group = osGroup.find(name=lab.group)
                 if not group:
                     group = osGroup.create(name=lab.group)
+                elif len(group) == 1:
+                    group = group[0]
                 osRole.grantGroup(group_id=group.id,
                                   role_id=defaults["role_lab"])
 
                 # Prepare data for showcase
-                lab = lab.__dict__
-                template = template.__dict__
+                lab = lab.to_dict()
+                template = template.to_dict()
                 tempPeriods = []
                 for period in periods:
-                    tempPeriods.append(period.__dict__)
+                    tempPeriods.append(period.to_dict())
                 periods = tempPeriods
                 data = dict(current="Laboratory manager",
                             laboratory=lab,
