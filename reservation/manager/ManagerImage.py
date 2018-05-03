@@ -1,8 +1,6 @@
 import cherrypy
-
 from reservation.stack import OSGlance
-from reservation.stack.OSTools import OSTools
-
+from reservation.service.Image import Image
 from .ManagerTools import ManagerTool
 
 
@@ -48,7 +46,11 @@ class ManagerImage:
             if "file_path" in data:
                 filePath = data["file_path"]
             image = self.osKSGlance.create(imageName, containerFormat, diskFormat, isPublic, filePath)
-            return dict(current="Image manager", stats="OK", data=OSTools.prepareJSON(image)[0])
+
+            if len(image) == 1:
+                image = image[0]
+            image = Image().parseDict(image)
+            return dict(current="Image manager", stats="OK", data=image.to_dict())
         except IndexError as error:
             return(dict(current="Image manager", error=repr(error)))
         except Exception as error:

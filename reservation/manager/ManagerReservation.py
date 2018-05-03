@@ -143,6 +143,9 @@ class ManagerReservation:
             labs = MySQL.mysqlConn.select_lab(id=reservation.laboratory_id)
             if len(labs) == 1:
                 lab = Laboratory().parseDict(labs[0])
+            else:
+                data = dict(current="Reservation manager", status="No lab found with this ID. Cannnot make reservation")
+                return data
 
             # Does laboratory is active?
             # Get periods

@@ -59,9 +59,18 @@ class ManagerAuth:
             elif "user" in osUserRoles:
                 auth.role = "user"
 
-            #Check pass
-            osKSAuth.username = auth.username
-            osKSAuth.password = auth.password
+            # If user is not admin then authenticated via reservation_system
+            if auth.role != "admin":
+                osKSProject = OSKeystone.OSProject(session=osKSAuth.createKeyStoneSession())
+                project = osKSProject.find(name="reservation_system")
+                if len(project) == 1:
+                    project = project[0]
+                osKSAuth.username = auth.username
+                osKSAuth.password = auth.password
+                osKSAuth.project_id = project.id
+                osKSAuth.project_name = project.name
+                osKSAuth.project_domain_name = project.domain_id
+            # Check pass
             auth.token = osKSAuth.createKeyStoneSession().get_token()
 
             osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")

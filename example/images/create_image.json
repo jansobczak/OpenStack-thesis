@@ -1,7 +1,7 @@
 {
     "name": "cirros_image",
-    "container_format": "bare   ",
-    "disk_format": "raw",
+    "container_format": "bare",
+    "disk_format": "qcow2",
     "is_public": "True",
-    "file_path": "/Users/jansobczak/Downloads/cirros.raw"
+    "file_path": "/Users/jansobczak/Downloads/cirros.img"
 }

@@ -38,7 +38,7 @@ class ManagerTeam:
             return False
 
 
-    def getTeam(self, session, username, id=None, owner_id=None, team_id=None):
+    def getTeam(self, session, username, id=None, owner_id=None, team_id=None, admin=False):
         getAll = False
         if id is not None:
             teams = MySQL.mysqlConn.select_team(id=id)
@@ -54,9 +54,7 @@ class ManagerTeam:
         for team in teams:
             team = Team().parseDict(team)
             if not getAll:
-                if not self._isOwner(session=session, username=username, id=team.id):
-                    teamList.append(dict(status="Not authorized"))
-                else:
+                if self._isOwner(session=session, username=username, id=team.id) or admin:
                     osGroup = OSGroup(session=session)
                     group = Group().parseObject(osGroup.find(id=team.team_id))
                     users = osGroup.getUsers(group_id=group.id)
@@ -65,6 +63,8 @@ class ManagerTeam:
                         for user in users:
                             userArray.append(User().parseObject(user).to_dict())
                     teamList.append(dict(team=team.to_dict(), users=userArray))
+                else:
+                    teamList.append(dict(status="Not authorized"))
             else:
                 osGroup = OSGroup(session=session)
                 group = Group().parseObject(osGroup.find(id=team.team_id))
@@ -88,18 +88,18 @@ class ManagerTeam:
 
                 if id is None and owner_id is None:
                     if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
-                        teamDict =  self.getTeam(session=session, username=osKSAuth.authUsername)
+                        teamDict = self.getTeam(session=session, username=osKSAuth.authUsername)
                         data = dict(current="Team manager", response=teamDict)
                     else:
                         data = dict(current="Team manager", response="Not authorized")
                 elif id is not None:
-                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, id=id)
+                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, id=id, admin=ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList))
                     data = dict(current="Team manager", response=teamDict)
                 elif owner_id is not None:
-                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, owner_id=owner_id)
+                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, owner_id=owner_id, admin=ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList))
                     data = dict(current="Team manager", response=teamDict)
                 elif team_id is not None:
-                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, team_id=team_id)
+                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, team_id=team_id, admin=ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList))
                     data = dict(current="Team manager", response=teamDict)
         except Exception as e:
                 data = dict(current="Team manager", error=str(e))
