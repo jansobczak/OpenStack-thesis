@@ -6,6 +6,10 @@ from reservation.service.Reservation import Reservation
 from reservation.service.User import User
 from reservation.service.Period import Period
 from reservation.service.Laboratory import Laboratory
+from reservation.service.Template import Template
+from reservation.service.Team import Team
+from reservation.stack.OSKeystone import OSProject
+from reservation.stack.OSHeat import OSHeat
 from .ManagerTeam import ManagerTeam
 from .ManagerLab import ManagerLab
 import reservation.service.MySQL as MySQL
@@ -248,6 +252,7 @@ class ManagerReservation:
             data = dict(current="Reservation manager", user_status="not authorized", require_moderator=False)
         else:
             # Find reservation
+            MySQL.mysqlConn.commit()
             reservations = MySQL.mysqlConn.select_reservation(id=id)
             for reservation in reservations:
                 reservation = Reservation().parseDict(reservation)
@@ -305,6 +310,139 @@ class ManagerReservation:
                         data = dict(current="Reservation manager", status="No user or team_id in reservation. Not expected!")
                         return data
         return data
+
+    @cherrypy.expose()
+    @cherrypy.tools.json_out()
+    def activate(self, id=None):
+        if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+            data = dict(current="Reservation manager", user_status="not authorized", require_moderator=True)
+        else:
+            if id is None:
+                data = dict(current="Reservation manager", status="No id send")
+                return data
+
+            #Find reservation
+            MySQL.mysqlConn.commit()
+            reservation = MySQL.mysqlConn.select_reservation(id=id)
+            if len(reservation) == 1:
+                reservation = Reservation().parseDict(reservation[0])
+
+                # Grab template
+                template = MySQL.mysqlConn.select_template(lab_id=reservation.laboratory_id)
+                if len(template) == 1:
+                    template = Template().parseDict(template[0])
+                laboratory = MySQL.mysqlConn.select_lab(id=reservation.laboratory_id)
+                if len(laboratory) == 1:
+                    laboratory = Laboratory().parseDict(laboratory[0])
+
+                # Check if reservation is active
+                resrvationActive = False
+                if reservation.status == "nonactive":
+                    currentTime = datetime.datetime.now()
+                    if reservation.start <= currentTime and currentTime <= reservation.start + laboratory.duration:
+                        resrvationActive = True
+
+                    if resrvationActive is False:
+                        data = dict(current="Reservation manager", status="Reservation cannot be activated yet")
+                        return data
+                else:
+                    data = dict(current="Reservation manager", status="Reservation is already active")
+                    return data
+
+                if reservation.team_id is not None:
+                    projectName = laboratory.name + "@" + reservation.team_id
+                else:
+                    projectName = laboratory.name + "@" + reservation.user
+                # Create new project
+                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                session = osKSAuth.createKeyStoneSession()
+                osProject = OSProject(session=session)
+                projFind = osProject.find(name=projectName)
+                if len(projFind) > 0:
+                    defProject = projFind[0]
+                else:
+                    defProject = osProject.create(name=projectName)
+
+                # Update tenat id in reservation
+                reservation.tenat_id = defProject.id
+                reservation.tenat_name = projectName
+                MySQL.mysqlConn.update_reservation(id=reservation.id, tenat_id=reservation.tenat_id, status="active")
+
+                # Grant owner of project ability to log in to project
+                osProject = OSProject(session=session, id=defProject.id)
+                if reservation.team_id is not None:
+                    team = MySQL.mysqlConn.select_team(team_id=reservation.team_id)
+                    if len(team) == 1:
+                        team = Team().parseDict(team[0])
+                    osProject.allowGroup(group_id=team.team_id)
+                else:
+                    osProject.allowUser(user_id=reservation.user)
+
+                # Grant access for admin, moderator
+                # For admin
+                osProject.allowUser(user_id=osKSAuth.authId, role="admin")
+                # For moderator of this lab
+                osProject.allowUser(user_id=laboratory.moderator, role="moderator")
+
+                # Create heat template in project
+                template = MySQL.mysqlConn.select_template(laboratory_id=laboratory.id)
+                if len(template) == 1:
+                    template = Template().parseDict(template[0])
+
+                # Change project
+                osKSAuth.project_id = reservation.tenat_id
+                osKSAuth.project_name = reservation.tenat_name
+                session = osKSAuth.createKeyStoneSession()
+                osHeat = OSHeat(session=session)
+                osHeatData = osHeat.create(name=laboratory.name, template=template.data)
+                MySQL.mysqlConn.commit()
+
+            else:
+                data = dict(current="Reservation manager", status="No reservation found")
+                return data
+
+            data = dict(current="Reservation manager", status="Reservation started")
+        return data
+
+
+    @cherrypy.expose()
+    @cherrypy.tools.json_out()
+    def deactivate(self, id=None, force=False):
+        if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+            data = dict(current="Reservation manager", user_status="not authorized", require_moderator=True)
+        else:
+            # Find reservation
+            MySQL.mysqlConn.commit()
+            reservation = MySQL.mysqlConn.select_reservation(id=id)
+            if len(reservation) == 1:
+                reservation = Reservation().parseDict(reservation[0])
+
+            # If reservation is active then
+            if reservation.status == 'active':
+                # Check if reservation still should be active
+
+                laboratory = MySQL.mysqlConn.select_lab(id=reservation.laboratory_id)
+                if len(laboratory) == 1:
+                    laboratory = Laboratory().parseDict(laboratory[0])
+
+                # Check if reservation is active
+                resrvationActive = False
+                currentTime = datetime.datetime.now()
+                if reservation.start <= currentTime and currentTime <= reservation.start + laboratory.duration:
+                    resrvationActive = True
+
+                if resrvationActive is False or force is True:
+                    osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                    session = osKSAuth.createKeyStoneSession()
+                    osProject = OSProject(session=session)
+                    osProject.delete(project_id=reservation.tenat_id)
+                    MySQL.mysqlConn.update_reservation(id=reservation.id, tenat_id="",
+                                                       status="nonactive")
+                    MySQL.mysqlConn.commit()
+
+            data = dict(current="Reservation manager", status="Reservation deactivated")
+        return data
+
 
     @cherrypy.expose()
     @cherrypy.tools.json_out()

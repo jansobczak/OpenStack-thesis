@@ -13,6 +13,10 @@
         {
             "start": "2017-04-25 15:00:00",
             "stop": "2017-04-30 12:00:00"
+        },
+        {
+            "start": "2018-04-25 15:00:00",
+            "stop": "2018-06-30 12:00:00"
         }
     ],
     "template": {
@@ -61,7 +65,7 @@
                     "type": "OS::Nova::Server",
                     "properties": {
                         "key_name": "test",
-                        "image": "cirros-0.3.5-x86_64-disk",
+                        "image": "cirros_image_lab",
                         "flavor": "cirros256",
                         "networks": [
                             {

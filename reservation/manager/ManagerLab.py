@@ -237,7 +237,7 @@ class ManagerLab:
                     data = dict(current="Laboratory manager", status="not deleted or laboratory doesn't exists")
                 MySQL.mysqlConn.commit()
         except Exception as e:
-            data = dict(current="Laboratory manager", error=e)
+            data = dict(current="Laboratory manager", error=str(e))
         finally:
             MySQL.mysqlConn.close()
             return data

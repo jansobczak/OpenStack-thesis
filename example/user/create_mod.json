@@ -1,0 +1,10 @@
+{
+    "user": {
+        "name": "mod",
+        "password": "OsPass.123",
+        "mail": "mod@mail.test"
+    },
+    "group": {
+        "name": "moderators"
+    }
+}

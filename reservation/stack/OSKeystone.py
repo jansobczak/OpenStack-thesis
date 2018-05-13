@@ -90,8 +90,18 @@ class OSProject(OSKeystone):
         osRole = OSRole(session=self.session)
         memberRole = Role().parseObject(osRole.find(name="Member")[0])
         return self.client.roles.grant(role=memberRole.id, group=group_id, project=self.id, system="Project")
+
     def allowUser(self, **kwargs):
         """Allow user access to project"""
+        user_id = kwargs.get("user_id")
+        role = kwargs.get("role")
+        osRole = OSRole(session=self.session)
+        if role is not None:
+            memberRole = Role().parseObject(osRole.find(name=str(role))[0])
+        else:
+            memberRole = Role().parseObject(osRole.find(name="Member")[0])
+        return self.client.roles.grant(role=memberRole.id, user=user_id, project=self.id, system="Project")
+
 
 class OSUser(OSKeystone):
     username = None

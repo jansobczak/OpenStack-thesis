@@ -33,8 +33,8 @@
             "type": "OS::Nova::Server",
             "properties": {
                 "key_name": "test",
-                "image": "cirros-0.3.5-x86_64-disk",
-                "flavor": "cirros256",
+                "image": "cirros_image_lab",
+                "flavor": "m1.tiny",
                 "networks": [{
                     "network": { "get_resource": "lab_network" }
                 }]

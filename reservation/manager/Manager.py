@@ -29,11 +29,13 @@ class Menager:
 
     def __init__(self):
         self.managerAuth = ManagerAuth()
-        self.managerLab = ManagerLab()
-        self.managerSystem = ManagerSystem()
         self.managerAuth.keystoneAuthList = self.keystoneAuthList
         self.adminKSAuth = self.managerAuth.adminKSAuth
+
+        self.managerLab = ManagerLab()
         self.managerLab.keystoneAuthList = self.keystoneAuthList
+
+        self.managerSystem = ManagerSystem()
         self.managerSystem.keystoneAuthList = self.keystoneAuthList
 
         self.managerUser = ManagerUser()
@@ -57,6 +59,8 @@ class Menager:
         print(body)
 
     def _cp_dispatch(self, vpath):
+
+        MySQL.mysqlConn.commit()
         # /auth
         if len(vpath) == 1 and "auth" in vpath:
             return self.managerAuth.auth
@@ -154,7 +158,21 @@ class Menager:
             del vpath[:]
             return self.managerReservation.delete
         # /reservation/activate
+        if len(vpath) == 4 and "reservation" in vpath and "activate" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.managerReservation.activate
         # /reservation/deactivate
+        if len(vpath) == 4 and "reservation" in vpath and "deactivate" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[3]
+            del vpath[:]
+            return self.managerReservation.deactivate
+        # /reservation/deactivate/force
+        if len(vpath) == 5 and "reservation" in vpath and "deactivate" in vpath and "force" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[4]
+            cherrypy.request.params['force'] = True
+            del vpath[:]
+            return self.managerReservation.deactivate
 
         # /image
         if len(vpath) == 1 and "image" in vpath:

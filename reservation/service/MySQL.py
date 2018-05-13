@@ -383,3 +383,26 @@ class MySQL():
             return data
         else:
             return False
+
+    def update_reservation(self, **kwargs):
+        """
+        Update reservation
+        :param kwargs:
+        :return:
+        """
+        id = kwargs.get("id")
+        tenat_id = kwargs.get("tenat_id")
+        status = kwargs.get("status")
+        self.cursor = self.conn.cursor()
+        if id is not None:
+            if tenat_id is not None and status is None:
+                sql = "UPDATE reservation SET tenat_id = %s WHERE id = %s"
+                self.cursor.execute(sql, (tenat_id, id))
+            elif tenat_id is not None and status is not None:
+                sql = "UPDATE reservation SET tenat_id = %s, status = %s WHERE id = %s"
+                self.cursor.execute(sql, (tenat_id, status, id))
+            elif tenat_id is None and status is not None:
+                sql = "UPDATE reservation SET status = %s WHERE id = %s"
+                self.cursor.execute(sql, (status, id))
+            else:
+                return False

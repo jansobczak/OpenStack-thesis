@@ -176,9 +176,17 @@ class ManagerUser:
 
                 #Find lab
                 if lab.id is not None:
-                    lab = MySQL.mysqlConn.select_lab(id=lab.id)[0]
+                    lab = MySQL.mysqlConn.select_lab(id=lab.id)
+                    if len(lab) > 0:
+                        lab = lab[0]
+                    else:
+                        raise Exception("Can't find laboratory for given request")
                 elif lab.name is not None:
-                    lab = MySQL.mysqlConn.select_lab(name=lab.name)[0]
+                    lab = MySQL.mysqlConn.select_lab(name=lab.name)
+                    if len(lab) > 0:
+                        lab = lab[0]
+                    else:
+                        raise Exception("Can't find laboratory for given request")
                 else:
                     raise Exception("Can't find laboratory for given request")
 
