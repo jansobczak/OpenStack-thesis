@@ -1,5 +1,8 @@
 #Project
 config.json
+config_student.json
+config_tutor.json
+reservation.json
 sftp-config.json
 
 #PyCharm
