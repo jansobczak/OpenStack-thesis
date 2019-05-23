@@ -1,5 +1,5 @@
 from heatclient import client as HClient
-from .OSTools import  OSTools
+from .OSTools import OSTools
 
 
 class OSHeat():

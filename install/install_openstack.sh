@@ -7,8 +7,8 @@ su - stack
 echo "Clone and checkout devstack"
 git clone https://git.openstack.org/openstack-dev/devstack
 cd devstack
-git branch origin/stable/ocata
-git checkout origin/stable/ocata
+git branch origin/stable/stein
+git checkout origin/stable/stein
 
 echo "Create conf"
 cat <<EOF >>local.conf
@@ -28,7 +28,9 @@ SWIFT_REPLICAS=1
 SWIFT_DATA_DIR=\$DEST/data/swift
 
 # Enable Heat
-enable_plugin heat https://git.openstack.org/openstack/heat
+#Enable heat services
+enable_service h-eng h-api h-api-cfn h-api-cw
+enable_plugin heat https://git.openstack.org/openstack/heat stable/stein
 
 [[post-config|\$GLANCE_API_CONF]]
 [DEFAULT]
