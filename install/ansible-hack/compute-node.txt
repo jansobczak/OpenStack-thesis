@@ -1,0 +1,18 @@
+W kontenerze cindera - controller
+
+apt remove cinder-backup
+apt remove cinder-volume
+
+Nova
+
+apt remove nova-*
+apt install nova-compute
+
+Neutron
+
+apt remove neutron-server
+apt remove neutron-l2gateway-agent
+
+ip link add br-vlan-veth type veth peer name eth12
+ip link set br-vlan-veth up
+ip link set eth12 up

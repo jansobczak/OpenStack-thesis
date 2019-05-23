@@ -1,0 +1,12 @@
+Aby w ogóle przeszła dalej rola wymagane jest sklonowanie repo
+zgodnie z tym co mówi ten link:
+https://docs.openstack.org/heat-dashboard/latest/install/index.html
+
+Jak ansible zostanie wykonany trzeba horizon wywalić z tego
+kontenera. 
+
+Instalacja Horizon za pomocą:
+https://docs.openstack.org/horizon/latest/install/from-source.html#installation
+
+Kończąc należy zmienić konfigurację haproxy.
+Poza tym zmiana konfiguracji haproxy tak aby nie używał nigdzie SSL tylko na horizon. Ułatwia sprawę.

@@ -1,0 +1,23 @@
+---
+# This file contains an example of the global variable overrides
+# which may need to be set for a production environment.
+
+## OpenStack public endpoint protocol
+openstack_service_publicuri_proto: http
+install_method: distro
+
+## innodb options
+galera_innodb_buffer_pool_size: 1024M
+galera_innodb_log_file_size: 512M
+galera_innodb_log_buffer_size: 64M
+
+nova_wsgi_processes: 2
+cinder_wsgi_processes: 2
+glance__wsgi_processes: 2
+heat_wsgi_processes: 2
+keystone_wsgi_processes: 2
+horizon_wsgi_threads: 2
+ironic_wsgi_processes: 2
+magnum_wsgi_processes: 2
+sahara_wsgi_processes: 2
+trove_wsgi_processes: 2
