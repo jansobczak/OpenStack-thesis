@@ -55,7 +55,7 @@ workon reservation_system
 ```
 Python requirments install with
 ```
-pip3 install -f ../requirements.txt
+pip3 install -r ../requirements.txt
 ```
 ## Install and create database
 ```
