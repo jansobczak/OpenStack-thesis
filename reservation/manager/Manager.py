@@ -48,12 +48,11 @@ class Menager:
 
         self.managerReservation = ManagerReservation(self.keystoneAuthList, self.adminKSAuth)
 
-        con_conf = ConfigParser.configuration["database"]
         MySQL.mysqlConn = MySQL.MySQL(
-            host=con_conf["host"],
-            user=con_conf["user"],
-            password=con_conf["password"],
-            database=con_conf["database"])
+            host=ConfigParser.configuration["database"]["host"],
+            user=ConfigParser.configuration["database"]["user"],
+            password=ConfigParser.configuration["database"]["password"],
+            database=ConfigParser.configuration["database"]["database"])
 
     def bindUser(self, body):
         print(body)

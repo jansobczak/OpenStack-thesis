@@ -88,8 +88,8 @@ class OSProject(OSKeystone):
         :return:
         """
         osRole = OSRole(session=self.session)
-        memberRole = Role().parseObject(osRole.find(name="Member")[0])
-        return self.client.roles.grant(role=memberRole.id, group=group_id, project=self.id, system="Project")
+        memberRole = Role().parseObject(osRole.find(name="member")[0])
+        return self.client.roles.grant(role=memberRole.id, group=group_id, project=self.id)
 
     def allowUser(self, **kwargs):
         """Allow user access to project"""
@@ -100,7 +100,7 @@ class OSProject(OSKeystone):
             memberRole = Role().parseObject(osRole.find(name=str(role))[0])
         else:
             memberRole = Role().parseObject(osRole.find(name="Member")[0])
-        return self.client.roles.grant(role=memberRole.id, user=user_id, project=self.id, system="Project")
+        return self.client.roles.grant(role=memberRole.id, user=user_id, project=self.id)
 
 
 class OSUser(OSKeystone):
@@ -462,22 +462,23 @@ class OSAuth:
         with open(file_name) as data_file:
             data = json.load(data_file)
             try:
-                if "user_domain" in data:
-                    self.user_domain = data["user_domain"]
-                if "username" in data:
-                    self.username = data["username"]
-                if "password" in data:
-                    self.password = data["password"]
-                if "auth_url" in data:
-                    self.auth_url = data["auth_url"]
-                if "project_name" in data:
-                    self.project_name = data["project_name"]
-                if "project_domain_name" in data:
-                    self.project_domain_name = data["project_domain_name"]
-                if "project_id" in data:
-                    self.project_id = data["project_id"]
-                if "glance_endpoint" in data:
-                    self.glance_endpoint = data["glance_endpoint"]
+                if "openstack" in data:
+                    if "user_domain" in data["openstack"]:
+                        self.user_domain = data["openstack"]["user_domain"]
+                    if "username" in data["openstack"]:
+                        self.username = data["openstack"]["username"]
+                    if "password" in data["openstack"]:
+                        self.password = data["openstack"]["password"]
+                    if "auth_url" in data["openstack"]:
+                        self.auth_url = data["openstack"]["auth_url"]
+                    if "project_name" in data["openstack"]:
+                        self.project_name = data["openstack"]["project_name"]
+                    if "project_domain_name" in data["openstack"]:
+                        self.project_domain_name = data["openstack"]["project_domain_name"]
+                    if "project_id" in data["openstack"]:
+                        self.project_id = data["openstack"]["project_id"]
+                    if "glance_endpoint" in data["openstack"]:
+                        self.glance_endpoint = data["openstack"]["glance_endpoint"]
             except IndexError:
                 print("JSON cred invalid!")
 

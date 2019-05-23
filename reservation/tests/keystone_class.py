@@ -1,6 +1,6 @@
 from reservation.stack import OSKeystone
 
-osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
+osKSAuth = OSKeystone.OSAuth(filename="configs/config.json")
 session = osKSAuth.createKeyStoneSession()
 
 osProject = OSKeystone.OSProject(session=session)

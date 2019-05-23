@@ -2,13 +2,13 @@
 # Auth test #
 #############
 # Auth as admin
-curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_admin.json  http://localhost:8080/auth/ | python -m json.tool
+curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config.json  http://localhost:8080/auth/ | python -m json.tool
 
 # Check session
 curl -s -L -X GET --cookie cookies http://localhost:8080/ | python -m json.tool
 
 # Deauthenticate
-curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @../configs/config_admin.json  http://localhost:8080/deauth/ | python -m json.tool
+curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @../configs/config.json  http://localhost:8080/deauth/ | python -m json.tool
 
 ###############
 # System test #
@@ -20,7 +20,7 @@ curl -s -H "Content-Type: application/json" -L -X GET --cookie cookies  http://l
 # Laboratory test #
 ###################
 # Auth as admin
-curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_admin.json  http://localhost:8080/auth/ | python -m json.tool
+curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config.json  http://localhost:8080/auth/ | python -m json.tool
 
 # Create laboratory
 curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @laboratory/lab_create_req.json  http://localhost:8080/laboratory/create | python -m json.tool
@@ -40,7 +40,7 @@ curl -s -H "Content-Type: application/json" -L -X POST --cookie cookies -d @labo
 #    Image test   #
 ###################
 # Auth as admin
-curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config_admin.json  http://localhost:8080/auth/ | python -m json.tool
+curl -s -H "Content-Type: application/json" -L -X POST --cookie-jar cookies -d @../configs/config.json  http://localhost:8080/auth/ | python -m json.tool
 
 # List images
 curl -s -L -X GET --cookie cookies http://localhost:8080/images/list | python -m json.tool

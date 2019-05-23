@@ -17,7 +17,7 @@ class ManagerAuth:
     adminKSAuth = None
 
     def __init__(self):
-        self.adminKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json").createKeyStoneSession()
+        self.adminKSAuth = OSKeystone.OSAuth(filename="configs/config.json").createKeyStoneSession()
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
@@ -36,7 +36,7 @@ class ManagerAuth:
                 raise Exception("No data in POST")
 
             # Bind admin and check group
-            osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
+            osKSAuth = OSKeystone.OSAuth(filename="configs/config.json")
             osKSUser = OSKeystone.OSUser(session=osKSAuth.createKeyStoneSession())
             osKSRoles = OSKeystone.OSRole(session=osKSAuth.createKeyStoneSession())
 
@@ -73,7 +73,7 @@ class ManagerAuth:
             # Check pass
             auth.token = osKSAuth.createKeyStoneSession().get_token()
 
-            osKSAuth = OSKeystone.OSAuth(filename="configs/config_admin.json")
+            osKSAuth = OSKeystone.OSAuth(filename="configs/config.json")
             osKSAuth.role = auth.role
             osKSAuth.authUsername = auth.username
             osKSAuth.authId = user.id

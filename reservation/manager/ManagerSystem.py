@@ -1,4 +1,5 @@
 import cherrypy
+import traceback
 from reservation.manager.ManagerTools import ManagerTool
 from reservation.stack.OSTools import OSTools
 from reservation.stack.OSKeystone import OSRole
@@ -128,7 +129,9 @@ class ManagerSystem():
                     osGroup.delete(groupStud.id)
                 if groupModer is not None and osGroup is not None:
                     osGroup.delete(groupModer.id)
-            data = dict(current="System manager", error=str(e))
+            error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="System manager", error=error)
+
         finally:
             MySQL.mysqlConn.close()
             return data
