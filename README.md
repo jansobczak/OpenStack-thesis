@@ -64,7 +64,7 @@ apt install mysql
 ```
 Create database
 ```
-sudo mysql -e "create database reservation_service'";
+sudo mysql -e "create database reservation_service";
 sudo mysql -e "create user reservation_user identified by 'top_used_password'";
 sudo mysql -e "grant all on reservation_service.* to 'reservation_user'";
 
