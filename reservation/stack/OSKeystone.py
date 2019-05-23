@@ -402,24 +402,36 @@ class OSAuth:
     project_domain_name = None
     project_name = None
     project_id = None
-    user_domain = None
+    user_domain_name = None
     username = None
     password = None
     glance_endpoint = None
 
     def __init__(self, **kwargs):
-        filename = kwargs.get("filename")
-        if filename is None:
+        config = kwargs.get("config")
+        if config is not None:
+            if "user_domain_name" in config:
+                self.user_domain_name = config["user_domain_name"]
+            if "username" in config:
+                self.username = config["username"]
+            if "password" in config:
+                self.password = config["password"]
+            if "auth_url" in config:
+                self.auth_url = config["auth_url"]
+            if "project_name" in config:
+                self.project_name = config["project_name"]
+            if "project_domain_name" in config:
+                self.project_domain_name = config["project_domain_name"]
+            if "project_id" in config:
+                self.project_id = config["project_id"]
+        else:
+            self.user_domain_name = kwargs.get("user_domain_name")
+            self.username = kwargs.get("username")
+            self.password = kwargs.get("password")
             self.auth_url = kwargs.get("auth_url")
             self.project_name = kwargs.get("project_name")
             self.project_domain_name = kwargs.get("project_domain_name")
-            self.user_domain = kwargs.get("user_domain")
-            self.username = kwargs.get("username")
             self.project_id = kwargs.get("project_id")
-            self.password = kwargs.get("password")
-            self.glance_endpoint = kwargs.get("glance_endpoint")
-        else:
-            self.getCredFromFile(filename)
 
     def __eq__(self, other):
         if self.auth_url == other.auth_url and self.project_name == other.project_name and self.project_domain_name == other.project_domain_name and self.user_domain == other.user_domain and self.username == other.username and self.password == other.password and self.project_id == other.project_id and self.glance_endpoint == other.glance_endpoint:
@@ -429,7 +441,7 @@ class OSAuth:
 
     def createKeyStoneSession(self):
         auth = KSIdentity.Password(
-            user_domain_name=self.user_domain,
+            user_domain_name=self.user_domain_name,
             username=self.username,
             password=self.password,
             project_domain_name=self.project_domain_name,
@@ -449,41 +461,3 @@ class OSAuth:
             project_name=self.project_name,
             project_id=self.project_id)
         return KSSession.Session(auth=auth)
-
-    def getKeystoneCreds(self):
-        d = {}
-        d["username"] = self.username
-        d["password"] = self.password
-        d["auth_url"] = self.auth_url
-        d["tenant_name"] = self.project_name
-        return d
-
-    def getCredFromFile(self, file_name):
-        with open(file_name) as data_file:
-            data = json.load(data_file)
-            try:
-                if "openstack" in data:
-                    if "user_domain" in data["openstack"]:
-                        self.user_domain = data["openstack"]["user_domain"]
-                    if "username" in data["openstack"]:
-                        self.username = data["openstack"]["username"]
-                    if "password" in data["openstack"]:
-                        self.password = data["openstack"]["password"]
-                    if "auth_url" in data["openstack"]:
-                        self.auth_url = data["openstack"]["auth_url"]
-                    if "project_name" in data["openstack"]:
-                        self.project_name = data["openstack"]["project_name"]
-                    if "project_domain_name" in data["openstack"]:
-                        self.project_domain_name = data["openstack"]["project_domain_name"]
-                    if "project_id" in data["openstack"]:
-                        self.project_id = data["openstack"]["project_id"]
-                    if "glance_endpoint" in data["openstack"]:
-                        self.glance_endpoint = data["openstack"]["glance_endpoint"]
-            except IndexError:
-                print("JSON cred invalid!")
-
-    def getProjectName(self):
-        return self.project_name
-
-    def getProjectID(self):
-        return self.project_id

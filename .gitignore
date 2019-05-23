@@ -14,7 +14,7 @@ Reservation-Service.sublime-workspace
 Reservation-Service.sublime-project
 
 # Examples
-example/cookies
+**/cookies
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
