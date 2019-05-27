@@ -13,7 +13,7 @@ import reservation.service.ConfigParser as ConfigParser
 import reservation.service.MySQL as MySQL
 
 
-class Menager:
+class Manager:
     """Service manager
     This class represent manager which organize all service abilities
     It should be spawn with CherryPy main class
@@ -58,11 +58,10 @@ class Menager:
         print(body)
 
     def _cp_dispatch(self, vpath):
-
         MySQL.mysqlConn.commit()
         # /auth
         if len(vpath) == 1 and "auth" in vpath:
-            return self.managerAuth.auth
+            return self.managerAuth
         # /deauth
         if len(vpath) == 1 and "deauth" in vpath:
             return self.managerAuth.deauth
@@ -198,27 +197,31 @@ class Menager:
         # /user
         if len(vpath) == 1 and "user" in vpath:
             vpath.pop(0)
-            return self.managerUser
-        # /user/list
-        if len(vpath) == 2 and "user" in vpath and "list" in vpath:
+            return self.managerUser.list
+        # /user/id
+        if len(vpath) == 3 and "user" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[2]
             del vpath[:]
             return self.managerUser.list
-        if len(vpath) == 4 and "user" in vpath and "list" in vpath and "id" in vpath:
-            cherrypy.request.params['id'] = vpath[3]
+        # /user/name
+        if len(vpath) == 3 and "user" in vpath and "name" in vpath:
+            cherrypy.request.params['name'] = vpath[2]
             del vpath[:]
             return self.managerUser.list
-        if len(vpath) == 4 and "user" in vpath and "list" in vpath and "name" in vpath:
-            cherrypy.request.params['name'] = vpath[3]
+        # /group
+        if len(vpath) == 1 and "group" in vpath:
             del vpath[:]
-            return self.managerUser.list
-        # /user/list/moderators
-        if len(vpath) == 3 and "user" in vpath and "list" in vpath and "moderators" in vpath:
+            return self.managerUser.listGroup
+        # /group/name/group_name
+        if len(vpath) == 3 and "group" in vpath and "name" in vpath:
+            cherrypy.request.params['name'] = vpath[2]
             del vpath[:]
-            return self.managerUser.listModerators
-        # /user/list/students
-        if len(vpath) == 3 and "user" in vpath and "list" in vpath and "students" in vpath:
+            return self.managerUser.listGroup
+        # /group/id/group_name
+        if len(vpath) == 3 and "group" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[2]
             del vpath[:]
-            return self.managerUser.listStudents
+            return self.managerUser.listGroup
         # /user/create
         if len(vpath) == 2 and "user" in vpath and "create" in vpath:
             del vpath[:]
@@ -235,6 +238,18 @@ class Menager:
         if len(vpath) == 3 and "user" in vpath and "allow" in vpath and "reservation" in vpath:
             del vpath[:]
             return self.managerUser.allowReservation
+        # /user/allow/reservation/name/student/lab_name
+        if len(vpath) == 6 and "user" in vpath and "allow" in vpath and "reservation" in vpath and "name" in vpath:
+            cherrypy.request.params['name'] = vpath[4]
+            cherrypy.request.params['lab_name'] = vpath[5]
+            del vpath[:]
+            return self.managerUser.allowReservation
+        # /user/allow/reservation/id/student_id/lab_id
+        if len(vpath) == 6 and "user" in vpath and "allow" in vpath and "reservation" in vpath and "id" in vpath:
+            cherrypy.request.params['id'] = vpath[4]
+            cherrypy.request.params['lab_id'] = vpath[5]
+            del vpath[:]
+            return self.managerUser.allowReservation
         # /user/deny/reservation
         if len(vpath) == 3 and "user" in vpath and "deny" in vpath and "reservation" in vpath:
             del vpath[:]
@@ -243,10 +258,12 @@ class Menager:
         if len(vpath) == 3 and "user" in vpath and "allow" in vpath and "moderator" in vpath:
             del vpath[:]
             return self.managerUser.allowModerator
+        # /user/allow/moderator/id/user_id
         if len(vpath) == 5 and "user" in vpath and "allow" in vpath and "moderator" in vpath and "id" in vpath:
             cherrypy.request.params['id'] = vpath[4]
             del vpath[:]
             return self.managerUser.allowModerator
+        # /user/allow/moderator/name/user_name
         if len(vpath) == 5 and "user" in vpath and "allow" in vpath and "moderator" in vpath and "name" in vpath:
             cherrypy.request.params['name'] = vpath[4]
             del vpath[:]

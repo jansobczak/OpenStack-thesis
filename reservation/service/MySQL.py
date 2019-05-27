@@ -249,6 +249,20 @@ class MySQL():
         self.cursor.execute(sql, (project_id, role_lab, role_student, role_moderator, group_student, group_moderator))
         return self.cursor.lastrowid
 
+    def update_defaults(self, **kwargs):
+
+        project_id = kwargs.get("project_id")
+        role_student = kwargs.get("role_student")
+        role_lab = kwargs.get("role_lab")
+        role_moderator = kwargs.get("role_moderator")
+        group_student = kwargs.get("group_student")
+        group_moderator = kwargs.get("group_moderator")
+
+        self.cursor = self.conn.cursor()
+        sql = "UPDATE system SET project=%s, role_lab=%s, role_student=%s, role_moderator=%s, group_student=%s, group_moderator=%s WHERE id=1"
+        self.cursor.execute(sql, (project_id, role_lab, role_student, role_moderator, group_student, group_moderator))
+        return self.cursor.lastrowid
+
     def select_team(self, **kwargs):
         team_id = kwargs.get("id")
         team_keystone_id = kwargs.get("team_id")

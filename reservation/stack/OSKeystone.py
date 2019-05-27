@@ -1,4 +1,5 @@
 import json
+import traceback
 from keystoneclient.v3.projects import ProjectManager as KSProjectManager
 from keystoneclient.v3 import client as KSClient
 from keystoneauth1.identity import v3 as KSIdentity
@@ -81,14 +82,19 @@ class OSProject(OSKeystone):
                     returnArray.append(projects[i])
             return returnArray
 
-    def allowGroup(self, group_id):
+    def allowGroup(self, **kwargs):
         """
         Allow group access to project
         :param group_id:
         :return:
         """
+        group_id = kwargs.get("group_id")
+        role = kwargs.get("role")
         osRole = OSRole(session=self.session)
-        memberRole = Role().parseObject(osRole.find(name="member")[0])
+        if role is not None:
+            memberRole = Role().parseObject(osRole.find(name=str(role))[0])
+        else:
+            memberRole = Role().parseObject(osRole.find(name="Member")[0])
         return self.client.roles.grant(role=memberRole.id, group=group_id, project=self.id)
 
     def allowUser(self, **kwargs):
@@ -263,7 +269,8 @@ class OSGroup(OSKeystone):
         try:
             return self.client.users.add_to_group(user=user_id, group=group_id)
         except Exception as e:
-            print(str(e))
+            error = str(e) + ": " + str(traceback.print_exc())
+            print(error)
             return False
 
     def removeUser(self, group_id, user_id):
@@ -275,7 +282,7 @@ class OSGroup(OSKeystone):
     def checkUserIn(self, group_id, user_id):
         try:
             return self.client.users.check_in_group(user=user_id, group=group_id)
-        except Exception:
+        except Exception as e:
             return False
 
     def getUsers(self, group_id):

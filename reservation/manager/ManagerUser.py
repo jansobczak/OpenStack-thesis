@@ -2,6 +2,7 @@ import cherrypy
 from .ManagerTools import ManagerTool
 from reservation.stack.OSKeystone import OSUser
 from reservation.stack.OSKeystone import OSGroup
+from reservation.stack.OSKeystone import OSProject
 from reservation.service.User import User
 from reservation.service.Group import Group
 from reservation.service.Laboratory import Laboratory
@@ -17,8 +18,7 @@ class ManagerUser:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
                 userDict = []
 
@@ -40,46 +40,61 @@ class ManagerUser:
         finally:
             return data
 
-    def _listType(self, type=None, cookie=None):
+    @cherrypy.expose()
+    @cherrypy.tools.json_out()
+    def listGroup(self, id=None, name=None):
         try:
-            if not ManagerTool.isAuthorized(cookie, self.keystoneAuthList, require_moderator=True):
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                osKSAuth = self.keystoneAuthList[cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
-                userArray = []
-                defaults = ManagerTool.getDefaults()
-                #Find lab group id
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osGroup = OSGroup(session=session)
-                if type == "moderators":
-                    group = osGroup.find(id=defaults["group_moderator"])
-                elif type == "students":
-                    group = osGroup.find(id=defaults["group_student"])
-                else:
-                    raise Exception("Invalid type requested")
-                if group is not None:
-                    group = Group().parseObject(group)
-                elif group is not None:
-                    raise Exception("Group doesn't exists")
-                users = osGroup.getUsers(group_id=group.id)
-                if users is not None and len(users) > 0:
-                    for user in users:
-                        userArray.append(User().parseObject(user).to_dict())
-                data = dict(current="User manager", response=userArray)
+                groupArray = []
+
+                if id is None and name is None:
+                    for group in osGroup.list():
+                        Group().parseObject(group)
+                        groupArray.append(Group().parseObject(group).to_dict())
+                elif id is not None:
+                    group = osGroup.find(id=id)
+                    if group is not None:
+                        groupDict = Group().parseObject(group).to_dict()
+                        groupDict["users"] = self._listType(group_id=group.id,  cookie=cherrypy.request.cookie)
+                        groupArray.append(groupDict)
+                    else:
+                        raise Exception("Group doesn't exists")
+                elif name is not None:
+                    for group in osGroup.find(name=name):
+                        groupDict = Group().parseObject(group).to_dict()
+                        groupDict["users"] = self._listType(group_id=group.id,  cookie=cherrypy.request.cookie)
+                        groupArray.append(groupDict)
+
+                data = dict(current="User manager", response=groupArray)
         except Exception as e:
                 data = dict(current="User manager", error=e)
         finally:
             return data
 
-    @cherrypy.expose()
-    @cherrypy.tools.json_out()
-    def listModerators(self):
-        return self._listType(type="moderators", cookie=cherrypy.request.cookie)
-
-    @cherrypy.expose()
-    @cherrypy.tools.json_out()
-    def listStudents(self):
-        return self._listType(type="students", cookie=cherrypy.request.cookie)
+    def _listType(self, group_id=None, cookie=None):
+        try:
+            session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+            userArray = []
+            #Find lab group id
+            osGroup = OSGroup(session=session)
+            group = osGroup.find(id=group_id)
+            if group is not None:
+                group = Group().parseObject(group)
+            elif group is not None:
+                raise Exception("Group doesn't exists")
+            users = osGroup.getUsers(group_id=group.id)
+            if users is not None and len(users) > 0:
+                for user in users:
+                    userArray.append(User().parseObject(user).to_dict())
+            data = userArray
+        except Exception as e:
+            data = dict(current="User manager", error=e)
+        finally:
+            return data
 
 
     @cherrypy.expose()
@@ -90,8 +105,7 @@ class ManagerUser:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
                 osGroup = OSGroup(session=session)
 
@@ -108,25 +122,25 @@ class ManagerUser:
                     user = User().parseObject(user)
 
                     # Find lab group id
-                    if group.id is not None:
-                        group = Group.parseObject(osGroup.find(id=group.id))
-                    elif group.name is not None:
-                        findGroup = osGroup.find(name=group.name)
-                        if findGroup is not None and len(findGroup) == 1:
-                            group = Group().parseObject(findGroup[0])
-                        elif len(findGroup) > 0:
+                    if group is not None:
+                        if group.id is not None:
+                            group = Group.parseObject(osGroup.find(id=group.id))
+                        elif group.name is not None:
+                            findGroup = osGroup.find(name=group.name)
+                            if findGroup is not None and len(findGroup) == 1:
+                                group = Group().parseObject(findGroup[0])
+                            elif len(findGroup) > 0:
+                                osUser.delete(user_id=user.id)
+                                raise Exception("Found more than one group with given name. This is not expected")
+                            else:
+                                osUser.delete(user_id=user.id)
+                                raise Exception("Group doesn't exists. This is not expected")
+                        if group.id != defaults["group_moderator"] and group.id != defaults["group_student"]:
                             osUser.delete(user_id=user.id)
-                            raise Exception("Found more than one group with given name. This is not expected")
+                            raise Exception("Group doesn't match any of system defaults")
                         else:
-                            osUser.delete(user_id=user.id)
-                            raise Exception("Group doesn't exists. This is not expected")
-
-                    if group.id != defaults["group_moderator"] and group.id != defaults["group_student"]:
-                        osUser.delete(user_id=user.id)
-                        raise Exception("Group doesn't match any of system defaults")
-                    else:
-                        osGroup.addUser(group_id=group.id, user_id=user.id)
-                        result = user.to_dict()
+                            osGroup.addUser(group_id=group.id, user_id=user.id)
+                    result = user.to_dict()
                 else:
                     raise Exception("Invalid request")
                 data = dict(current="User manager", response=result)
@@ -144,8 +158,7 @@ class ManagerUser:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
 
                 if id is None:
@@ -161,19 +174,37 @@ class ManagerUser:
     @cherrypy.expose()
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def allowReservation(self):
+    def allowReservation(self, name=None, id=None, lab_name=None, lab_id=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+                osUser = OSUser(session=session)
+                osProject = OSProject(session=session)
 
                 # Parse incoming JSON
-                request = cherrypy.request.json
-                user = User().parseJSON(data=request)
-                lab = Laboratory().parseJSON(data=request)
-
+                if hasattr(cherrypy.request, "json"):
+                    request = cherrypy.request.json
+                    user = User().parseJSON(data=request)
+                    lab = Laboratory().parseJSON(data=request)
+                else:
+                    if id is not None:
+                        user = User().parseObject(osUser.find(id=user.id))
+                    elif name is not None:
+                        findUsers = osUser.find(name=user.name)
+                        if len(findUsers) == 1:
+                            user = User().parseObject(findUsers[0])
+                        else:
+                            raise Exception("Found more than one user with given name. Try by ID")
+                    if lab_id is not None:
+                        lab = osProject.find(id=lab_id)
+                    elif lab_name is not None:
+                        findLabs = osProject.find(name=lab_name)
+                        if len(findLabs) == 1:
+                            lab = findLabs[0]
+                        else:
+                            raise Exception("Found more than one project(labs) with given name. Try by ID")
                 #Find lab
                 if lab.id is not None:
                     lab = MySQL.mysqlConn.select_lab(id=lab.id)
@@ -226,8 +257,7 @@ class ManagerUser:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
 
                 # Parse incoming JSON
                 request = cherrypy.request.json
@@ -278,8 +308,7 @@ class ManagerUser:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
 
                 # Parse incoming JSON
@@ -329,8 +358,7 @@ class ManagerUser:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
 
                 # Parse incoming JSON

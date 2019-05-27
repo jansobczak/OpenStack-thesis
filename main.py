@@ -5,5 +5,4 @@ from reservation.service import ConfigParser
 
 ConfigParser.configuration = ConfigParser.ConfigParser().getConfig()
 rest_service = RESTservice.RESTservice()
-rest_service.mountMenager()
 rest_service.start()

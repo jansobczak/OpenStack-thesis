@@ -10,6 +10,7 @@ import reservation.service.ConfigParser as ConfigParser
 from .ManagerTools import ManagerTool
 
 
+@cherrypy.expose()
 class ManagerAuth:
     """Menage Authorization
 
@@ -22,15 +23,28 @@ class ManagerAuth:
     def __init__(self):
         self.adminKSAuth = OSKeystone.OSAuth(config=ConfigParser.configuration["openstack"]).createKeyStoneSession()
 
-    @cherrypy.expose
     @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def auth(self):
-        """Authenticate
+    def DELETE(self, vpath=None):
+        """De-authenticate
 
-        :returns: JSON response
+        :returns: JSON response, logout or not authorized
         :rtype: {string}
         """
+        if ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
+            session_id = cherrypy.request.cookie["ReservationService"].value
+            self.keystoneAuthList.pop(session_id, None)
+            data = dict(current="Authorization manager", user_status="logout")
+        else:
+            data = dict(current="Authorization manager", user_status="not authorized")
+        return data
+
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def POST(self, vpath=None):
+        """Authenticate
+         :returns: JSON response
+         :rtype: {string}
+         """
         try:
             # Parse json input auth
             if hasattr(cherrypy.request, "json"):
@@ -68,22 +82,15 @@ class ManagerAuth:
             if len(project) == 1:
                 project = project[0]
             osKSAuth = OSKeystone.OSAuth(username=auth.username,
-                                         user_domain_name=ConfigParser.configuration["openstack"]["user_domain_name"],
-                                         password=auth.password,
-                                         project_id=project.id,
-                                         project_name=project.name,
-                                         project_domain_name=project.domain_id,
+                                         user_domain_name=ConfigParser.configuration["openstack"][
+                                             "user_domain_name"], password=auth.password, project_id=project.id,
+                                         project_name=project.name, project_domain_name=project.domain_id,
                                          auth_url=ConfigParser.configuration["openstack"]["auth_url"])
             # Check pass
             auth.token = osKSAuth.createKeyStoneSession().get_token()
-            session = Session(userid=user.id,
-                              username=auth.username,
-                              role=auth.role,
-                              token=auth.token)
+            session = Session(userid=user.id, username=auth.username, role=auth.role, token=auth.token)
             self.keystoneAuthList[str(cherrypy.session.id)] = session
-            data = dict(current="Authorization manager",
-                        user_status="authorized",
-                        username=session.username,
+            data = dict(current="Authorization manager", user_status="authorized", username=session.username,
                         type=session.role)
             return data
         except Exception as e:
@@ -91,18 +98,5 @@ class ManagerAuth:
             data = dict(current="Authorization manager", user_status="error", error=str(error))
             return data
 
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def deauth(self):
-        """De-authenticate
-
-        :returns: JSON response, logout or not authorized
-        :rtype: {string}
-        """
-        if ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
-            session_id = cherrypy.request.cookie["ReservationService"].value
-            self.keystoneAuthList.pop(session_id, None)
-            data = dict(current="Authorization manager", user_status="logout")
-        else:
-            data = dict(current="Authorization manager", user_status="not authorized")
-        return data
+    def GET(self, vpath):
+        print("GET")

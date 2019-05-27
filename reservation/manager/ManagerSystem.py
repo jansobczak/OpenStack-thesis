@@ -35,9 +35,7 @@ class ManagerSystem():
                 groupStud = None
                 groupModer = None
                 defaults = MySQL.mysqlConn.select_defaults()
-                session_id = cherrypy.request.cookie["ReservationService"].value
-                osKSAuth = self.keystoneAuthList[session_id]
-                session = osKSAuth.createKeyStoneSession()
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osRole = OSRole(session=session)
                 osProject = OSProject(session=session)
                 osGroup = OSGroup(session=session)
@@ -47,15 +45,41 @@ class ManagerSystem():
                     studRole = osRole.find(id=defaults["role_student"])
                     if len(studRole) == 1:
                         studRole = studRole[0]
+                    if studRole is None:
+                        studRole = Role().parseObject(osRole.create(name="student"))
+
                     labRole = osRole.find(id=defaults["role_lab"])
                     if len(labRole) == 1:
                         labRole = labRole[0]
+                    if labRole is None:
+                        labRole = Role().parseObject(osRole.create(name="lab"))
+
                     modRole = osRole.find(id=defaults["role_moderator"])
                     if len(modRole) == 1:
                         modRole = modRole[0]
+                    if modRole is None:
+                        modRole = Role().parseObject(osRole.create(name="moderator"))
+
                     defProject = osProject.find(id=defaults["project"])
+                    if defProject is None:
+                        defProject = osProject.create(name="reservation_system")
                     groupStud = osGroup.find(id=defaults["group_student"])
+                    if groupStud is None:
+                        osProject = OSProject(session=session, id=defProject.id)
+                        groupStud = Group().parseObject(osGroup.create(name="students"))
+                        osProject.allowGroup(group_id=groupStud.id, role="student")
                     groupModer = osGroup.find(id=defaults["group_moderator"])
+                    if groupModer is None:
+                        osProject = OSProject(session=session, id=defProject.id)
+                        groupModer = Group().parseObject(osGroup.create(name="moderators"))
+                        osProject.allowGroup(group_id=groupStud.id, role="moderators")
+
+                    MySQL.mysqlConn.update_defaults(project_id=defProject.id,
+                                                    role_student=studRole.id,
+                                                    role_lab=labRole.id,
+                                                    role_moderator=modRole.id,
+                                                    group_student=groupStud.id,
+                                                    group_moderator=groupModer.id)
                 else:
                     roleFind = osRole.find(name="student")
                     if len(roleFind) > 0:
@@ -97,8 +121,8 @@ class ManagerSystem():
                     osRole.grantGroup(group_id=groupModer.id, role_id=modRole.id)
 
                     osProject = OSProject(session=session, id=defProject.id)
-                    osProject.allowGroup(group_id=groupStud.id)
-                    osProject.allowGroup(group_id=groupModer.id)
+                    osProject.allowGroup(group_id=groupStud.id, role="student")
+                    osProject.allowGroup(group_id=groupModer.id, role="moderator")
 
                     MySQL.mysqlConn.insert_defaults(project_id=defProject.id,
                                                     role_student=studRole.id,
