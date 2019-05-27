@@ -98,5 +98,16 @@ class ManagerAuth:
             data = dict(current="Authorization manager", user_status="error", error=str(error))
             return data
 
-    def GET(self, vpath):
-        print("GET")
+    @cherrypy.tools.json_out()
+    def GET(self, vpath=None):
+        """Get  status authenticate
+
+        :returns: JSON response
+        :rtype: {string}
+        """
+        if ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList):
+            session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+            data = dict(current="Authorization manager", user_status=session.to_dict())
+        else:
+            data = dict(current="Authorization manager", user_status="not authorized")
+        return data
