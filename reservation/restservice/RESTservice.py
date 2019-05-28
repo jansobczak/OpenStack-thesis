@@ -1,5 +1,4 @@
 import cherrypy
-from reservation.manager.Manager import Manager
 from reservation.manager.ManagerAuth import ManagerAuth
 from reservation.manager.ManagerUser import ManagerUser
 from reservation.manager.ManagerSystem import ManagerSystem
@@ -54,7 +53,6 @@ class RESTservice(object):
                 "tools.response_headers.headers": [("Content-Type", "application/json")]
             }
         }
-        cherrypy.tree.mount(Manager(), "/", conf)
         cherrypy.tree.mount(self.managerAuth, '/auth', confDispatch)
         cherrypy.tree.mount(self.managerUser, '/user', confDispatch)
         cherrypy.tree.mount(self.managerSystem, '/system', confDispatch)

@@ -17,7 +17,7 @@ class ManagerUser:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
                 userDict = []
                 if vpath is not None:
@@ -47,7 +47,7 @@ class ManagerUser:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
                 osGroup = OSGroup(session=session)
 
@@ -102,26 +102,25 @@ class ManagerUser:
 
 
     @cherrypy.tools.json_out()
-    def DELETE(self, vpath=None):
+    def DELETE(self, type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
-                if vpath is not None:
-                    if len(vpath) is 2:
-                        if "id" in vpath:
-                            user = osUser.find(id=vpath[1])
-                            if user is not None:
-                                userObj = User().parseObject(user)
-                                osUser.delete(userObj.id)
-                        elif "name" in vpath:
-                            for user in osUser.find(name=vpath[1]):
-                                userObj = User().parseObject(user)
-                                osUser.delete(userObj.id)
+                if type is not None:
+                    if "id" in type:
+                        user = osUser.find(id=user_data)
+                        if user is not None:
+                            userObj = User().parseObject(user)
+                            osUser.delete(userObj.id)
+                    elif "name" in type:
+                        for user in osUser.find(name=user_data):
+                            userObj = User().parseObject(user)
+                            osUser.delete(userObj.id)
                 else:
-                    raise Exception("Not allowed on: /user! Specify id or name")
+                    raise Exception("User /user/id or /user/name to specify id or name")
 
                 data = dict(current="User manager", response="OK")
         except Exception as e:
@@ -136,7 +135,7 @@ class ManagerUser:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
                 if vpath is not None:
                     if len(vpath) is 2:

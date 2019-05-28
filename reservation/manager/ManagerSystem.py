@@ -35,7 +35,7 @@ class ManagerSystem():
                 groupStud = None
                 groupModer = None
                 defaults = MySQL.mysqlConn.select_defaults()
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osRole = OSRole(session=session)
                 osProject = OSProject(session=session)
                 osGroup = OSGroup(session=session)
