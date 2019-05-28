@@ -87,7 +87,8 @@ class ManagerAuth:
                                          project_name=project.name, project_domain_name=project.domain_id,
                                          auth_url=ConfigParser.configuration["openstack"]["auth_url"])
             # Check pass
-            auth.token = osKSAuth.createKeyStoneSession().get_token()
+            auth.token = osKSAuth.createKeyStoneSession()
+            auth.token.get_token()
             session = Session(userid=user.id, username=auth.username, role=auth.role, token=auth.token, auth=osKSAuth)
             self.keystoneAuthList[str(cherrypy.session.id)] = session
             data = dict(current="Authorization manager", user_status="authorized", username=session.username,
