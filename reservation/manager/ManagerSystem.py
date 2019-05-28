@@ -10,6 +10,8 @@ from reservation.service.Role import Role
 
 import reservation.service.MySQL as MySQL
 
+
+@cherrypy.expose
 class ManagerSystem():
     keystoneAuthList = None
 
@@ -19,10 +21,8 @@ class ManagerSystem():
     New OpenStack need to be configured before system can operates.
     This class create roles
     """
-
-    @cherrypy.expose
     @cherrypy.tools.json_out()
-    def index(self):
+    def GET(self, vpath=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_admin=True):
                 data = dict(current="System manager", user_status="not authorized")
@@ -35,7 +35,7 @@ class ManagerSystem():
                 groupStud = None
                 groupModer = None
                 defaults = MySQL.mysqlConn.select_defaults()
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
                 osRole = OSRole(session=session)
                 osProject = OSProject(session=session)
                 osGroup = OSGroup(session=session)

@@ -151,6 +151,27 @@ class OSUser(OSKeystone):
         else:
             raise Exception("User " + name + " already exists!")
 
+    def update(self, user_id, **kwargs):
+        """
+        Update User
+        :param user_id:
+        :param kwargs: name, password, mail
+        :return:
+        """
+        name = kwargs.get("name")
+        password = kwargs.get("password")
+        mail = kwargs.get("mail")
+        enabled = kwargs.get("enabled")
+        if name is not None:
+            self.client.users.update(user=user_id, name=name)
+        if password is not None:
+            self.client.users.update(user=user_id, password=password)
+        if mail is not None:
+            self.client.users.update(user=user_id, mail=mail)
+        if enabled is not None:
+            self.client.users.update(user=user_id, enabled=enabled)
+        return self.get(user_id=user_id)
+
     def delete(self, user_id):
         return self.client.users.delete(user_id)
 
