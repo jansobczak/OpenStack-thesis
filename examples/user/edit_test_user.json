@@ -1,0 +1,7 @@
+{
+    "user": {
+        "name": "test_user",
+        "password": "OsPass.123",
+        "mail": "another@mail.test"
+    }
+}

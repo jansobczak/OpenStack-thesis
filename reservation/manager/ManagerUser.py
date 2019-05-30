@@ -12,7 +12,7 @@ class ManagerUser:
     keystoneAuthList = None
 
     @cherrypy.tools.json_out()
-    def GET(self, vpath=None):
+    def GET(self, type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
@@ -20,15 +20,14 @@ class ManagerUser:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
                 userDict = []
-                if vpath is not None:
-                    if len(vpath) is 2:
-                        if "id" in vpath:
-                            user = osUser.find(id=vpath[1])
-                            if user is not None:
-                                userDict.append(User().parseObject(user).to_dict())
-                        elif "name" in vpath:
-                            for user in osUser.find(name=vpath[1]):
-                                userDict.append(User().parseObject(user).to_dict())
+                if type is not None and user_data is not None:
+                    if "id" in type:
+                        user = osUser.find(id=user_data)
+                        if user is not None:
+                            userDict.append(User().parseObject(user).to_dict())
+                    elif "name" in type:
+                        for user in osUser.find(name=user_data):
+                            userDict.append(User().parseObject(user).to_dict())
                 # Get all
                 else:
                     for user in osUser.list():
@@ -109,7 +108,7 @@ class ManagerUser:
             else:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
-                if type is not None:
+                if type is not None and user_data is not None:
                     if "id" in type:
                         user = osUser.find(id=user_data)
                         if user is not None:
@@ -130,31 +129,32 @@ class ManagerUser:
 
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def PATCH(self, vpath=None):
+    def PATCH(self, type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
-                if vpath is not None:
-                    if len(vpath) is 2:
-                        if hasattr(cherrypy.request, "json"):
-                            userUpdate = User().parseJSON(data=cherrypy.request.json)
-                            userUpdate.to_dict()
-                            if "id" in vpath:
-                                user = osUser.find(id=vpath[1])
-                                if user is not None:
-                                    userObj = User().parseObject(user)
-                                    osUser.update(userObj.id, userUpdate.to_dict())
-                            elif "name" in vpath:
-                                for user in osUser.find(name=vpath[1]):
-                                    userObj = User().parseObject(user)
-                                    osUser.update(userObj.id, userUpdate.to_dict())
-                        else:
-                            raise Exception("Not JSON data!")
+                userResult = []
+                if type is not None and user_data is not None:
+                    if hasattr(cherrypy.request, "json"):
+                        userUpdate = User().parseJSON(data=cherrypy.request.json)
+                        userUpdate.to_dict()
+                        if "id" in type:
+                            user = osUser.find(id=user_data)
+                            if user is not None:
+                                userObj = User().parseObject(user)
+                                userResult.append(User().parseObject(osUser.update(userObj.id, **userUpdate.to_dict())).to_dict())
+                        elif "name" in type:
+                            for user in osUser.find(name=user_data):
+                                userObj = User().parseObject(user)
+                                userResult.append(User().parseObject(osUser.update(userObj.id, **userUpdate.to_dict())).to_dict())
+                    else:
+                        raise Exception("Not JSON data!")
                 else:
                     raise Exception("Not allowed on: /user! Specify id or name")
+                data = dict(current="User manager", result=userResult)
         except Exception as e:
             data = dict(current="User manager", error=str(e))
         finally:

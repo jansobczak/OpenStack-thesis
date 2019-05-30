@@ -41,4 +41,4 @@ class User:
             return None
 
     def to_dict(self):
-        return dict(id=self.id, name=self.name, mail=self.mail, enabled=self.enabled)
+        return dict(id=self.id, name=self.name, mail=self.mail, enabled=self.enabled, password=self.password)
