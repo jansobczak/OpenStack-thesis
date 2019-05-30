@@ -5,11 +5,14 @@
     "default": "rule:admin_required",
 
     "identity:list_users": "rule:is_moderator or rule:admin_required",
+    "identity:get_user": "rule:is_moderator or rule:admin_required",
     "identity:list_groups": "rule:is_moderator or rule:admin_required",
     "identity:create_user": "rule:is_moderator or rule:admin_required",
+    "identity:update_user": "rule:is_moderator or rule:admin_required",
     "identity:delete_user": "rule:is_moderator or rule:admin_required",
     "identity:create_group": "rule:is_moderator or rule:admin_required",
     "identity:delete_group": "rule:is_moderator or rule:admin_required",
+    "identity:update_group": "rule:is_moderator or rule:admin_required",
     "identity:check_user_in_group": "rule:is_moderator or rule:admin_required",
     "identity:add_user_to_group": "rule:is_moderator or rule:admin_required",
     "identity:remove_user_to_group": "rule:is_moderator or rule:admin_required"
