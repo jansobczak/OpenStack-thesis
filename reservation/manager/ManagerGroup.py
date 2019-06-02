@@ -15,7 +15,7 @@ class ManagerGroup:
     def GET(self, group_type=None, group_data=None, user_type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="User manager", user_status="not authorized", require_moderator=True)
+                data = dict(current="Group manager", user_status="not authorized", require_moderator=True)
             else:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osGroup = OSGroup(session=session)
@@ -66,10 +66,10 @@ class ManagerGroup:
                         returnData = False
                 else:
                     returnData = groupArray
-                data = dict(current="User manager", response=returnData)
+                data = dict(current="Group manager", response=returnData)
         except Exception as e:
             error = str(e) + ": " + str(traceback.print_exc())
-            data = dict(current="User manager", error=str(error))
+            data = dict(current="Group manager", error=str(error))
         finally:
             return data
 
@@ -90,7 +90,7 @@ class ManagerGroup:
                     userArray.append(User().parseObject(user).to_dict())
             data = userArray
         except Exception as e:
-            data = dict(current="User manager", error=e)
+            data = dict(current="Group manager", error=e)
         finally:
             return data
 
@@ -98,7 +98,7 @@ class ManagerGroup:
     def PUT(self, group_type=None, group_data=None, user_type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="User manager", user_status="not authorized", require_moderator=True)
+                data = dict(current="Group manager", user_status="not authorized", require_moderator=True)
             else:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osGroup = OSGroup(session=session)
@@ -130,11 +130,11 @@ class ManagerGroup:
                     user = User().parseObject(user)
                     # Grant access and check if already exists
                     osGroup.addUser(group_id=group.id, user_id=user.id)
-                    data = dict(current="User manager", response="OK")
+                    data = dict(current="Group manager", response="OK")
                 else:
-                    data = dict(current="User manager", response="Invalid request")
+                    data = dict(current="Group manager", response="Invalid request")
         except Exception as e:
-            data = dict(current="User manager", error=str(e))
+            data = dict(current="Group manager", error=str(e))
         finally:
             return data
 
@@ -142,7 +142,7 @@ class ManagerGroup:
     def DELETE(self, group_type=None, group_data=None, user_type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="User manager", user_status="not authorized", require_moderator=True)
+                data = dict(current="Group manager", user_status="not authorized", require_moderator=True)
             else:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osGroup = OSGroup(session=session)
@@ -174,10 +174,10 @@ class ManagerGroup:
                     user = User().parseObject(user)
                     # Grant access and check if already exists
                     osGroup.removeUser(group_id=group.id, user_id=user.id)
-                    data = dict(current="User manager", response="OK")
+                    data = dict(current="Group manager", response="OK")
                 else:
-                    data = dict(current="User manager", response="Invalid request")
+                    data = dict(current="Group manager", response="Invalid request")
         except Exception as e:
-            data = dict(current="User manager", error=str(e))
+            data = dict(current="Group manager", error=str(e))
         finally:
             return data
