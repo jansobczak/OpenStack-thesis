@@ -3,5 +3,5 @@
     "container_format": "bare",
     "disk_format": "qcow2",
     "is_public": "True",
-    "file_path": "/Users/jansobczak/Downloads/cirros.img"
+    "file": "/Users/jansobczak/Downloads/cirros.img"
 }

@@ -2,7 +2,7 @@ class Image:
 
     name = None
     checksum = None
-    container_fromat = None
+    container_format = None
     created_at = None
     disk_format = None
     file = None
