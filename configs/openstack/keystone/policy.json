@@ -1,19 +1,19 @@
 {
     "admin_required": "role:admin",
     "is_moderator": "role:moderator",
-
     "default": "rule:admin_required",
+    "admin_or_moderator": "rule:is_moderator or rule:admin_required",
 
-    "identity:list_users": "rule:is_moderator or rule:admin_required",
-    "identity:get_user": "rule:is_moderator or rule:admin_required",
-    "identity:list_groups": "rule:is_moderator or rule:admin_required",
-    "identity:create_user": "rule:is_moderator or rule:admin_required",
-    "identity:update_user": "rule:is_moderator or rule:admin_required",
-    "identity:delete_user": "rule:is_moderator or rule:admin_required",
-    "identity:create_group": "rule:is_moderator or rule:admin_required",
-    "identity:delete_group": "rule:is_moderator or rule:admin_required",
-    "identity:update_group": "rule:is_moderator or rule:admin_required",
-    "identity:check_user_in_group": "rule:is_moderator or rule:admin_required",
-    "identity:add_user_to_group": "rule:is_moderator or rule:admin_required",
-    "identity:remove_user_to_group": "rule:is_moderator or rule:admin_required"
+    "identity:list_users": "rule:admin_or_moderator",
+    "identity:get_user": "rule:admin_or_moderator",
+    "identity:list_groups": "rule:admin_or_moderator",
+    "identity:create_user": "rule:admin_or_moderator",
+    "identity:update_user": "rule:admin_or_moderator",
+    "identity:delete_user": "rule:admin_or_moderator",
+    "identity:create_group": "rule:admin_or_moderator",
+    "identity:delete_group": "rule:admin_or_moderator",
+    "identity:update_group": "rule:admin_or_moderator",
+    "identity:check_user_in_group": "rule:admin_or_moderator",
+    "identity:add_user_to_group": "rule:admin_or_moderator",
+    "identity:remove_user_to_group": "rule:admin_or_moderator"
 }
