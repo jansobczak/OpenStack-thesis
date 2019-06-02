@@ -5,6 +5,7 @@ from reservation.service.Template import Template
 from reservation.service.User import User
 from reservation.service.Group import Group
 from reservation.stack.OSKeystone import OSGroup
+from reservation.stack.OSKeystone import OSUser
 from reservation.stack.OSKeystone import OSRole
 from .ManagerTools import ManagerTool
 import reservation.service.MySQL as MySQL
@@ -47,15 +48,15 @@ class ManagerLab:
                     if "user" in user_or_group or "group" in user_or_group:
                         session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                         osGroup = OSGroup(session=session)
-                        group = osGroup.find(id=lab.group)
-                        if group is not None:
-                            group = Group().parseObject(group)
+                        group = osGroup.find(name=lab.group)
+                        if group is not None and len(group) == 1:
+                            group = Group().parseObject(group[0])
                             users = osGroup.getUsers(group_id=group.id)
                         userArray = []
                         if users is not None and len(users) > 0:
                             for user in users:
                                 userArray.append(User().parseObject(user).to_dict())
-                        data = dict(laboratory=Laboratory().parseDict(lab).to_dict(), allowedUsers=userArray)
+                        data = dict(laboratory=lab.to_dict(), allowedUsers=userArray)
                 else:
                     period = MySQL.mysqlConn.select_period(laboratory_id=lab.id)
                     periodChunk = Periods().parseArray(period)
@@ -131,39 +132,6 @@ class ManagerLab:
             MySQL.mysqlConn.close()
             return data
 
-    @cherrypy.tools.json_out()
-    def DELETE(self, lab_type=None, lab_data=None):
-        try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="Lab manager", user_status="not authorized", require_moderator=True)
-            else:
-                status = False
-                if lab_type is not None and lab_data is not None:
-                    if "id" in lab_type:
-                        lab = MySQL.mysqlConn.select_lab(id=lab_data)
-                        status = MySQL.mysqlConn.delete_lab(id=lab_data)
-                    elif "name" in lab_type:
-                        lab = MySQL.mysqlConn.select_lab(name=lab_data)
-                        status = MySQL.mysqlConn.delete_lab(name=lab_data)
-                else:
-                    raise Exception("Invalid request no id or name or compatible JSON")
-
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
-                osGroup = OSGroup(session=session)
-                group = osGroup.find(name=lab[0]["group"])
-                if len(group) > 0:
-                    osGroup.delete(group_id=group[0].id)
-                if status:
-                    data = dict(current="Laboratory manager", status="deleted")
-                else:
-                    data = dict(current="Laboratory manager", status="not deleted or laboratory doesn't exists")
-                MySQL.mysqlConn.commit()
-        except Exception as e:
-            data = dict(current="Laboratory manager", error=str(e))
-        finally:
-            MySQL.mysqlConn.close()
-            return data
-
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def PATCH(self, lab_type=None, lab_data=None):
@@ -226,6 +194,122 @@ class ManagerLab:
                     req_periods = tempPeriods
                     data = dict(current="Laboratory manager", laboratory=req_lab, template=req_template, periods=req_periods)
                     MySQL.mysqlConn.commit()
+        except Exception as e:
+            data = dict(current="Laboratory manager", error=str(e))
+        finally:
+            MySQL.mysqlConn.close()
+            return data
+
+    @cherrypy.tools.json_out()
+    def DELETE(self, lab_type=None, lab_data=None, user_or_group=None, uog_type=None, uog_data=None):
+        try:
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="Lab manager", user_status="not authorized", require_moderator=True)
+            else:
+                status = False
+                if lab_type is not None and lab_data is not None:
+                    if "id" in lab_type:
+                        lab = MySQL.mysqlConn.select_lab(id=lab_data)
+                    elif "name" in lab_type:
+                        lab = MySQL.mysqlConn.select_lab(name=lab_data)
+                else:
+                    raise Exception("Invalid request no id or name or compatible JSON")
+
+                if len(lab) == 1:
+                    lab = Laboratory().parseDict(lab[0])
+                elif len(lab) > 1:
+                    raise  Exception("Multiple laboratories found - not expected")
+                else:
+                    raise Exception("No laboratory found")
+                # Delete allowance
+                if user_or_group is not None and uog_type is not None and uog_data is not None:
+                    # Find lab group id
+                    session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+                    osGroup = OSGroup(session=session)
+                    group = osGroup.find(name=lab.group)
+                    if group is not None and len(group) == 1:
+                        lab_group = Group().parseObject(group[0])
+
+                    osUser = OSUser(session=session)
+                    if "user" in user_or_group:
+                        if "id" in uog_type:
+                            user = osUser.find(id=uog_data)
+                            user = User().parseObject(user)
+                        elif "name" in uog_type:
+                            user = osUser.find(name=uog_data)
+                            if len(user) == 1:
+                                user = User().parseObject(user[0])
+                        osGroup.removeUser(group_id=lab_group.id, user_id=user.id)
+                        data = dict(current="User manager", response="OK")
+                else:
+                    status = MySQL.mysqlConn.delete_lab(id=lab.id)
+                    session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+                    osGroup = OSGroup(session=session)
+                    group = osGroup.find(name=lab.group)
+                    if len(group) > 0:
+                        osGroup.delete(group_id=group[0].id)
+                    if status:
+                        data = dict(current="Laboratory manager", status="deleted")
+                    else:
+                        data = dict(current="Laboratory manager", status="not deleted or laboratory doesn't exists")
+                    MySQL.mysqlConn.commit()
+        except Exception as e:
+            data = dict(current="Laboratory manager", error=str(e))
+        finally:
+            MySQL.mysqlConn.close()
+            return data
+
+    @cherrypy.tools.json_out()
+    def PUT(self, lab_type=None, lab_data=None, user_or_group=None, uog_type=None, uog_data=None):
+        try:
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="Lab manager", user_status="not authorized", require_moderator=True)
+            else:
+                status = False
+                if lab_type is not None and lab_data is not None:
+                    if "id" in lab_type:
+                        lab = MySQL.mysqlConn.select_lab(id=lab_data)
+                    elif "name" in lab_type:
+                        lab = MySQL.mysqlConn.select_lab(name=lab_data)
+                else:
+                    raise Exception("Invalid request no id or name or compatible JSON")
+
+                if len(lab) == 1:
+                    lab = Laboratory().parseDict(lab[0])
+                elif len(lab) > 1:
+                    raise  Exception("Multiple laboratories found - not expected")
+                else:
+                    raise Exception("No laboratory found")
+
+                #Find lab group id
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+                osGroup = OSGroup(session=session)
+                group = osGroup.find(name=lab.group)
+                if group is not None and len(group) == 1:
+                    lab_group = Group().parseObject(group[0])
+
+                if user_or_group is not None and uog_type is not None and uog_data is not None:
+                    osUser = OSUser(session=session)
+                    osGroup = OSGroup(session=session)
+                    if "user" in user_or_group:
+                        if "id" in uog_type:
+                            user = osUser.find(id=uog_data)
+                            user = User().parseObject(user)
+                        elif "name" in uog_type:
+                            user = osUser.find(name=uog_data)
+                            if len(user) == 1:
+                                user = User().parseObject(user[0])
+                        osGroup.addUser(group_id=lab_group.id, user_id=user.id)
+                        data = dict(current="User manager", response="OK")
+                    elif "group" in user_or_group:
+                        if "id" in uog_type:
+                            group = osGroup.find(id=uog_data)
+                            group = Group().parseObject(group)
+                        elif "name" in uog_type:
+                            group = osGroup.find(name=uog_data)
+                            if len(group) == 1:
+                                group = Group().parseObject(group[0])
+                        data = dict(current="User manager", response="Not available for group yet")
         except Exception as e:
             data = dict(current="Laboratory manager", error=str(e))
         finally:

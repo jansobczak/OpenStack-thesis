@@ -308,7 +308,8 @@ class OSGroup(OSKeystone):
     def removeUser(self, group_id, user_id):
         try:
             return self.client.users.remove_from_group(user=user_id, group=group_id)
-        except Exception:
+        except Exception as e:
+            error = str(e) + ": " + str(traceback.print_exc())
             return False
 
     def checkUserIn(self, group_id, user_id):
