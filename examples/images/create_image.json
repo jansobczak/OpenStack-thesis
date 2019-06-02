@@ -1,7 +1,9 @@
 {
+  "image": {
     "name": "cirros_image_lab",
     "container_format": "bare",
     "disk_format": "qcow2",
     "is_public": "True",
     "file": "/Users/jansobczak/Downloads/cirros.img"
+  }
 }
