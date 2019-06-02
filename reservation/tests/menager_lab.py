@@ -16,7 +16,7 @@ MySQL.mysqlConn = MySQL.MySQL(
 
 
 
-dataJson = json.load(open("example/laboratory/lab_create_req.json"))
+dataJson = json.load(open("example/laboratory/create.json"))
 lab = Laboratory.Laboratory().parseJSON(data=dataJson)
 periods = Period.Periods().parseJSON(data=dataJson)
 template = Template.Template().parseJSON(data=dataJson)

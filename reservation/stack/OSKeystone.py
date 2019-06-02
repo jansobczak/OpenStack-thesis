@@ -286,6 +286,17 @@ class OSGroup(OSKeystone):
                     returnArray.append(users[i])
             return returnArray
 
+    def update(self, group_id, name):
+        """
+        Update group
+        :param group_id: group_id
+        :param name: Name
+        :return:
+        """
+        if name is not None:
+            self.client.groups.update(group=group_id, name=name)
+        return self.get(group_id=group_id)
+
     def addUser(self, group_id, user_id):
         try:
             return self.client.users.add_to_group(user=user_id, group=group_id)

@@ -47,6 +47,8 @@ class MySQL():
         if self.cursor is not None:
             self.cursor.close()
 
+    ### LAB
+
     def select_lab(self, **kwargs):
         """
         Select from lab
@@ -109,6 +111,38 @@ class MySQL():
         self.cursor.execute(sql, (name, duration, group, moderator))
         return self.cursor.lastrowid
 
+    def update_lab(self, lab_id, **kwargs):
+        """
+        Update laboratory
+        :param lab_id: id of laboratory to update
+        :param kwargs: name, duration, group, template_id, moderator
+        :return:
+        """
+        name = kwargs.get("name")
+        duration = kwargs.get("duration")
+        group = kwargs.get("group")
+        template_id = kwargs.get("template_id")
+        moderator = kwargs.get("moderator")
+
+        self.cursor = self.conn.cursor()
+        if name is not None:
+            sql = "UPDATE laboratory set name = %s WHERE id = %s"
+            self.cursor.execute(sql, (name, lab_id))
+        if duration is not None:
+            sql = "UPDATE laboratory set duration = %s WHERE id = %s"
+            self.cursor.execute(sql, (duration, lab_id))
+        if group is not None:
+            sql = "UPDATE laboratory set `group` = %s WHERE id = %s"
+            self.cursor.execute(sql, (group, lab_id))
+        if template_id is not None:
+            sql = "UPDATE laboratory set template_id = %s WHERE id = %s"
+            self.cursor.execute(sql, (template_id, lab_id))
+        if moderator is not None:
+            sql = "UPDATE laboratory set moderator = %s WHERE id = %s"
+            self.cursor.execute(sql, (moderator, lab_id))
+
+    ### TEMPLATE
+
     def select_template(self, **kwargs):
         """
         Select from lab
@@ -157,7 +191,6 @@ class MySQL():
         :param kwargs: name, data or filename. When using filename it expect JSON
         :return: ID of inserted template
         """
-
         name = kwargs.get("name")
         data = kwargs.get("data")
         filename = kwargs.get("filename")
@@ -169,6 +202,29 @@ class MySQL():
         sql = "INSERT INTO template VALUES(DEFAULT, %s, %s, %s);"
         self.cursor.execute(sql, (name, str(data), laboratory_id))
         return self.cursor.lastrowid
+
+    def update_template(self, template_id, **kwargs):
+        """
+        Update template
+        :param template_id: id of template to update
+        :param kwargs: name, data, filename, laboratory_id
+        :return:
+        """
+        name = kwargs.get("name")
+        data = kwargs.get("data")
+        laboratory_id = kwargs.get("laboratory_id")
+        self.cursor = self.conn.cursor()
+        if name is not None:
+            sql = "UPDATE template set name=%s WHERE id=%s"
+            self.cursor.execute(sql, (name, template_id))
+        if data is not None:
+            sql = "UPDATE template set data=%s WHERE id=%s"
+            self.cursor.execute(sql, (data, template_id))
+        if laboratory_id is not None:
+            sql = "UPDATE template set laboratory_id=%s WHERE id=%s"
+            self.cursor.execute(sql, (laboratory_id, template_id))
+
+    ### PERIOD
 
     def select_period(self, **kwargs):
         """
