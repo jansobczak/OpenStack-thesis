@@ -2,7 +2,7 @@ class Image:
 
     name = None
     checksum = None
-    container_fromat = None
+    container_format = None
     created_at = None
     disk_format = None
     file = None
@@ -89,44 +89,44 @@ class Image:
 
     def parseJSON(self, data):
         if "image" in data:
-            if "checksum" in data[image]:
-                self.checksum = data[image]["checksum"]
-            if "container_format" in data[image]:
-                self.container_format = data[image]["container_format"]
-            if "created_at" in data[image]:
-                self.created_at = data[image]["created_at"]
-            if "disk_format" in data[image]:
-                self.disk_format = data[image]["disk_format"]
-            if "file" in data[image]:
-                self.file = data[image]["file"]
-            if "id" in data[image]:
-                self.id = data[image]["id"]
-            if "is_public" in data[image]:
-                self.is_public = data[image]["is_public"]
-            if "min_disk" in data[image]:
-                self.min_disk = data[image]["min_disk"]
-            if "min_ram" in data[image]:
-                self.min_ram = data[image]["min_ram"]
-            if "name" in data[image]:
-                self.name = data[image]["name"]
-            if "owner" in data[image]:
-                self.owner = data[image]["owner"]
-            if "protected" in data[image]:
-                self.protected = data[image]["protected"]
-            if "schema" in data[image]:
-                self.schema = data[image]["schema"]
-            if "size" in data[image]:
-                self.size = data[image]["size"]
-            if "status" in data[image]:
-                self.status = data[image]["status"]
-            if "tags" in data[image]:
-                self.tags = data[image]["tags"]
-            if "updated_at" in data[image]:
-                self.updated_at = data[image]["updated_at"]
-            if "virtual_size" in data[image]:
-                self.virtual_size = data[image]["virtual_size"]
-            if "visibility" in data[image]:
-                self.visibility = data[image]["visibility"]
+            if "checksum" in data["image"]:
+                self.checksum = data["image"]["checksum"]
+            if "container_format" in data["image"]:
+                self.container_format = data["image"]["container_format"]
+            if "created_at" in data["image"]:
+                self.created_at = data["image"]["created_at"]
+            if "disk_format" in data["image"]:
+                self.disk_format = data["image"]["disk_format"]
+            if "file" in data["image"]:
+                self.file = data["image"]["file"]
+            if "id" in data["image"]:
+                self.id = data["image"]["id"]
+            if "is_public" in data["image"]:
+                self.is_public = data["image"]["is_public"]
+            if "min_disk" in data["image"]:
+                self.min_disk = data["image"]["min_disk"]
+            if "min_ram" in data["image"]:
+                self.min_ram = data["image"]["min_ram"]
+            if "name" in data["image"]:
+                self.name = data["image"]["name"]
+            if "owner" in data["image"]:
+                self.owner = data["image"]["owner"]
+            if "protected" in data["image"]:
+                self.protected = data["image"]["protected"]
+            if "schema" in data["image"]:
+                self.schema = data["image"]["schema"]
+            if "size" in data["image"]:
+                self.size = data["image"]["size"]
+            if "status" in data["image"]:
+                self.status = data["image"]["status"]
+            if "tags" in data["image"]:
+                self.tags = data["image"]["tags"]
+            if "updated_at" in data["image"]:
+                self.updated_at = data["image"]["updated_at"]
+            if "virtual_size" in data["image"]:
+                self.virtual_size = data["image"]["virtual_size"]
+            if "visibility" in data["image"]:
+                self.visibility = data["image"]["visibility"]
             return self
         else:
             return None

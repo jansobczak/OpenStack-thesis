@@ -3,6 +3,7 @@ from reservation.manager.ManagerAuth import ManagerAuth
 from reservation.manager.ManagerUser import ManagerUser
 from reservation.manager.ManagerGroup import ManagerGroup
 from reservation.manager.ManagerSystem import ManagerSystem
+from reservation.manager.ManagerImage import ManagerImage
 import reservation.service.ConfigParser as ConfigParser
 import reservation.service.MySQL as MySQL
 
@@ -20,7 +21,8 @@ class RESTservice(object):
         self.managerGroup.keystoneAuthList = self.keystoneAuthList
         self.managerSystem = ManagerSystem()
         self.managerSystem.keystoneAuthList = self.keystoneAuthList
-
+        self.managerImage = ManagerImage()
+        self.managerImage.keystoneAuthList = self.keystoneAuthList
 
         MySQL.mysqlConn = MySQL.MySQL(
             host=ConfigParser.configuration["database"]["host"],
@@ -37,15 +39,6 @@ class RESTservice(object):
         cherrypy.engine.block()
 
     def mountMenager(self):
-        conf = {
-            "/": {
-                "tools.sessions.on": True,
-                "tools.sessions.timeout": 60,
-                "tools.sessions.name": "ReservationService",
-                "tools.response_headers.on": True,
-                "tools.response_headers.headers": [("Content-Type", "application/json")]
-            }
-        }
         confDispatch = {
             "/": {
                 'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
@@ -60,6 +53,7 @@ class RESTservice(object):
         cherrypy.tree.mount(self.managerUser, '/user', confDispatch)
         cherrypy.tree.mount(self.managerSystem, '/system', confDispatch)
         cherrypy.tree.mount(self.managerGroup, '/group', confDispatch)
+        cherrypy.tree.mount(self.managerImage, '/image', confDispatch)
 
     def stop(self):
         cherrypy.engine.stop()

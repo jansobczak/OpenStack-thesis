@@ -1,79 +1,100 @@
 import cherrypy
-from reservation.stack import OSGlance
+import traceback
+from reservation.stack.OSGlance import OSGlance
 from reservation.service.Image import Image
 from .ManagerTools import ManagerTool
 
 
+@cherrypy.expose()
 class ManagerImage:
     keystoneAuthList = None
     osKSGlance = None
 
-    def sessionCheck(self):
-        if ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-            session_id = cherrypy.request.cookie["ReservationService"].value
-            osKSAuth = self.keystoneAuthList[session_id]
-            self.osKSGlance = OSGlance.OSGlance(session=osKSAuth.createKeyStoneSession())
-            return True
-        else:
-            return False
-
-    @cherrypy.expose
     @cherrypy.tools.json_out()
-    def list(self):
-        if self.sessionCheck():
-            return dict(current="Image manager", response=self.osKSGlance.list())
-        else:
-            return dict(current="Image manager", user_status="not authorized")
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def create(self):
+    def GET(self, image_type=None, image_data=None):
         try:
-            # Check session
-            if not self.sessionCheck():
-                return dict(current="Image manager", user_status="not authorized")
-            # Parse incoming JSON
-            data = cherrypy.request.json
-            if "name" in data:
-                imageName = data["name"]
-            if "container_format" in data:
-                containerFormat = data["container_format"]
-            if "disk_format" in data:
-                diskFormat = data["disk_format"]
-            if "is_public" in data:
-                isPublic = data["is_public"]
-            if "file_path" in data:
-                filePath = data["file_path"]
-            image = self.osKSGlance.create(imageName, containerFormat, diskFormat, isPublic, filePath)
-
-            if len(image) == 1:
-                image = image[0]
-            image = Image().parseDict(image)
-            return dict(current="Image manager", stats="OK", data=image.to_dict())
-        except IndexError as error:
-            return(dict(current="Image manager", error=repr(error)))
-        except Exception as error:
-            return(dict(current="Image manager", error=repr(error)))
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def delete(self, id=None):
-        try:
-            # Check session
-            if not self.sessionCheck():
-                return dict(current="Image manager", user_status="not authorized")
-            if id is not None:
-                self.osKSGlance.delete(id)
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="Image manager", user_status="not authorized", require_moderator=True)
             else:
-                raise Exception("Failed to parse JSON!")
-            return dict(current="Image manager", stats="OK")
-        except IndexError as error:
-            return(dict(current="Image manager", error=repr(error)))
-        except Exception as error:
-            return(dict(current="Image manager", error=repr(error)))
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+                osGlance = OSGlance(session=session)
+                imageArray = []
+                if image_type is not None and image_data is not None:
+                    if "id" in image_type:
+                        image = osGlance.find(image_id=image_data)
+                        if image is not None:
+                            imageArray.append(image)
+                        else:
+                            raise Exception("Image doesn't exists")
+                    elif "name" in image_type:
+                        for image in osGlance.find(name=image_data):
+                            imageArray.append(image)
+                # Get all groups
+                else:
+                    for image in osGlance.list():
+                        imageArray.append(image)
+                data = dict(current="Image manager", response=imageArray)
+        except Exception as e:
+            error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Image manager", error=str(error))
+        finally:
+            return data
 
-    @cherrypy.expose
+    @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def index(self):
-        return self.list()
+    def POST(self, vpath=None):
+        try:
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="Image manager", user_status="not authorized", require_moderator=True)
+            else:
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+                osGlance = OSGlance(session=session)
+
+                if vpath is not None:
+                    raise Exception("Not allowed on: /user/" + str(vpath))
+                else:
+                    # Parse incoming JSON
+                    if hasattr(cherrypy.request, "json"):
+                        request = cherrypy.request.json
+                        image = Image().parseJSON(data=request)
+                    else:
+                        raise Exception("No data in POST")
+                    image = osGlance.create(image.name,
+                                            image.container_format,
+                                            image.disk_format,
+                                            image.is_public,
+                                            image.file)
+                    image = Image().parseDict(image)
+                data = dict(current="Image manager", stats="OK", data=image.to_dict())
+        except Exception as e:
+            error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Image manager", error=str(error))
+        finally:
+            return data
+
+    @cherrypy.tools.json_out()
+    def DELETE(self, image_type=None, image_data=None):
+        try:
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="Image manager", user_status="not authorized", require_moderator=True)
+            else:
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+                osGlance = OSGlance(session=session)
+                if image_type is not None and image_data is not None:
+                    if "id" in image_type:
+                        image = osGlance.find(image_id=image_data)
+                        image = Image().parseDict(image)
+                        if image is not None:
+                            osGlance.delete(image.id)
+                        else:
+                            raise Exception("Image doesn't exists")
+                    elif "name" in image_type:
+                        for image in osGlance.find(name=image_data):
+                            image = Image().parseDict(image)
+                            osGlance.delete(image.id)
+                data = dict(current="Image manager", response="OK")
+        except Exception as e:
+            error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Image manager", error=str(error))
+        finally:
+            return data
