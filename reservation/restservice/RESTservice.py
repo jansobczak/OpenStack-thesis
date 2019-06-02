@@ -1,6 +1,7 @@
 import cherrypy
 from reservation.manager.ManagerAuth import ManagerAuth
 from reservation.manager.ManagerUser import ManagerUser
+from reservation.manager.ManagerGroup import ManagerGroup
 from reservation.manager.ManagerSystem import ManagerSystem
 import reservation.service.ConfigParser as ConfigParser
 import reservation.service.MySQL as MySQL
@@ -15,6 +16,8 @@ class RESTservice(object):
         self.managerAuth.keystoneAuthList = self.keystoneAuthList
         self.managerUser = ManagerUser()
         self.managerUser.keystoneAuthList = self.keystoneAuthList
+        self.managerGroup = ManagerGroup()
+        self.managerGroup.keystoneAuthList = self.keystoneAuthList
         self.managerSystem = ManagerSystem()
         self.managerSystem.keystoneAuthList = self.keystoneAuthList
 
@@ -56,7 +59,7 @@ class RESTservice(object):
         cherrypy.tree.mount(self.managerAuth, '/auth', confDispatch)
         cherrypy.tree.mount(self.managerUser, '/user', confDispatch)
         cherrypy.tree.mount(self.managerSystem, '/system', confDispatch)
-        #cherrypy.tree.mount(self.managerGroup, '/user', confDispatch)
+        cherrypy.tree.mount(self.managerGroup, '/group', confDispatch)
 
     def stop(self):
         cherrypy.engine.stop()

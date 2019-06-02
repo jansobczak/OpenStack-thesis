@@ -40,5 +40,11 @@ class User:
         else:
             return None
 
+    def __eq__(self, other):
+        if self.id == other.id:
+            return True
+        else:
+            return False
+
     def to_dict(self):
         return dict(id=self.id, name=self.name, mail=self.mail, enabled=self.enabled, password=self.password)

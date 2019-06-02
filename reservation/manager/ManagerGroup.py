@@ -1,303 +1,183 @@
 import cherrypy
+import traceback
 from .ManagerTools import ManagerTool
 from reservation.stack.OSKeystone import OSUser
 from reservation.stack.OSKeystone import OSGroup
-from reservation.stack.OSKeystone import OSProject
 from reservation.service.User import User
 from reservation.service.Group import Group
-from reservation.service.Laboratory import Laboratory
-import reservation.service.MySQL as MySQL
 
-class ManagerUser:
+
+@cherrypy.expose()
+class ManagerGroup:
     keystoneAuthList = None
 
-
-    @cherrypy.expose()
     @cherrypy.tools.json_out()
-    def listGroup(self, id=None, name=None):
+    def GET(self, group_type=None, group_data=None, user_type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osGroup = OSGroup(session=session)
+                osUser = OSUser(session=session)
                 groupArray = []
-
-                if id is None and name is None:
+                returnData = None
+                if group_type is not None and group_data is not None:
+                    if "id" in group_type:
+                        group = osGroup.find(id=group_data)
+                        if group is not None:
+                            groupDict = Group().parseObject(group).to_dict()
+                            groupDict["users"] = self._listUsersinGroup(group_id=group.id)
+                            groupArray.append(groupDict)
+                        else:
+                            raise Exception("Group doesn't exists")
+                    elif "name" in group_type:
+                        for group in osGroup.find(name=group_data):
+                            groupDict = Group().parseObject(group).to_dict()
+                            groupDict["users"] = self._listUsersinGroup(group_id=group.id)
+                            groupArray.append(groupDict)
+                # Get all groups
+                else:
                     for group in osGroup.list():
                         Group().parseObject(group)
                         groupArray.append(Group().parseObject(group).to_dict())
-                elif id is not None:
-                    group = osGroup.find(id=id)
-                    if group is not None:
-                        groupDict = Group().parseObject(group).to_dict()
-                        groupDict["users"] = self._listType(group_id=group.id,  cookie=cherrypy.request.cookie)
-                        groupArray.append(groupDict)
-                    else:
-                        raise Exception("Group doesn't exists")
-                elif name is not None:
-                    for group in osGroup.find(name=name):
-                        groupDict = Group().parseObject(group).to_dict()
-                        groupDict["users"] = self._listType(group_id=group.id,  cookie=cherrypy.request.cookie)
-                        groupArray.append(groupDict)
 
-                data = dict(current="User manager", response=groupArray)
+                # Check if specific user exists
+                if user_type is not None and user_data is not None:
+                    if "id" in user_type:
+                        user = osUser.find(id=user_data)
+                    elif "name" in user_type:
+                        user = osUser.find(name=user_data)
+                        if len(user) > 1:
+                            raise Exception("Multiple user found not expected")
+                        elif len(user) == 0:
+                            raise Exception("No user found")
+                        else:
+                            user = user[0]
+                    userObj = User().parseObject(user)
+                    for group in groupArray:
+                        for user in group["users"]:
+                            if User(**user) == userObj:
+                                returnData = True
+                                break
+                            else:
+                                continue
+                    if returnData is None:
+                        returnData = False
+                else:
+                    returnData = groupArray
+                data = dict(current="User manager", response=returnData)
         except Exception as e:
-                data = dict(current="User manager", error=e)
+            error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="User manager", error=str(error))
         finally:
             return data
 
-        def _listType(self, group_id=None, cookie=None):
-            try:
+    def _listUsersinGroup(self, group_id=None):
+        try:
+            session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
+            userArray = []
+            # Find lab group id
+            osGroup = OSGroup(session=session)
+            group = osGroup.find(id=group_id)
+            if group is not None:
+                group = Group().parseObject(group)
+            elif group is not None:
+                raise Exception("Group doesn't exists")
+            users = osGroup.getUsers(group_id=group.id)
+            if users is not None and len(users) > 0:
+                for user in users:
+                    userArray.append(User().parseObject(user).to_dict())
+            data = userArray
+        except Exception as e:
+            data = dict(current="User manager", error=e)
+        finally:
+            return data
+
+    @cherrypy.tools.json_out()
+    def PUT(self, group_type=None, group_data=None, user_type=None, user_data=None):
+        try:
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
+                data = dict(current="User manager", user_status="not authorized", require_moderator=True)
+            else:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
-                userArray = []
-                # Find lab group id
                 osGroup = OSGroup(session=session)
-                group = osGroup.find(id=group_id)
-                if group is not None:
+                osUser = OSUser(session=session)
+                if group_type is not None and group_data is not None and user_type is not None and user_data is not None:
+                    if "id" in group_type:
+                        group = osGroup.find(id=group_data)
+                        if group is None:
+                            raise Exception("Group doesn't exists")
+                    elif "name" in group_type:
+                        group = osGroup.find(name=group_data)
+                        if len(group) > 1:
+                            raise Exception("Multiple groups found not expected")
+                        elif len(group) == 0:
+                            raise Exception("No groups found")
+                        else:
+                            group = group[0]
                     group = Group().parseObject(group)
-                elif group is not None:
-                    raise Exception("Group doesn't exists")
-                users = osGroup.getUsers(group_id=group.id)
-                if users is not None and len(users) > 0:
-                    for user in users:
-                        userArray.append(User().parseObject(user).to_dict())
-                data = userArray
-            except Exception as e:
-                data = dict(current="User manager", error=e)
-            finally:
-                return data
-
-    @cherrypy.expose()
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def allowReservation(self, name=None, id=None, lab_name=None, lab_id=None):
-        try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="User manager", user_status="not authorized", require_moderator=True)
-            else:
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
-                osUser = OSUser(session=session)
-                osProject = OSProject(session=session)
-
-                # Parse incoming JSON
-                if hasattr(cherrypy.request, "json"):
-                    request = cherrypy.request.json
-                    user = User().parseJSON(data=request)
-                    lab = Laboratory().parseJSON(data=request)
-                else:
-                    if id is not None:
-                        user = User().parseObject(osUser.find(id=user.id))
-                    elif name is not None:
-                        findUsers = osUser.find(name=user.name)
-                        if len(findUsers) == 1:
-                            user = User().parseObject(findUsers[0])
+                    if "id" in user_type:
+                        user = osUser.find(id=user_data)
+                    elif "name" in user_type:
+                        user = osUser.find(name=user_data)
+                        if len(user) > 1:
+                            raise Exception("Multiple user found not expected")
+                        elif len(user) == 0:
+                            raise Exception("No user found")
                         else:
-                            raise Exception("Found more than one user with given name. Try by ID")
-                    if lab_id is not None:
-                        lab = osProject.find(id=lab_id)
-                    elif lab_name is not None:
-                        findLabs = osProject.find(name=lab_name)
-                        if len(findLabs) == 1:
-                            lab = findLabs[0]
-                        else:
-                            raise Exception("Found more than one project(labs) with given name. Try by ID")
-                #Find lab
-                if lab.id is not None:
-                    lab = MySQL.mysqlConn.select_lab(id=lab.id)
-                    if len(lab) > 0:
-                        lab = lab[0]
-                    else:
-                        raise Exception("Can't find laboratory for given request")
-                elif lab.name is not None:
-                    lab = MySQL.mysqlConn.select_lab(name=lab.name)
-                    if len(lab) > 0:
-                        lab = lab[0]
-                    else:
-                        raise Exception("Can't find laboratory for given request")
+                            user = user[0]
+                    user = User().parseObject(user)
+                    # Grant access and check if already exists
+                    osGroup.addUser(group_id=group.id, user_id=user.id)
+                    data = dict(current="User manager", response="OK")
                 else:
-                    raise Exception("Can't find laboratory for given request")
-
-                #Find user
-                osUser = OSUser(session=session)
-                if user.id is not None:
-                    user = User().parseObject(osUser.find(id=user.id))
-                elif user.name is not None:
-                    findUsers = osUser.find(name=user.name)
-                    if len(findUsers) == 1:
-                        user = User().parseObject(findUsers[0])
-                    else:
-                        raise Exception("Found more than one user with given name. Try by ID")
-
-                #Find lab group id
-                osGroup = OSGroup(session=session)
-                group = osGroup.find(name=lab["group"])
-
-                if group is not None and len(group) == 1:
-                    group = Group().parseObject(group[0])
-                elif group is not None:
-                    raise Exception("Found more than one group with given name. This is not expected")
-                #Grant access and check if already exists
-                osGroup.addUser(group_id=group.id, user_id=user.id)
-
-                data = dict(current="User manager", response="OK")
+                    data = dict(current="User manager", response="Invalid request")
         except Exception as e:
             data = dict(current="User manager", error=str(e))
         finally:
             return data
 
-    @cherrypy.expose()
-    @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def denyReservation(self):
+    def DELETE(self, group_type=None, group_data=None, user_type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
-
-                # Parse incoming JSON
-                request = cherrypy.request.json
-                user = User().parseJSON(data=request)
-                lab = Laboratory().parseJSON(data=request)
-
-                # Find lab
-                if lab.id is not None:
-                    lab = MySQL.mysqlConn.select_lab(id=lab.id)[0]
-                elif lab.name is not None:
-                    lab = MySQL.mysqlConn.select_lab(name=lab.name)[0]
-                else:
-                    raise Exception("Can't find laboratory for given request")
-
-                # Find user
-                osUser = OSUser(session=session)
-                if user.id is not None:
-                    user = User().parseObject(osUser.find(id=user.id))
-                elif user.name is not None:
-                    findUsers = osUser.find(name=user.name)
-                    if len(findUsers) == 1:
-                        user = User().parseObject(findUsers[0])
-                    else:
-                        raise Exception("Found more than one user with given name. Try by ID")
-
-                # Find lab group id
                 osGroup = OSGroup(session=session)
-                group = osGroup.find(name=lab["group"])
-
-                if group is not None and len(group) == 1:
-                    group = Group().parseObject(group[0])
-                elif group is not None:
-                    raise Exception("Found more than one group with given name. This is not expected")
-                # Grant access and check if already exists
-                osGroup.removeUser(group_id=group.id, user_id=user.id)
-
-                data = dict(current="User manager", response="OK")
-        except Exception as e:
-            data = dict(current="User manager", error=str(e))
-        finally:
-            return data
-
-    @cherrypy.expose()
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def allowModerator(self, id=None, name=None):
-        try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="User manager", user_status="not authorized", require_moderator=True)
-            else:
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
-
-                # Parse incoming JSON
-                if hasattr(cherrypy.request, "json"):
-                    request = cherrypy.request.json
-                    user = User().parseJSON(data=request)
-                    if user.id is not None:
-                        user = User().parseObject(osUser.find(id=user.id))
-                    elif user.name is not None:
-                        findUsers = osUser.find(name=user.name)
-                        if len(findUsers) == 1:
-                            user = User().parseObject(findUsers[0])
+                if group_type is not None and group_data is not None and user_type is not None and user_data is not None:
+                    if "id" in group_type:
+                        group = osGroup.find(id=group_data)
+                        if group is None:
+                            raise Exception("Group doesn't exists")
+                    elif "name" in group_type:
+                        group = osGroup.find(name=group_data)
+                        if len(group) > 1:
+                            raise Exception("Multiple groups found not expected")
+                        elif len(group) == 0:
+                            raise Exception("No groups found")
                         else:
-                            raise Exception("Found more than one user with given name. Try by ID")
-                else:
-                    if id is not None:
-                        user = User().parseObject(osUser.find(id=id))
-                    elif name is not None:
-                        findUsers = osUser.find(name=name)
-                        if len(findUsers) == 1:
-                            user = User().parseObject(findUsers[0])
-                        else:
-                            raise Exception("Found more than one user with given name. Try by ID")
-
-                defaults = ManagerTool.getDefaults()
-                #Find lab group id
-                osGroup = OSGroup(session=session)
-                group = osGroup.find(id=defaults["group_moderator"])
-                if group is not None:
+                            group = group[0]
                     group = Group().parseObject(group)
-                elif group is not None:
-                    raise Exception("Group doesn't exists")
-                #Grant access and check if already exists
-                osGroup.addUser(group_id=group.id, user_id=user.id)
-
-                data = dict(current="User manager", response="OK")
-        except Exception as e:
-            data = dict(current="User manager", error=str(e))
-        finally:
-            return data
-
-    @cherrypy.expose()
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def denyModerator(self, id=None, name=None):
-        try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="User manager", user_status="not authorized", require_moderator=True)
-            else:
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
-                osUser = OSUser(session=session)
-
-                # Parse incoming JSON
-                if hasattr(cherrypy.request, "json"):
-                    request = cherrypy.request.json
-                    user = User().parseJSON(data=request)
-                    if user.id is not None:
-                        user = User().parseObject(osUser.find(id=user.id))
-                    elif user.name is not None:
-                        findUsers = osUser.find(name=user.name)
-                        if len(findUsers) == 1:
-                            user = User().parseObject(findUsers[0])
+                    if "id" in user_type:
+                        user = osUser.find(id=user_data)
+                    elif "name" in user_type:
+                        user = osUser.find(name=user_data)
+                        if len(user) > 1:
+                            raise Exception("Multiple user found not expected")
+                        elif len(user) == 0:
+                            raise Exception("No user found")
                         else:
-                            raise Exception("Found more than one user with given name. Try by ID")
+                            user = user[0]
+                    user = User().parseObject(user)
+                    # Grant access and check if already exists
+                    osGroup.removeUser(group_id=group.id, user_id=user.id)
+                    data = dict(current="User manager", response="OK")
                 else:
-                    if id is not None:
-                        user = User().parseObject(osUser.find(id=id))
-                    elif name is not None:
-                        findUsers = osUser.find(name=name)
-                        if len(findUsers) == 1:
-                            user = User().parseObject(findUsers[0])
-                        else:
-                            raise Exception("Found more than one user with given name. Try by ID")
-
-                defaults = ManagerTool.getDefaults()
-                #Find lab group id
-                osGroup = OSGroup(session=session)
-                group = osGroup.find(id=defaults["group_moderator"])
-                if group is not None:
-                    group = Group().parseObject(group)
-                elif group is not None:
-                    raise Exception("Group doesn't exists")
-                #Grant access and check if already exists
-                osGroup.removeUser(group_id=group.id, user_id=user.id)
-
-                data = dict(current="User manager", response="OK")
+                    data = dict(current="User manager", response="Invalid request")
         except Exception as e:
             data = dict(current="User manager", error=str(e))
         finally:
             return data
-
-    @cherrypy.expose()
-    @cherrypy.tools.json_out()
-    def index(self):
-        return self.list()
