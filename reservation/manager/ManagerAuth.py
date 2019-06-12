@@ -20,8 +20,13 @@ class ManagerAuth:
     keystoneAuthList = None
     adminKSAuth = None
 
-    def __init__(self):
-        self.adminKSAuth = OSKeystone.OSAuth(config=ConfigParser.configuration["openstack"]).createKeyStoneSession()
+    def __init__(self, keystoneAuthList):
+        self.keystoneAuthList = keystoneAuthList
+        osKSAuth = OSKeystone.OSAuth(config=ConfigParser.configuration["openstack"])
+        self.adminKSAuth = Session(username=ConfigParser.configuration["openstack"]["username"],
+                                   role='admin',
+                                   token=osKSAuth.createKeyStoneSession(),
+                                   auth=osKSAuth)
 
     @cherrypy.tools.json_out()
     def DELETE(self, vpath=None):
@@ -53,8 +58,8 @@ class ManagerAuth:
             else:
                 raise Exception("No data in POST")
             # Bind admin and check group
-            osKSUser = OSKeystone.OSUser(session=self.adminKSAuth)
-            osKSRoles = OSKeystone.OSRole(session=self.adminKSAuth)
+            osKSUser = OSKeystone.OSUser(session=self.adminKSAuth.token)
+            osKSRoles = OSKeystone.OSRole(session=self.adminKSAuth.token)
             # Find user from json input
             userFind = osKSUser.find(name=auth.username)
             if userFind is not None and len(userFind) == 1:
@@ -74,7 +79,7 @@ class ManagerAuth:
             elif "user" in osUserRoles:
                 auth.role = "user"
 
-            osKSProject = OSKeystone.OSProject(session=self.adminKSAuth)
+            osKSProject = OSKeystone.OSProject(session=self.adminKSAuth.token)
             if auth.role is not "admin":
                 project = osKSProject.find(name="reservation_system")
             else:

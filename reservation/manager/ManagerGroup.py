@@ -11,6 +11,9 @@ from reservation.service.Group import Group
 class ManagerGroup:
     keystoneAuthList = None
 
+    def __init__(self, keystoneAuthList):
+        self.keystoneAuthList = keystoneAuthList
+
     @cherrypy.tools.json_out()
     def GET(self, group_type=None, group_data=None, user_type=None, user_data=None):
         try:

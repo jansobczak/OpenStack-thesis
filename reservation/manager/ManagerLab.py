@@ -15,6 +15,9 @@ import reservation.service.MySQL as MySQL
 class ManagerLab:
     keystoneAuthList = None
 
+    def __init__(self, keystoneAuthList):
+        self.keystoneAuthList = keystoneAuthList
+
     @cherrypy.tools.json_out()
     def GET(self, lab_type=None, lab_data=None, user_or_group=None):
         try:

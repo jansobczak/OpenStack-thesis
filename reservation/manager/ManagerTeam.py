@@ -1,34 +1,36 @@
 import cherrypy
+import traceback
 from .ManagerTools import ManagerTool
 from reservation.stack.OSKeystone import OSUser
 from reservation.stack.OSKeystone import OSGroup
 from reservation.service.User import User
 from reservation.service.Team import Team
 from reservation.service.Group import Group
-from reservation.service.Laboratory import Laboratory
 import reservation.service.MySQL as MySQL
 
 
+@cherrypy.expose()
 class ManagerTeam:
     keystoneAuthList = None
     adminKSAuth = None
 
-    def __init__(self, keystoneAuthList=None, adminAuth=None):
+    def __init__(self, keystoneAuthList, adminAuth):
         self.keystoneAuthList = keystoneAuthList
         self.adminKSAuth = adminAuth
 
-
-    def _isOwner(self, session, username, id=None):
+    def _isOwner(self, session, userid, id):
         team = MySQL.mysqlConn.select_team(id=id)
         if team is not None and len(team) == 1:
             team = Team().parseDict(team[0])
+        elif team is not None and len(team) == 0:
+            raise Exception("No team with id" + str() + " found!")
         else:
             raise Exception("More than one team found with given id. This was not expected!")
 
-        osUser = OSUser(session=session)
-        userFind = osUser.find(name=username)
-        if userFind is not None and len(userFind) == 1:
-            user = User().parseObject(userFind[0])
+        osUser = OSUser(session=session.token)
+        userFind = osUser.find(id=userid)
+        if userFind is not None:
+            user = User().parseObject(userFind)
         else:
             raise Exception("More than one user found with given username. This was not expected!")
 
@@ -37,8 +39,7 @@ class ManagerTeam:
         else:
             return False
 
-
-    def getTeam(self, session, username, id=None, owner_id=None, team_id=None, admin=False):
+    def getTeam(self, session, userid, id=None, owner_id=None, team_id=None, admin=False):
         getAll = False
         if id is not None:
             teams = MySQL.mysqlConn.select_team(id=id)
@@ -54,8 +55,8 @@ class ManagerTeam:
         for team in teams:
             team = Team().parseDict(team)
             if not getAll:
-                if self._isOwner(session=session, username=username, id=team.id) or admin:
-                    osGroup = OSGroup(session=session)
+                if self._isOwner(session=session, userid=userid, id=team.id) or admin:
+                    osGroup = OSGroup(session=session.token)
                     group = Group().parseObject(osGroup.find(id=team.team_id))
                     users = osGroup.getUsers(group_id=group.id)
                     userArray = []
@@ -66,7 +67,7 @@ class ManagerTeam:
                 else:
                     teamList.append(dict(status="Not authorized"))
             else:
-                osGroup = OSGroup(session=session)
+                osGroup = OSGroup(session=session.token)
                 group = Group().parseObject(osGroup.find(id=team.team_id))
                 users = osGroup.getUsers(group_id=group.id)
                 userArray = []
@@ -76,156 +77,206 @@ class ManagerTeam:
                 teamList.append(dict(team=team.to_dict(), users=userArray))
         return teamList
 
-    @cherrypy.expose()
     @cherrypy.tools.json_out()
-    def list(self, id=None, owner_id=None, team_id=None):
+    def GET(self, team_type=None, team_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
                 data = dict(current="Team manager", user_status="not authorized", require_moderator=False)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
-
-                if id is None and owner_id is None:
+                # Don't user session as every where. Student role have no access to keystone
+                # We control it with own policies:
+                # - _isOwner
+                session = self.adminKSAuth
+                user_session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                if team_type is not None and team_data is not None:
+                    if "id" in team_type:
+                        if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList) or self._isOwner(
+                                session, user_session.userid, id=team_data):
+                            teamDict = self.getTeam(session=session, userid=user_session.userid, id=team_data,
+                                                    admin=ManagerTool.isAdminOrMod(cherrypy.request.cookie,
+                                                                                   self.keystoneAuthList))
+                            data = dict(current="Team manager", response=teamDict)
+                        else:
+                            raise Exception("Not allowed!")
+                # List all
+                else:
                     if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
-                        teamDict = self.getTeam(session=session, username=osKSAuth.authUsername)
+                        # Get all all teams
+                        teamDict = self.getTeam(session=session, userid=user_session.userid, admin=True)
                         data = dict(current="Team manager", response=teamDict)
                     else:
-                        data = dict(current="Team manager", response="Not authorized")
-                elif id is not None:
-                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, id=id, admin=ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList))
-                    data = dict(current="Team manager", response=teamDict)
-                elif owner_id is not None:
-                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, owner_id=owner_id, admin=ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList))
-                    data = dict(current="Team manager", response=teamDict)
-                elif team_id is not None:
-                    teamDict = self.getTeam(session=session, username=osKSAuth.authUsername, team_id=team_id, admin=ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList))
-                    data = dict(current="Team manager", response=teamDict)
+                        # Get all teams for that user
+                        teamDict = self.getTeam(session=session, userid=user_session.userid, admin=False)
+                        data = dict(current="Team manager", response=teamDict)
         except Exception as e:
-                data = dict(current="Team manager", error=str(e))
+            error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Team manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
-            return data
+        return data
 
-    @cherrypy.expose()
-    @cherrypy.tools.json_out()
-    def index(self):
-        return self.list()
-
-    @cherrypy.expose()
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def create(self):
+    def POST(self, **vpath):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
                 data = dict(current="Team manager", user_status="not authorized", require_moderator=False)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
-                osGroup = OSGroup(session=session)
-                osUser = OSUser(session=session)
-
+                # Don't user session as every where. Student role have no access to keystone
+                # We control it with own policies:
+                # - _isOwner
+                session = self.adminKSAuth
+                osGroup = OSGroup(session=session.token)
+                osUser = OSUser(session=session.token)
                 if hasattr(cherrypy.request, "json"):
-                    request = cherrypy.request.json
-                    team = Team().parseJSON(data=request)
-
-                    team.id = MySQL.mysqlConn.insert_team(owner_id=team.owner_id)
+                    team = Team().parseJSON(data=cherrypy.request.json)
+                    # Owner is the user that created the team
+                    user_session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                    # If team owner is none assume user who create is an owner
+                    if team.owner_id is None:
+                        team.owner_id = user_session.userid
+                    team.id = MySQL.mysqlConn.insert_team(owner_id=user_session.userid)
                     group = osGroup.create(name="team_" + str(team.owner_id) + "_" + str(team.id))
                     group = Group().parseObject(group)
                     MySQL.mysqlConn.update_team(id=team.id, team_id=group.id)
-
+                    # Add users to group
                     userArray = []
-                    osGroup.addUser(group_id=group.id, user_id=team.owner_id)
+                    osGroup.addUser(group_id=group.id, user_id=user_session.userid)
                     userArray.append(User().parseObject(osUser.find(id=team.owner_id)).to_dict())
-                    for userID in team.users:
-                        osGroup.addUser(group_id=group.id, user_id=userID)
-                        userArray.append(User().parseObject(osUser.find(id=userID)).to_dict())
-
+                    for user_object in team.users:
+                        if hasattr(user_object, "name"):
+                            user = osUser.find(name=user_object["name"])
+                            if len(user) == 1:
+                                user = User().parseObject(user[0])
+                            osGroup.addUser(group_id=group.id, user_id=user.id)
+                            userArray.append(User().parseObject(osUser.find(id=user.id)).to_dict())
+                        elif hasattr(user_object, "id"):
+                            user = User().parseObject(osUser.find(id=user_object["id"]))
+                            osGroup.addUser(group_id=group.id, user_id=user.id)
+                            userArray.append(User().parseObject(osUser.find(id=user.id)).to_dict())
                     data = dict(team=team.to_dict(), users=userArray)
                 else:
-                    raise Exception("No data in POST")
-
-                data = dict(current="Team manager", response=data)
+                    raise Exception("No POST data")
         except Exception as e:
-            data = dict(current="Team manager", error=str(e))
-        finally:
-            MySQL.mysqlConn.close()
-            MySQL.mysqlConn.commit()
-            return data
-    @cherrypy.expose()
-    @cherrypy.tools.json_out()
-    def delete(self, id=None, team_id=None):
-        try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
-                data = dict(current="Team manager", user_status="not authorized", require_moderator=False)
-            else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
-                osGroup = OSGroup(session=session)
-
-                if id is not None:
-                    team = MySQL.mysqlConn.select_team(id=id)
-                    if team is not None and len(team) == 1:
-                        team = Team().parseDict(team[0])
-                    else:
-                        raise Exception("More than one team found with given id. This was not expected!")
-                elif team_id is not None:
-                    team = MySQL.mysqlConn.select_team(team_id=team_id)
-                    if team is not None and len(team) == 1:
-                        team = Team().parseDict(team[0])
-                    else:
-                        raise Exception("More than one team found with given team_id. This was not expected!")
-                else:
-                    raise Exception("No ID or team_id given. Not expected")
-
-                if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList) or self._isOwner(session=session, username=osKSAuth.authUsername, id=team.id):
-                    osGroup.delete(group_id=team.team_id)
-                    MySQL.mysqlConn.delete_team(id=team.id)
-                    data = dict(current="Team manager", response="OK")
-                else:
-                    data = dict(current="Team manager", response="Not owned by this user")
-
-        except Exception as e:
-                data = dict(current="Team manager", error=str(e))
+            error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Team manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
             MySQL.mysqlConn.commit()
             return data
 
-
-    @cherrypy.expose()
-    @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def addUser(self):
+    def DELETE(self, team_type=None, team_data=None, user_type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
                 data = dict(current="Team manager", user_status="not authorized", require_moderator=False)
             else:
-                osKSAuth = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                session = osKSAuth.createKeyStoneSession()
-                osGroup = OSGroup(session=session)
+                # Don't user session as every where. Student role have no access to keystone
+                # We control it with own policies:
+                # - _isOwner
+                session = self.adminKSAuth
+                osGroup = OSGroup(session=session.token)
+                osUser = OSUser(session=session.token)
+                user_session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                if team_type is not None and team_data is not None:
+                    if "id" in team_type:
+                        team = MySQL.mysqlConn.select_team(id=team_data)
+                    else:
+                        raise Exception("Not allowed without /team/id/")
 
-                if hasattr(cherrypy.request, "json"):
-                    request = cherrypy.request.json
-                    team = Team().parseJSON(data=request)
+                if user_type is not None and user_data is not None:
+                    if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList) or self._isOwner(
+                            session=session, userid=user_session.userid, id=team_data):
+                        # Remove specific user
+                        if "id" in user_type:
+                            user = User().parseObject(osUser.find(id=user_data))
+                            osGroup.removeUser(group_id=team.team_id, user_id=user.id)
+                            data = self.getTeam(session=session, team_id=team.team_id, userid=session.userid)
+                        elif "name" in user_type:
+                            user = osUser.find(name=user_data)
+                            if len(user) > 1:
+                                raise Exception("Multiple users found")
+                            elif len(user) == 0:
+                                raise Exception("No user found!")
+                            else:
+                                user = User().parseObject(user[0])
+                            osGroup.removeUser(group_id=team.team_id, user_id=user.id)
+                            data = self.getTeam(session=session, team_id=team.team_id, userid=session.userid)
+                    else:
+                        data = dict(current="Team manager", response="Not owned by this user or not mod,admin")
+                else:
+                    # Remove whole team
+                    if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList) or self._isOwner(
+                            session=session, userid=user_session.userid, id=team_data):
+                        team = MySQL.mysqlConn.select_team(id=team_data)
+                        if len(team) == 1:
+                            team = Team().parseDict(team[0])
+                        elif len(team) == 0:
+                            # Should never happend
+                            raise Exception("Multiple groups with id ")
+                        else:
+                            raise Exception("No team found")
+                        osGroup.delete(group_id=team.team_id)
+                        MySQL.mysqlConn.delete_team(id=team.id)
+                        data = dict(current="Team manager", response="OK")
+                    else:
+                        data = dict(current="Team manager", response="Not owned by this user or not mod,admin")
+        except Exception as e:
+            error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Team manager", error=str(error))
+        finally:
+            MySQL.mysqlConn.close()
+            MySQL.mysqlConn.commit()
+        return data
 
-                    if team.team_id is None and team.id is not None:
-                        teamFind = MySQL.mysqlConn.select_team(id=team.id)
-                        if len(teamFind) == 1:
-                            team.team_id = Team().parseDict(teamFind[0]).team_id
+    @cherrypy.tools.json_out()
+    def PUT(self, team_type=None, team_data=None, user=None, user_type=None, user_data=None):
+        try:
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
+                data = dict(current="Team manager", user_status="not authorized", require_moderator=False)
+            else:
+                # Don't user session as every where. Student role have no access to keystone
+                # We control it with own policies:
+                # - _isOwner
+                session = self.adminKSAuth
+                osGroup = OSGroup(session=session.token)
+                osUser = OSUser(session=session.token)
+                user_session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                if team_type is not None and team_data is not None:
+                    if "id" in team_type:
+                        team = MySQL.mysqlConn.select_team(id=team_data)
+                        if team is not None and len(team) == 1:
+                            team = Team().parseDict(team[0])
+                        elif team is not None and len(team) == 0:
+                            raise Exception("No team with id" + str() + " found!")
                         else:
                             raise Exception("More than one team found with given id. This was not expected!")
-
-                    if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList) or self._isOwner(
-                            session=session, username=osKSAuth.authUsername, id=team.id):
-                        for userID in team.users:
-                            osGroup.addUser(group_id=team.team_id,user_id=userID)
-                        data = self.getTeam(session=session, team_id=team.team_id, username=osKSAuth.authUsername)
                     else:
-                        data = dict(current="Team manager", response="Not owned by this user")
-                else:
-                    raise Exception("No data in POST")
+                        raise Exception("Not allowed without /team/id/")
+                if user_type is not None and user_data is not None:
+                    if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList) or self._isOwner(
+                            session=session, userid=user_session.userid, id=team_data):
+                        # Remove specific user
+                        if "id" in user_type:
+                            user = User().parseObject(osUser.find(id=user_data))
+                            osGroup.addUser(group_id=team.team_id, user_id=user.id)
+                            data = self.getTeam(session=session, team_id=team.team_id, userid=user_session.userid)
+                        elif "name" in user_type:
+                            user = osUser.find(name=user_data)
+                            if len(user) > 1:
+                                raise Exception("Multiple users found")
+                            elif len(user) == 0:
+                                raise Exception("No user found!")
+                            else:
+                                user = User().parseObject(user[0])
+                            osGroup.addUser(group_id=team.team_id, user_id=user.id)
+                            data = self.getTeam(session=session, team_id=team.team_id, userid=user_session.userid)
+                    else:
+                        data = dict(current="Team manager", response="Not owned by this user or not mod,admin")
         except Exception as e:
-            data = dict(current="Team manager", error=str(e))
+            error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Team manager", error=str(error))
         finally:
+            MySQL.mysqlConn.close()
+            MySQL.mysqlConn.commit()
             return data

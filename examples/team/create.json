@@ -1,8 +1,7 @@
 {
     "team": {
-        "owner_id": "6bb45f4e8e984068b90bc662fae281d4",
         "users": [
-            "e30467e32d374560998c04c1431fa28a"
+            {"name": "test_user"}
         ]
     }
 }

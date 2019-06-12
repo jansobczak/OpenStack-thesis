@@ -10,6 +10,9 @@ class ManagerImage:
     keystoneAuthList = None
     osKSGlance = None
 
+    def __init__(self, keystoneAuthList):
+        self.keystoneAuthList = keystoneAuthList
+
     @cherrypy.tools.json_out()
     def GET(self, image_type=None, image_data=None):
         try:

@@ -15,6 +15,9 @@ import reservation.service.MySQL as MySQL
 class ManagerSystem():
     keystoneAuthList = None
 
+    def __init__(self, keystoneAuthList):
+        self.keystoneAuthList = keystoneAuthList
+
     """This class make initial configuration to new OpenStack it 
        should be also made for empty (no data) database
 

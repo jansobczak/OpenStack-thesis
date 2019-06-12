@@ -5,6 +5,7 @@ from reservation.manager.ManagerGroup import ManagerGroup
 from reservation.manager.ManagerSystem import ManagerSystem
 from reservation.manager.ManagerImage import ManagerImage
 from reservation.manager.ManagerLab import ManagerLab
+from reservation.manager.ManagerTeam import ManagerTeam
 import reservation.service.ConfigParser as ConfigParser
 import reservation.service.MySQL as MySQL
 
@@ -12,20 +13,17 @@ import reservation.service.MySQL as MySQL
 class RESTservice(object):
 
     keystoneAuthList = {}
+    adminKSAuth = {}
 
     def start(self):
-        self.managerAuth = ManagerAuth()
-        self.managerAuth.keystoneAuthList = self.keystoneAuthList
-        self.managerUser = ManagerUser()
-        self.managerUser.keystoneAuthList = self.keystoneAuthList
-        self.managerGroup = ManagerGroup()
-        self.managerGroup.keystoneAuthList = self.keystoneAuthList
-        self.managerSystem = ManagerSystem()
-        self.managerSystem.keystoneAuthList = self.keystoneAuthList
-        self.managerImage = ManagerImage()
-        self.managerImage.keystoneAuthList = self.keystoneAuthList
-        self.managerLab = ManagerLab()
-        self.managerLab.keystoneAuthList = self.keystoneAuthList
+        self.managerAuth = ManagerAuth(keystoneAuthList=self.keystoneAuthList)
+        self.adminKSAuth = self.managerAuth.adminKSAuth
+        self.managerUser = ManagerUser(keystoneAuthList=self.keystoneAuthList)
+        self.managerGroup = ManagerGroup(keystoneAuthList=self.keystoneAuthList)
+        self.managerSystem = ManagerSystem(keystoneAuthList=self.keystoneAuthList)
+        self.managerImage = ManagerImage(keystoneAuthList=self.keystoneAuthList)
+        self.managerLab = ManagerLab(keystoneAuthList=self.keystoneAuthList)
+        self.managerTeam = ManagerTeam(keystoneAuthList=self.keystoneAuthList,adminAuth=self.adminKSAuth)
 
         MySQL.mysqlConn = MySQL.MySQL(
             host=ConfigParser.configuration["database"]["host"],
@@ -58,6 +56,7 @@ class RESTservice(object):
         cherrypy.tree.mount(self.managerGroup, '/group', confDispatch)
         cherrypy.tree.mount(self.managerImage, '/image', confDispatch)
         cherrypy.tree.mount(self.managerLab, '/lab', confDispatch)
+        cherrypy.tree.mount(self.managerTeam, '/team', confDispatch)
 
     def stop(self):
         cherrypy.engine.stop()
