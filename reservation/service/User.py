@@ -40,6 +40,19 @@ class User:
         else:
             return None
 
+    def parseDict(self, dict):
+        if "id" in dict:
+            self.id = dict["id"]
+        if "name" in dict:
+            self.name = dict["name"]
+        if "mail" in dict:
+            self.mail = dict["mail"]
+        if "enabled" in dict:
+            self.enabled = dict["enabled"]
+        if "password" in dict:
+            self.password = dict["password"]
+        return self
+
     def __eq__(self, other):
         if self.id == other.id:
             return True

@@ -40,6 +40,10 @@ class ManagerTeam:
             return False
 
     def getTeam(self, session, userid, id=None, owner_id=None, team_id=None, admin=False):
+        """
+
+        :rtype: object
+        """
         getAll = False
         if id is not None:
             teams = MySQL.mysqlConn.select_team(id=id)
@@ -113,7 +117,7 @@ class ManagerTeam:
             data = dict(current="Team manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
-        return data
+            return data
 
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
@@ -227,7 +231,7 @@ class ManagerTeam:
         finally:
             MySQL.mysqlConn.close()
             MySQL.mysqlConn.commit()
-        return data
+            return data
 
     @cherrypy.tools.json_out()
     def PUT(self, team_type=None, team_data=None, user=None, user_type=None, user_data=None):

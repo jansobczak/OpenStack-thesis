@@ -6,6 +6,7 @@ from reservation.manager.ManagerSystem import ManagerSystem
 from reservation.manager.ManagerImage import ManagerImage
 from reservation.manager.ManagerLab import ManagerLab
 from reservation.manager.ManagerTeam import ManagerTeam
+from reservation.manager.ManagerReservation import ManagerReservation
 import reservation.service.ConfigParser as ConfigParser
 import reservation.service.MySQL as MySQL
 
@@ -24,6 +25,7 @@ class RESTservice(object):
         self.managerImage = ManagerImage(keystoneAuthList=self.keystoneAuthList)
         self.managerLab = ManagerLab(keystoneAuthList=self.keystoneAuthList)
         self.managerTeam = ManagerTeam(keystoneAuthList=self.keystoneAuthList,adminAuth=self.adminKSAuth)
+        self.managerReservation = ManagerReservation(keystoneAuthList=self.keystoneAuthList,adminAuth=self.adminKSAuth)
 
         MySQL.mysqlConn = MySQL.MySQL(
             host=ConfigParser.configuration["database"]["host"],
@@ -57,6 +59,7 @@ class RESTservice(object):
         cherrypy.tree.mount(self.managerImage, '/image', confDispatch)
         cherrypy.tree.mount(self.managerLab, '/lab', confDispatch)
         cherrypy.tree.mount(self.managerTeam, '/team', confDispatch)
+        cherrypy.tree.mount(self.managerReservation, '/reservation', confDispatch)
 
     def stop(self):
         cherrypy.engine.stop()

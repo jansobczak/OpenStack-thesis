@@ -17,25 +17,44 @@ class ManagerUser:
     @cherrypy.tools.json_out()
     def GET(self, type=None, user_data=None):
         try:
-            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="User manager", user_status="not authorized", require_moderator=True)
+            if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
+                data = dict(current="User manager", user_status="not authorized", require_moderator=False)
             else:
-                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
-                osUser = OSUser(session=session)
+                session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+                osUser = OSUser(session=session.token)
                 userDict = []
                 if type is not None and user_data is not None:
                     if "id" in type:
                         user = osUser.find(id=user_data)
                         if user is not None:
-                            userDict.append(User().parseObject(user).to_dict())
+                            user = User().parseObject(user)
+                            if not ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
+                                if user.id == session.userid:
+                                    userDict.append(user.to_dict())
+                                else:
+                                    data = dict(current="User manager", user_status="not authorized",
+                                                require_moderator=True)
+                            else:
+                                userDict.append(user.to_dict())
                     elif "name" in type:
                         for user in osUser.find(name=user_data):
-                            userDict.append(User().parseObject(user).to_dict())
+                            user = User().parseObject(user)
+                            if not ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
+                                if user.id == session.userid:
+                                    userDict.append(user.to_dict())
+                                else:
+                                    data = dict(current="User manager", user_status="not authorized",
+                                                require_moderator=True)
+                            else:
+                                userDict.append(user.to_dict())
+                    data = dict(current="User manager", response=userDict)
                 # Get all
-                else:
+                elif ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
                     for user in osUser.list():
                         userDict.append(User().parseObject(user).to_dict())
-                data = dict(current="User manager", response=userDict)
+                    data = dict(current="User manager", response=userDict)
+                else:
+                    data = dict(current="User manager", user_status="not authorized", require_moderator=True)
 
         except Exception as e:
             data = dict(current="User manager", error=str(e))
