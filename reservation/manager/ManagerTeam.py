@@ -42,7 +42,7 @@ class ManagerTeam:
     def getTeam(self, session, userid, id=None, owner_id=None, team_id=None, admin=False):
         """
 
-        :rtype: object
+        :rtype: list
         """
         getAll = False
         if id is not None:

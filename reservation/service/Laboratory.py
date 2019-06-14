@@ -7,15 +7,17 @@ class Laboratory:
     duration = None
     group = None
     moderator = None
+    limit = None
 
     def __init__(self, **kwargs):
-        self.id = kwargs.get("name")
+        self.id = kwargs.get("id")
         self.name = kwargs.get("name")
         self.duration = kwargs.get("duration")
         if self.duration is not None:
             self.duration = datetime.timedelta(seconds=int(self.duration))
         self.group = kwargs.get("group")
         self.moderator = kwargs.get("moderator")
+        self.limit = kwargs.get("limit", 1)
 
     def parseJSON(self, data):
         if "laboratory" in data:
@@ -32,6 +34,8 @@ class Laboratory:
                 self.id = data["laboratory"]["id"]
             if "moderator" in data["laboratory"]:
                 self.moderator = data["laboratory"]["moderator"]
+            if "limit" in data["laboratory"]:
+                self.limit = data["laboratory"]["limit"]
             return self
         else:
             return None
@@ -52,7 +56,10 @@ class Laboratory:
             self.template_id = dict["template_id"]
         if "moderator" in dict:
             self.moderator = dict["moderator"]
+        if "limit" in dict:
+            self.limit = dict["limit"]
         return self
 
     def to_dict(self):
-        return dict(id=self.id, name=self.name, duration=str(self.duration), group=self.group, moderator=self.moderator)
+        return dict(id=self.id, name=self.name, duration=str(self.duration), group=self.group,
+                    moderator=self.moderator, limit=self.limit)

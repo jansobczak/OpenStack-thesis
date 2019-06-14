@@ -9,7 +9,8 @@ class OSNova:
     novaClient = None
 
     def __init__(self, session):
-        self.novaClient = NovaClient.Client(2, session=session)
+        self.novaClient = NovaClient.Client("2.1", session=session)
+        self.novaClient.keypairs
 
 
 class OSInstances(OSNova):
@@ -77,28 +78,45 @@ class OSKeypair(OSNova):
         return self.novaClient.keypairs.list()
 
     def create(self, name):
-        return self.novaClient.keypairs.create(name)
+        return self.novaClient.keypairs.create(name=name)
 
-    def delete(self, key):
-        keypair = self.find(name=key)
+    def delete(self, **kwargs):
+        """
+        Remove keypair
+        :param kwargs: id or name
+        :return:
+        """
+        self.id = kwargs.get("id")
+        self.name = kwargs.get("name")
+        if self.id is not None:
+            keypair = self.find(id=self.name)
+        elif self.name is not None:
+            keypair = self.find(name=self.name)
+        else:
+            raise Exception("No argument given or malformed argument")
         if keypair is not None:
             self.novaClient.keypairs.delete(keypair)
 
     def find(self, **kwargs):
         """This find item based on kwargs
         Args:
-            **kwargs: name=""
+            **kwargs: id or name
         Returns:
-            Keypair object
+            Keypair.py object
         """
+        id = kwargs.get("id")
         name = kwargs.get("name")
         items = self.list()
         if name is not None:
             for item in items:
                 if item.name == name:
                     return item
+        elif id is not None:
+            for item in items:
+                if item.id == id:
+                    return item
         else:
-            return None
+            raise Exception("No argument given or malformed argument")
 
 
 class OSFlavor(OSNova):
@@ -111,7 +129,7 @@ class OSFlavor(OSNova):
         Args:
             **kwargs: name=""
         Returns:
-            Keypair object
+            Keypair.py object
         """
         name = kwargs.get("name")
         items = self.list()

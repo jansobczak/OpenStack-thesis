@@ -1,25 +1,22 @@
 {
     "laboratory": {
-        "name": "test_lab_edit",
+        "name": "test_lab_test",
         "duration": "03:00:00",
-        "group": "test_lab_group2",
-        "moderator": "1826f4174b4e4f839407f955455007f4"
+        "group": "test_lab_group",
+        "moderator": "9b10e3ef1bf342b1a8fc69a58655ede1",
+        "limit": 5
     },
     "periods": [
         {
-            "start": "2017-04-20 12:00:00",
-            "stop": "2017-04-25 12:00:00"
-        },
-        {
-            "start": "2017-04-25 15:00:00",
-            "stop": "2017-04-30 12:00:00"
+            "start": "2019-04-25 15:00:00",
+            "stop": "2019-09-30 12:00:00"
         }
     ],
     "template": {
-        "name": "test_template_2",
+        "name": "test_template",
         "data": {
             "heat_template_version": "2015-04-30",
-            "description": "Test laboratory template _EDIIT_",
+            "description": "Test laboratory template",
             "resources": {
                 "lab_network": {
                     "type": "OS::Neutron::Net"
@@ -60,7 +57,6 @@
                 "lab_instance": {
                     "type": "OS::Nova::Server",
                     "properties": {
-                        "key_name": "test",
                         "image": "cirros_image_lab",
                         "flavor": "cirros256",
                         "networks": [

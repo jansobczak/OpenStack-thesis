@@ -7,6 +7,7 @@ from reservation.service.User import User
 from reservation.service.Group import Group
 import reservation.service.MySQL as MySQL
 
+
 @cherrypy.expose()
 class ManagerUser:
     keystoneAuthList = None
@@ -15,7 +16,7 @@ class ManagerUser:
         self.keystoneAuthList = keystoneAuthList
 
     @cherrypy.tools.json_out()
-    def GET(self, type=None, user_data=None):
+    def GET(self, user_type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=False):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=False)
@@ -23,8 +24,8 @@ class ManagerUser:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
                 osUser = OSUser(session=session.token)
                 userDict = []
-                if type is not None and user_data is not None:
-                    if "id" in type:
+                if user_type is not None and user_data is not None:
+                    if "id" in user_type:
                         user = osUser.find(id=user_data)
                         if user is not None:
                             user = User().parseObject(user)
@@ -36,7 +37,7 @@ class ManagerUser:
                                                 require_moderator=True)
                             else:
                                 userDict.append(user.to_dict())
-                    elif "name" in type:
+                    elif "name" in user_type:
                         for user in osUser.find(name=user_data):
                             user = User().parseObject(user)
                             if not ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
@@ -55,9 +56,12 @@ class ManagerUser:
                     data = dict(current="User manager", response=userDict)
                 else:
                     data = dict(current="User manager", user_status="not authorized", require_moderator=True)
-
         except Exception as e:
-            data = dict(current="User manager", error=str(e))
+            if traceback is not None:
+                error = str(e)
+            else:
+                error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Reservation manager", error=str(error))
         finally:
             return data
 
@@ -87,9 +91,9 @@ class ManagerUser:
                         raise Exception("No data in POST")
 
                     if user is not None:
-                        user = osUser.create(name=user.name, password=user.password, project_id=defaults["project"], mail=user.mail)
+                        user = osUser.create(name=user.name, password=user.password, project_id=defaults["project"],
+                                             mail=user.mail)
                         user = User().parseObject(user)
-
                         # Find lab group id
                         if group is not None:
                             if group.id is not None:
@@ -114,44 +118,54 @@ class ManagerUser:
                         raise Exception("Invalid request")
                     data = dict(current="User manager", response=result)
         except Exception as e:
-            error = str(e) + ": " + str(traceback.print_exc())
-            data = dict(current="User manager", error=str(error))
+            if traceback is not None:
+                error = str(e)
+            else:
+                error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Reservation manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
             MySQL.mysqlConn.commit()
             return data
 
-
     @cherrypy.tools.json_out()
-    def DELETE(self, type=None, user_data=None):
+    def DELETE(self, user_type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
             else:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
-                if type is not None and user_data is not None:
-                    if "id" in type:
+                if user_type is not None and user_data is not None:
+                    user_obj = None
+                    if "id" in user_type:
                         user = osUser.find(id=user_data)
                         if user is not None:
-                            userObj = User().parseObject(user)
-                            osUser.delete(userObj.id)
-                    elif "name" in type:
+                            user_obj = User().parseObject(user)
+                    elif "name" in user_type:
                         for user in osUser.find(name=user_data):
-                            userObj = User().parseObject(user)
-                            osUser.delete(userObj.id)
+                            user_obj = User().parseObject(user)
+                    if user_obj is not None:
+                        # Remove user
+                        osUser.delete(user_obj.id)
+                    else:
+                        raise Exception("No user found!")
                 else:
                     raise Exception("User /user/id or /user/name to specify id or name")
 
                 data = dict(current="User manager", response="OK")
         except Exception as e:
-            data = dict(current="User manager", error=str(e))
+            if traceback is not None:
+                error = str(e)
+            else:
+                error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Reservation manager", error=str(error))
         finally:
             return data
 
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
-    def PATCH(self, type=None, user_data=None):
+    def PATCH(self, user_type=None, user_data=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
                 data = dict(current="User manager", user_status="not authorized", require_moderator=True)
@@ -159,26 +173,32 @@ class ManagerUser:
                 session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value].token
                 osUser = OSUser(session=session)
                 userResult = []
-                if type is not None and user_data is not None:
+                if user_type is not None and user_data is not None:
                     if hasattr(cherrypy.request, "json"):
                         userUpdate = User().parseJSON(data=cherrypy.request.json)
                         userUpdate.to_dict()
-                        if "id" in type:
+                        if "id" in user_type:
                             user = osUser.find(id=user_data)
                             if user is not None:
                                 userObj = User().parseObject(user)
-                                userResult.append(User().parseObject(osUser.update(userObj.id, **userUpdate.to_dict())).to_dict())
-                        elif "name" in type:
+                                userResult.append(
+                                    User().parseObject(osUser.update(userObj.id, **userUpdate.to_dict())).to_dict())
+                        elif "name" in user_type:
                             for user in osUser.find(name=user_data):
                                 userObj = User().parseObject(user)
-                                userResult.append(User().parseObject(osUser.update(userObj.id, **userUpdate.to_dict())).to_dict())
+                                userResult.append(
+                                    User().parseObject(osUser.update(userObj.id, **userUpdate.to_dict())).to_dict())
                     else:
                         raise Exception("Not JSON data!")
                 else:
                     raise Exception("Not allowed on: /user! Specify id or name")
                 data = dict(current="User manager", result=userResult)
         except Exception as e:
-            data = dict(current="User manager", error=str(e))
+            if traceback is not None:
+                error = str(e)
+            else:
+                error = str(e) + ": " + str(traceback.print_exc())
+            data = dict(current="Reservation manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
             MySQL.mysqlConn.commit()

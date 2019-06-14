@@ -93,7 +93,8 @@ class ManagerLab:
                                                     duration=lab.duration,
                                                     group=lab.group,
                                                     template_id=template.id,
-                                                    moderator=lab.moderator)
+                                                    moderator=lab.moderator,
+                                                    limit=lab.limit)
                 template.id = MySQL.mysqlConn.insert_template(name=template.name,
                                                               data=template.data,
                                                               laboratory_id=lab.id)

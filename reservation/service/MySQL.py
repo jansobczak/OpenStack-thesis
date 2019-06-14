@@ -98,24 +98,25 @@ class MySQL():
     def insert_lab(self, **kwargs):
         """
         Insert into laboratory table
-        :param kwargs: name, duration, group, template_id, moderator
+        :param kwargs: name, duration, group, template_id, moderator, (limit)
         :return: ID of inserted lab
         """
         name = kwargs.get("name")
         duration = kwargs.get("duration")
         group = kwargs.get("group")
         moderator = kwargs.get("moderator")
+        limit = kwargs.get("limit", "1")
 
         self.cursor = self.conn.cursor()
-        sql = "INSERT INTO laboratory VALUES(DEFAULT, %s, %s, %s, %s);"
-        self.cursor.execute(sql, (name, duration, group, moderator))
+        sql = "INSERT INTO laboratory VALUES(DEFAULT, %s, %s, %s, %s, %s);"
+        self.cursor.execute(sql, (name, duration, group, moderator, limit))
         return self.cursor.lastrowid
 
     def update_lab(self, lab_id, **kwargs):
         """
         Update laboratory
         :param lab_id: id of laboratory to update
-        :param kwargs: name, duration, group, template_id, moderator
+        :param kwargs: name, duration, group, template_id, moderator, limit
         :return:
         """
         name = kwargs.get("name")
@@ -123,6 +124,7 @@ class MySQL():
         group = kwargs.get("group")
         template_id = kwargs.get("template_id")
         moderator = kwargs.get("moderator")
+        limit = kwargs.get("limit")
 
         self.cursor = self.conn.cursor()
         if name is not None:
@@ -140,6 +142,9 @@ class MySQL():
         if moderator is not None:
             sql = "UPDATE laboratory set moderator = %s WHERE id = %s"
             self.cursor.execute(sql, (moderator, lab_id))
+        if limit is not None:
+            sql = "UPDATE laboratory set `limit` = %s WHERE id = %s"
+            self.cursor.execute(sql, (limit, lab_id))
 
     ### TEMPLATE
 
@@ -404,12 +409,18 @@ class MySQL():
         elif reserv_id is not None:
             sql = "SELECT * FROM reservation WHERE id = %s;"
             self.cursor.execute(sql, reserv_id)
-        elif reserv_user is not None:
+        elif reserv_user is not None and reserv_lab is None:
             sql = "SELECT * FROM reservation WHERE user = %s"
             self.cursor.execute(sql, reserv_user)
-        elif reserv_team is not None:
+        elif reserv_user is not None and reserv_lab is not None:
+            sql = "SELECT * FROM reservation WHERE user = %s and laboratory_id = %s;"
+            self.cursor.execute(sql, (reserv_user, reserv_lab))
+        elif reserv_team is not None and reserv_lab is None:
             sql = "SELECT * FROM reservation WHERE team_id = %s"
             self.cursor.execute(sql, reserv_team)
+        elif reserv_team is not None and reserv_lab is not None:
+            sql = "SELECT * FROM reservation WHERE team_id = %s and laboratory_id = %s"
+            self.cursor.execute(sql, (reserv_team, reserv_lab))
         elif reserv_lab is not None:
             sql = "SELECT * FROM reservation WHERE laboratory_id = %s"
             self.cursor.execute(sql, reserv_lab)
@@ -469,8 +480,12 @@ class MySQL():
                 sql = "UPDATE reservation SET tenat_id = %s WHERE id = %s"
                 self.cursor.execute(sql, (tenat_id, id))
             elif tenat_id is not None and status is not None:
-                sql = "UPDATE reservation SET tenat_id = %s, status = %s WHERE id = %s"
-                self.cursor.execute(sql, (tenat_id, status, id))
+                if tenat_id == "NULL":
+                    sql = "UPDATE reservation SET tenat_id = NULL, status = %s WHERE id = %s"
+                    self.cursor.execute(sql, (status, id))
+                else:
+                    sql = "UPDATE reservation SET tenat_id = %s, status = %s WHERE id = %s"
+                    self.cursor.execute(sql, (tenat_id, status, id))
             elif tenat_id is None and status is not None:
                 sql = "UPDATE reservation SET status = %s WHERE id = %s"
                 self.cursor.execute(sql, (status, id))

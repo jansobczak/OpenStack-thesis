@@ -25,8 +25,12 @@ class ManagerAuth:
         osKSAuth = OSKeystone.OSAuth(config=ConfigParser.configuration["openstack"])
         self.adminKSAuth = Session(username=ConfigParser.configuration["openstack"]["username"],
                                    role='admin',
-                                   token=osKSAuth.createKeyStoneSession(),
                                    auth=osKSAuth)
+        token = osKSAuth.createKeyStoneSession()
+        token.get_token()
+        self.adminKSAuth.token = token
+        self.adminKSAuth.userid = token.auth.auth_ref.user_id
+
 
     @cherrypy.tools.json_out()
     def DELETE(self, vpath=None):
@@ -101,6 +105,7 @@ class ManagerAuth:
             return data
         except Exception as e:
             error = str(e) + ": " + str(traceback.print_exc())
+            print(error)
             data = dict(current="Authorization manager", user_status="error", error=str(error))
             return data
 
