@@ -465,29 +465,40 @@ class MySQL():
         else:
             return False
 
-    def update_reservation(self, **kwargs):
+    def update_reservation(self, reservation_id, **kwargs):
         """
         Update reservation
         :param kwargs:
         :return:
         """
-        id = kwargs.get("id")
+        id = reservation_id
         tenat_id = kwargs.get("tenat_id")
         status = kwargs.get("status")
+        laboratory_id = kwargs.get("laboratory_id")
+        user = kwargs.get("user")
+        team_id = kwargs.get("team_id")
+        start = kwargs.get("start")
         self.cursor = self.conn.cursor()
         if id is not None:
-            if tenat_id is not None and status is None:
-                sql = "UPDATE reservation SET tenat_id = %s WHERE id = %s"
-                self.cursor.execute(sql, (tenat_id, id))
-            elif tenat_id is not None and status is not None:
+            if tenat_id is not None:
                 if tenat_id == "NULL":
-                    sql = "UPDATE reservation SET tenat_id = NULL, status = %s WHERE id = %s"
+                    sql = "UPDATE reservation SET tenat_id = NULL WHERE id = %s"
                     self.cursor.execute(sql, (status, id))
                 else:
-                    sql = "UPDATE reservation SET tenat_id = %s, status = %s WHERE id = %s"
-                    self.cursor.execute(sql, (tenat_id, status, id))
-            elif tenat_id is None and status is not None:
+                    sql = "UPDATE reservation SET tenat_id = %s WHERE id = %s"
+                    self.cursor.execute(sql, (tenat_id, id))
+            if status is not None:
                 sql = "UPDATE reservation SET status = %s WHERE id = %s"
                 self.cursor.execute(sql, (status, id))
-            else:
-                return False
+            if laboratory_id is not None:
+                sql = "UPDATE reservation SET laboratory_id = %s WHERE id = %s"
+                self.cursor.execute(sql, (laboratory_id, id))
+            if user is not None:
+                sql = "UPDATE reservation SET user = %s WHERE id = %s"
+                self.cursor.execute(sql, (user, id))
+            if team_id is not None:
+                sql = "UPDATE reservation SET team_id = %s WHERE id = %s"
+                self.cursor.execute(sql, (team_id, id))
+            if start is not None:
+                sql = "UPDATE reservation SET start = %s WHERE id = %s"
+                self.cursor.execute(sql, (start, id))

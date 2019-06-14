@@ -57,11 +57,13 @@ class ManagerUser:
                 else:
                     data = dict(current="User manager", user_status="not authorized", require_moderator=True)
         except Exception as e:
-            if traceback is not None:
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
                 error = str(e)
             else:
                 error = str(e) + ": " + str(traceback.print_exc())
-            data = dict(current="Reservation manager", error=str(error))
+            print(error)
+            data = dict(current="User manager", error=str(error))
         finally:
             return data
 
@@ -118,11 +120,13 @@ class ManagerUser:
                         raise Exception("Invalid request")
                     data = dict(current="User manager", response=result)
         except Exception as e:
-            if traceback is not None:
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
                 error = str(e)
             else:
                 error = str(e) + ": " + str(traceback.print_exc())
-            data = dict(current="Reservation manager", error=str(error))
+            print(error)
+            data = dict(current="User manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
             MySQL.mysqlConn.commit()
@@ -155,11 +159,13 @@ class ManagerUser:
 
                 data = dict(current="User manager", response="OK")
         except Exception as e:
-            if traceback is not None:
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
                 error = str(e)
             else:
                 error = str(e) + ": " + str(traceback.print_exc())
-            data = dict(current="Reservation manager", error=str(error))
+            print(error)
+            data = dict(current="User manager", error=str(error))
         finally:
             return data
 
@@ -194,11 +200,13 @@ class ManagerUser:
                     raise Exception("Not allowed on: /user! Specify id or name")
                 data = dict(current="User manager", result=userResult)
         except Exception as e:
-            if traceback is not None:
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
                 error = str(e)
             else:
                 error = str(e) + ": " + str(traceback.print_exc())
-            data = dict(current="Reservation manager", error=str(error))
+            print(error)
+            data = dict(current="User manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
             MySQL.mysqlConn.commit()

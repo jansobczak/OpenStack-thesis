@@ -92,10 +92,12 @@ class ManagerReservation:
                     raise Exception("Malformed request")
                 data = dict(current="Reservation manager", response=reservArray)
         except Exception as e:
-            if traceback is not None:
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
                 error = str(e)
             else:
                 error = str(e) + ": " + str(traceback.print_exc())
+            print(error)
             data = dict(current="Reservation manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
@@ -263,53 +265,29 @@ class ManagerReservation:
                     reservations = MySQL.mysqlConn.select_reservation(id=reserv_id)
                     if reservations is None or len(reservations) == 0:
                         raise Exception("No reservation found with this id!")
-                    for reservation in reservations:
-                        reservation = Reservation().parseDict(reservation)
-                        if reservation.status == "active" or reservation.status == "building":
-                            raise Exception("Reservation is building or active, unable to delete")
+                    if reservations is None or len(reservations) == 0:
+                        raise Exception("No reservation found with this id!")
+                    elif len(reservations) > 1:
+                        raise Exception("Multiple reservation found with this id!")
+                    else:
+                        reservation = Reservation().parseDict(reservations[0])
+
+                    if reservation.status == "active" or reservation.status == "building":
+                        raise Exception("Reservation is building or active, unable to delete")
+                    else:
+                        # Check if user is allowed to delete
+                        authorize_delete = self.__isAuthorized(reservation=reservation)
+                        if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
+                            authorize_delete = True
+                        if authorize_delete:
+                            if reservation.status == "active":
+                                raise Exception("Reservation is active. Ask moderator to deactive it!")
+                            else:
+                                MySQL.mysqlConn.delete_reservation(id=reserv_id)
+                                MySQL.mysqlConn.commit()
+                                data = dict(current="Reservation manager", status="Reservation is deleted")
                         else:
-                            # Check if user is allowed to delete
-                            # reservation made by team
-                            authorize_delete = False
-                            session = self.adminKSAuth
-                            user_session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                            if reservation.team_id is not None:
-                                managerTeam = ManagerTeam(self.keystoneAuthList, self.adminKSAuth)
-                                teams = managerTeam.getTeam(session=session, userid=user_session.userid,
-                                                            id=reservation.team_id, admin=True)
-                                for team in teams:
-                                    usersid = []
-                                    if len(team["users"]) == 0:
-                                        raise Exception("No user in team")
-                                    for user in team["users"]:
-                                        user = User().parseDict(user)
-                                        usersid.append(user.id)
-                                if user_session.userid in usersid:
-                                    authorize_delete = True
-                            # Reservation is made by user
-                            elif reservation.user_id is not None:
-                                osUser = OSUser(session=session.token)
-                                user = osUser.find(id=user_session.userid)
-                                if user is not None:
-                                    user = User().parseObject(user)
-                                else:
-                                    raise Exception("No user found!")
-                                if user.id == reservation.user_id:
-                                    authorize_delete = True
-                            else:
-                                data = dict(current="Reservation manager",
-                                            status="No user or team_id in reservation. Not expected!")
-                            if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
-                                authorize_delete = True
-                            if authorize_delete:
-                                if reservation.status == "active":
-                                    raise Exception("Reservation is active. Ask moderator to deactive it!")
-                                else:
-                                    MySQL.mysqlConn.delete_reservation(id=reserv_id)
-                                    MySQL.mysqlConn.commit()
-                                    data = dict(current="Reservation manager", status="Reservation is deleted")
-                            else:
-                                raise Exception("Not authorized to delete")
+                            raise Exception("Not authorized to delete")
                 # Deactivate
                 elif reserv_type is not None and reserv_id is not None and activate == "activate":
                     if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList,
@@ -324,7 +302,11 @@ class ManagerReservation:
                     raise Exception("Wrong request!")
             MySQL.mysqlConn.commit()
         except Exception as e:
-            error = str(e) + ": " + str(traceback.print_exc())
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
+                error = str(e)
+            else:
+                error = str(e) + ": " + str(traceback.print_exc())
             print(error)
             data = dict(current="Reservation manager", error=str(error))
         finally:
@@ -350,16 +332,19 @@ class ManagerReservation:
 
             MySQL.mysqlConn.commit()
         except Exception as e:
-            if traceback is not None:
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
                 error = str(e)
             else:
                 error = str(e) + ": " + str(traceback.print_exc())
+            print(error)
             data = dict(current="Reservation manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
             return data
 
-    # TODO
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def PATCH(self, reserv_type=None, reserv_id=None):
         # This edit reservation
         try:
@@ -368,125 +353,53 @@ class ManagerReservation:
             else:
                 if hasattr(cherrypy.request, "json"):
                     request = cherrypy.request.json
-                    reservation = Reservation().parseJSON(data=request)
+                    edit_reservation = Reservation().parseJSON(data=request)
                 else:
                     raise Exception("JSON data not valid")
 
-                MySQL.mysqlConn.commit()
-                # Find laboratory
-                labs = MySQL.mysqlConn.select_lab(id=reservation.laboratory_id)
-                if len(labs) == 1:
-                    lab = Laboratory().parseDict(labs[0])
-                else:
-                    raise Exception("No lab found with this ID. Cannnot make reservation")
-
-                # Does laboratory is active?
-                # Get periods
-                lab_periods = MySQL.mysqlConn.select_period(lab_id=reservation.laboratory_id)
-
-                # Check if periods expired?
-                labActive = False
-                for period in lab_periods:
-                    period = Period().parseDict(period)
-                    currentTime = datetime.datetime.now()
-                    if period.start <= currentTime and currentTime <= period.stop:
-                        labActive = True
-                        break
-                #This laboratory is not active
-                if labActive is False:
-                    raise Exception("Laboratory is not active")
-                # Does reservation time fit in laboratory periods
-                reservationFit = False
-                for period in lab_periods:
-                    period = Period().parseDict(period)
-                    if period.start <= reservation.start and reservation.start + lab.duration <= period.stop:
-                        reservationFit = True
-                        break
-                # It does not fit
-                if reservationFit is False:
-                    raise Exception("Reservation outside of lab period")
-
-                # Check allowance for making reservation
-                reservationUserAllow = False
-                session = self.adminKSAuth
-                user_session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
-                osUser = OSUser(session=session.token)
-                osGroup = OSGroup(session=session.token)
-                group = osGroup.find(name=lab.group)
-                if group is not None and len(group) == 1:
-                    group = Group().parseObject(group[0])
-                else:
-                    raise Exception("No group found for lab - not expected")
-                # If reservation is for team
-                if reservation.team_id is not None:
-                    managerTeam = ManagerTeam(self.keystoneAuthList, self.adminKSAuth)
-                    teams = managerTeam.getTeam(session=session,
-                                                   userid=user_session.userid,
-                                                   id=reservation.team_id,
-                                                   admin=True)
-                    for team in teams:
-                        usersid = []
-                        if len(team["users"]) == 0:
-                            raise Exception("No user in team")
-                        for user in team["users"]:
-                            user = User().parseDict(user)
-                            usersid.append(user.id)
-
-                        groupusersid = []
-                        groupusers = osGroup.getUsers(group_id=group.id)
-                        if groupusers is None or len(groupusers) == 0:
-                            groupusers = []
-                        else:
-                            for groupuser in groupusers:
-                                groupusersid.append(groupuser.id)
-                            if all(userid in groupusersid for userid in usersid):
-                                reservationUserAllow = True
+                if reserv_type is not None and reserv_id is not None:
+                    reservations = MySQL.mysqlConn.select_reservation(id=reserv_id)
+                    if reservations is None or len(reservations) == 0:
+                        raise Exception("No reservation found with this id!")
+                    elif len(reservations) > 1:
+                        raise Exception("Multiple reservation found with this id!")
+                    else:
+                        reservation = Reservation().parseDict(reservations[0])
+                    if reservation.status == "active" or reservation.status == "building":
+                        raise Exception("Reservation is building or active, unable to delete")
+                    else:
+                        # Check if user is allowed to edit
+                        authorize_edit = self.__isAuthorized(reservation=reservation)
+                        if ManagerTool.isAdminOrMod(cherrypy.request.cookie, self.keystoneAuthList):
+                            authorize_edit = True
+                        if authorize_edit:
+                            if reservation.status == "active":
+                                raise Exception("Reservation is active. Ask moderator to deactive it!")
                             else:
-                                reservationUserAllow = False
-                # If reservation is for one user
-                elif reservation.user_id is not None:
-                    # Use admin privilages
-                    reservationUserAllow = osUser.checkUserIn(group_id=group.id, user_id=user_session.userid)
+                                MySQL.mysqlConn.update_reservation(reservation_id=reserv_id,
+                                                                   **edit_reservation.to_dict())
+                                MySQL.mysqlConn.commit()
+                                reservations = MySQL.mysqlConn.select_reservation(id=reserv_id)
+                                reservArray = []
+                                for reservation in reservations:
+                                    reservation = Reservation().parseDict(reservation)
+                                    reservArray.append(reservation.to_dict())
+                                data = dict(current="Reservation manager", response=reservArray)
+                        else:
+                            raise Exception("Not authorized to edit")
                 else:
-                    raise Exception("No user id or team id in request!")
-
-                if reservationUserAllow is False:
-                    raise Exception("User or team not allowed to reserve this lab")
-
-                # Is there any other reservation for this lab in that period
-                # From database reservation for this lab
-                reservationAllow = True
-                otherReservations = MySQL.mysqlConn.select_reservation(lab=lab.id)
-                for otherReservation in otherReservations:
-                    otherReservation = Reservation().parseDict(otherReservation)
-                    if (reservation.start + lab.duration >= otherReservation.start and reservation.start < otherReservation.start):
-                        reservationAllow = False
-                        break
-                    if (reservation.start <= otherReservation.start + lab.duration and reservation.start >= otherReservation.start):
-                        reservationAllow = False
-                        break
-
-                if reservationAllow is False:
-                    raise Exception("Unable to make reservation, other reservation already exists")
-
-                # Create this reservation
-                if reservation.user_id is not None:
-                    reservation.id = MySQL.mysqlConn.insert_reservation(user=reservation.user_id, start=reservation.start, laboratory_id=reservation.laboratory_id)
-                elif reservation.team_id is not None:
-                    reservation.id = MySQL.mysqlConn.insert_reservation(team_id=reservation.team_id, start=reservation.start, laboratory_id=reservation.laboratory_id)
-                else:
-                    # Not expected
-                    raise Exception("No user id or team id not expected")
-
-                data = dict(current="Reservation manager", response=reservation.to_dict())
+                    raise Exception("Malformed request!")
         except Exception as e:
-            error = str(e) + ": " + str(traceback.print_exc())
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
+                error = str(e)
+            else:
+                error = str(e) + ": " + str(traceback.print_exc())
+            print(error)
             data = dict(current="Reservation manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
-            MySQL.mysqlConn.commit()
             return data
-
 
     def __activate(self, id=None):
         #Find reservation
@@ -532,7 +445,9 @@ class ManagerReservation:
             # Update tenat id in reservation
             reservation.tenat_id = project.id
             reservation.tenat_name = project_name
-            MySQL.mysqlConn.update_reservation(id=reservation.id, tenat_id=reservation.tenat_id, status="active")
+            MySQL.mysqlConn.update_reservation(reservation_id=reservation.id,
+                                               tenat_id=reservation.tenat_id,
+                                               status="active")
 
             # Grant owner of project ability to log in to project
             os_project = OSProject(session=session.token, id=project.id)
@@ -593,7 +508,9 @@ class ManagerReservation:
                 session = self.adminKSAuth
                 os_project = OSProject(session=session.token)
                 os_project.delete(project_id=reservation.tenat_id)
-                MySQL.mysqlConn.update_reservation(id=reservation.id, status="nonactive", tenat_id="NULL")
+                MySQL.mysqlConn.update_reservation(reservation_id=reservation.id,
+                                                   status="nonactive",
+                                                   tenat_id="NULL")
                 MySQL.mysqlConn.commit()
             else:
                 raise Exception("Reservation is still active!")
@@ -602,3 +519,33 @@ class ManagerReservation:
 
         data = dict(current="Reservation manager", status="Reservation deactivated")
         return data
+
+    def __isAuthorized(self, reservation):
+        authorize = False
+        session = self.adminKSAuth
+        user_session = self.keystoneAuthList[cherrypy.request.cookie["ReservationService"].value]
+        if reservation.team_id is not None:
+            managerTeam = ManagerTeam(self.keystoneAuthList, self.adminKSAuth)
+            teams = managerTeam.getTeam(session=session, userid=user_session.userid, id=reservation.team_id, admin=True)
+            for team in teams:
+                usersid = []
+                if len(team["users"]) == 0:
+                    raise Exception("No user in team")
+                for user in team["users"]:
+                    user = User().parseDict(user)
+                    usersid.append(user.id)
+            if user_session.userid in usersid:
+                authorize = True
+        # Reservation is made by user
+        elif reservation.user_id is not None:
+            osUser = OSUser(session=session.token)
+            user = osUser.find(id=user_session.userid)
+            if user is not None:
+                user = User().parseObject(user)
+            else:
+                raise Exception("No user found!")
+            if user.id == reservation.user_id:
+                authorize = True
+        else:
+            raise Exception("No user or team_id in reservation. Not expected!")
+        return authorize

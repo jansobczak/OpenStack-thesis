@@ -1,4 +1,5 @@
 import cherrypy
+import traceback
 from reservation.service.Laboratory import Laboratory
 from reservation.service.Period import Periods
 from reservation.service.Template import Template
@@ -22,7 +23,7 @@ class ManagerLab:
     def GET(self, lab_type=None, lab_data=None, user_or_group=None):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="Lab manager", user_status="not authorized", require_moderator=True)
+                data = dict(current="Laboratory manager", user_status="not authorized", require_moderator=True)
             else:
                 # Parse request if exists
                 labs = None
@@ -69,7 +70,13 @@ class ManagerLab:
                     preLabs = dict(info=lab.to_dict(), periods=periodChunk.to_dict(), template=templateChunk.to_dict())
                     data = dict(current="Laboratory manager", response=preLabs)
         except Exception as e:
-            data = dict(current="Laboratory manager", error=str(e))
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
+                error = str(e)
+            else:
+                error = str(e) + ": " + str(traceback.print_exc())
+            print(error)
+            data = dict(current="Laboratory manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
             MySQL.mysqlConn.commit()
@@ -77,10 +84,10 @@ class ManagerLab:
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
-    def POST(self, vpath=None):
+    def POST(self):
         try:
             if not ManagerTool.isAuthorized(cherrypy.request.cookie, self.keystoneAuthList, require_moderator=True):
-                data = dict(current="Lab manager", user_status="not authorized", require_moderator=True)
+                data = dict(current="Laboratory manager", user_status="not authorized", require_moderator=True)
             else:
                 # Parse request
                 request = cherrypy.request.json
@@ -129,9 +136,15 @@ class ManagerLab:
                             periods=periods)
                 MySQL.mysqlConn.commit()
         except Exception as e:
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
+                error = str(e)
+            else:
+                error = str(e) + ": " + str(traceback.print_exc())
+            print(error)
             if group is not None and osGroup is not None:
                 osGroup.delete(id=group.id)
-            data = dict(current="Laboratory manager", error=str(e))
+            data = dict(current="Laboratory manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
             return data
@@ -199,7 +212,13 @@ class ManagerLab:
                     data = dict(current="Laboratory manager", laboratory=req_lab, template=req_template, periods=req_periods)
                     MySQL.mysqlConn.commit()
         except Exception as e:
-            data = dict(current="Laboratory manager", error=str(e))
+            traceback_output = traceback.print_exc()
+            if traceback_output is None:
+                error = str(e)
+            else:
+                error = str(e) + ": " + str(traceback.print_exc())
+            print(error)
+            data = dict(current="Laboratory manager", error=str(error))
         finally:
             MySQL.mysqlConn.close()
             return data
