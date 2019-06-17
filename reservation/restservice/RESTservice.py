@@ -17,6 +17,12 @@ class RESTservice(object):
     adminKSAuth = {}
 
     def start(self):
+        MySQL.mysqlConn = MySQL.MySQL(
+            host=ConfigParser.configuration["database"]["host"],
+            user=ConfigParser.configuration["database"]["user"],
+            password=ConfigParser.configuration["database"]["password"],
+            database=ConfigParser.configuration["database"]["database"])
+
         self.managerAuth = ManagerAuth(keystoneAuthList=self.keystoneAuthList)
         self.adminKSAuth = self.managerAuth.adminKSAuth
         self.managerUser = ManagerUser(keystoneAuthList=self.keystoneAuthList)
@@ -26,12 +32,6 @@ class RESTservice(object):
         self.managerLab = ManagerLab(keystoneAuthList=self.keystoneAuthList)
         self.managerTeam = ManagerTeam(keystoneAuthList=self.keystoneAuthList,adminAuth=self.adminKSAuth)
         self.managerReservation = ManagerReservation(keystoneAuthList=self.keystoneAuthList,adminAuth=self.adminKSAuth)
-
-        MySQL.mysqlConn = MySQL.MySQL(
-            host=ConfigParser.configuration["database"]["host"],
-            user=ConfigParser.configuration["database"]["user"],
-            password=ConfigParser.configuration["database"]["password"],
-            database=ConfigParser.configuration["database"]["database"])
 
         self.mountMenager()
 

@@ -402,11 +402,10 @@ class MySQL():
         reserv_team = kwargs.get("team")
         reserv_user = kwargs.get("user")
         reserv_lab = kwargs.get("lab")
+        reserv_start = kwargs.get("start")
+        max_time = kwargs.get("max_time")
         self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
-        if reserv_id is None and reserv_lab is None and reserv_user is None and reserv_team is None:
-            sql = "SELECT * FROM reservation;"
-            self.cursor.execute(sql)
-        elif reserv_id is not None:
+        if reserv_id is not None:
             sql = "SELECT * FROM reservation WHERE id = %s;"
             self.cursor.execute(sql, reserv_id)
         elif reserv_user is not None and reserv_lab is None:
@@ -424,7 +423,40 @@ class MySQL():
         elif reserv_lab is not None:
             sql = "SELECT * FROM reservation WHERE laboratory_id = %s"
             self.cursor.execute(sql, reserv_lab)
+        elif reserv_start is not None and max_time is not None:
+            sql = "SELECT * FROM reservation WHERE start >= %s and start < %s"
+            self.cursor.execute(sql, (reserv_start, max_time))
+        else:
+            sql = "SELECT * FROM reservation;"
+            self.cursor.execute(sql)
         data = self.cursor.fetchall()
+        return data
+
+    def select_active_reservation(self, **kwargs):
+        start = kwargs.get("start")
+        status = "active"
+        self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
+        if status is not None:
+            sql = "select * from (select resv.id,resv.start,ADDTIME(resv.start,lab.duration) as end,"\
+                  "lab.id as laboratory_id,resv.status,lab.duration " \
+                  "from reservation as resv join laboratory as lab on lab.id=resv.laboratory_id where resv.status = %s) temp_resv "\
+                  "where end < %s;"
+            self.cursor.execute(sql, (status, start))
+            data = self.cursor.fetchall()
+        return data
+
+    def select_nonactive_reservation(self, **kwargs):
+        start = kwargs.get("start")
+        max_time = kwargs.get("max_time")
+        status = "nonactive"
+        self.cursor = self.conn.cursor(pymysql.cursors.DictCursor)
+        if status is not None:
+            sql = "select * from (select resv.id,resv.start,ADDTIME(resv.start,lab.duration) as end,"\
+                  "lab.id as laboratory_id,resv.status,lab.duration " \
+                  "from reservation as resv join laboratory as lab on lab.id=resv.laboratory_id where resv.status = %s) temp_resv "\
+                  "where start <= %s and end > %s;"
+            self.cursor.execute(sql, (status, start, max_time))
+            data = self.cursor.fetchall()
         return data
 
     def insert_reservation(self, **kwargs):
@@ -483,7 +515,7 @@ class MySQL():
             if tenat_id is not None:
                 if tenat_id == "NULL":
                     sql = "UPDATE reservation SET tenat_id = NULL WHERE id = %s"
-                    self.cursor.execute(sql, (status, id))
+                    self.cursor.execute(sql, id)
                 else:
                     sql = "UPDATE reservation SET tenat_id = %s WHERE id = %s"
                     self.cursor.execute(sql, (tenat_id, id))

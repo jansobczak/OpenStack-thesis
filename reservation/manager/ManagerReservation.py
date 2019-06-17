@@ -14,7 +14,6 @@ from reservation.service.Team import Team
 from reservation.stack.OSKeystone import OSProject
 from reservation.stack.OSHeat import OSHeat
 from .ManagerTeam import ManagerTeam
-from .ManagerLab import ManagerLab
 import reservation.service.MySQL as MySQL
 
 
@@ -295,9 +294,9 @@ class ManagerReservation:
                         data = dict(current="Reservation manager", user_status="not authorized", require_moderator=True)
                     else:
                         if force is None:
-                            data = self.__deactivate(id=reserv_id,force=False)
+                            data = self.deactivate(id=reserv_id, force=False)
                         elif force == "force":
-                            data = self.__deactivate(id=reserv_id,force=True)
+                            data = self.deactivate(id=reserv_id, force=True)
                 else:
                     raise Exception("Wrong request!")
             MySQL.mysqlConn.commit()
@@ -326,7 +325,7 @@ class ManagerReservation:
                                                     require_moderator=True):
                         data = dict(current="Reservation manager", user_status="not authorized", require_moderator=True)
                     else:
-                        data = self.__activate(id=reserv_id)
+                        data = self.activate(id=reserv_id)
                 else:
                     raise Exception("Wrong request!")
 
@@ -401,7 +400,7 @@ class ManagerReservation:
             MySQL.mysqlConn.close()
             return data
 
-    def __activate(self, id=None):
+    def activate(self, id=None):
         #Find reservation
         MySQL.mysqlConn.commit()
         reservation = MySQL.mysqlConn.select_reservation(id=id)
@@ -485,7 +484,7 @@ class ManagerReservation:
         data = dict(current="Reservation manager", status="Reservation started")
         return data
 
-    def __deactivate(self, id=None, force=False):
+    def deactivate(self, id=None, force=False):
         # Find reservation
         MySQL.mysqlConn.commit()
         reservation = MySQL.mysqlConn.select_reservation(id=id)
@@ -507,7 +506,10 @@ class ManagerReservation:
             if reservation_active is False or force is True:
                 session = self.adminKSAuth
                 os_project = OSProject(session=session.token)
-                os_project.delete(project_id=reservation.tenat_id)
+                try:
+                    os_project.delete(project_id=reservation.tenat_id)
+                except Exception as e:
+                    print(e)
                 MySQL.mysqlConn.update_reservation(reservation_id=reservation.id,
                                                    status="nonactive",
                                                    tenat_id="NULL")
