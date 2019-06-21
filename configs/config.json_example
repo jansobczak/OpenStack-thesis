@@ -1,0 +1,20 @@
+{
+    "database": {
+        "host": "127.0.0.1",
+        "database": "reservation_service",
+        "user": "reservation_user",
+        "password": "qwe123qwe"
+    },
+	"openstack": {
+		"user_domain_name": "default",
+		"username": "admin",
+		"password": "OsPass.123",
+		"auth_url": "http://op.gors.net/identity/v3/",
+		"project_domain_name": "default",
+		"project_name": "admin",
+		"project_id": "381befd211554082a6485eca3ff47186"
+	},
+	"autoreservation":{
+		"timer": 5
+	}
+}
