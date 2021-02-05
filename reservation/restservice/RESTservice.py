@@ -30,8 +30,8 @@ class RESTservice(object):
         self.managerSystem = ManagerSystem(keystoneAuthList=self.keystoneAuthList)
         self.managerImage = ManagerImage(keystoneAuthList=self.keystoneAuthList)
         self.managerLab = ManagerLab(keystoneAuthList=self.keystoneAuthList)
-        self.managerTeam = ManagerTeam(keystoneAuthList=self.keystoneAuthList,adminAuth=self.adminKSAuth)
-        self.managerReservation = ManagerReservation(keystoneAuthList=self.keystoneAuthList,adminAuth=self.adminKSAuth)
+        self.managerTeam = ManagerTeam(keystoneAuthList=self.keystoneAuthList, adminAuth=self.adminKSAuth)
+        self.managerReservation = ManagerReservation(keystoneAuthList=self.keystoneAuthList, adminAuth=self.adminKSAuth)
 
         self.mountMenager()
 

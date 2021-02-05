@@ -3,22 +3,15 @@
         "name": "test_lab",
         "duration": "03:00:00",
         "group": "test_lab_group",
-        "moderator": "9b10e3ef1bf342b1a8fc69a58655ede1"
+        "moderator": "0aa958c6ab4f490494d6dbb84711cb92",
+        "limit": 5
     },
     "periods": [
         {
-            "start": "2017-04-20 12:00:00",
-            "stop": "2017-04-25 12:00:00"
-        },
-        {
-            "start": "2017-04-25 15:00:00",
-            "stop": "2017-04-30 12:00:00"
-        },
-        {
-            "start": "2018-04-25 15:00:00",
-            "stop": "2018-06-30 12:00:00"
+            "start": "2019-05-20 12:00:00",
+            "stop": "2019-05-30 12:00:00"
         }
-    ],
+   ],
     "template": {
         "name": "test_template",
         "data": {
